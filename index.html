@@ -457,11 +457,47 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedDB = JSON.parse(e.target.result);
-                    if(Array.isArray(importedDB) && importedDB.length > 0) {
-                        state.db = importedDB;
+                    const rawData = JSON.parse(e.target.result);
+                    if(Array.isArray(rawData) && rawData.length > 0) {
+                        
+                        // 1. Troviamo il giocatore più costoso del listone di quest'anno per creare il parametro massimo
+                        let maxQt = Math.max(...rawData.map(g => parseInt(g.QtA || g.Quotazione || g.costoStim || 1)));
+                        if (maxQt < 1) maxQt = 50; // Fallback di sicurezza
+
+                        // 2. Elaborazione di tutti i giocatori
+                        const processedDB = rawData.map((giocatore, index) => {
+                            
+                            // Prendiamo la Quotazione di quest'anno
+                            let qt = parseInt(giocatore.QtA || giocatore.Quotazione || giocatore.costoStim || 1);
+                            
+                            // CALCOLO IA AUTOMATICO BASATO SULLA QUOTAZIONE ATTUALE
+                            // Trasforma la quotazione (es. 1-50) in un voto in stile calcistico (10-99)
+                            let calcoloIA = Math.round((qt / maxQt) * 90) + 9; 
+                            
+                            // Limiti di sicurezza
+                            if(calcoloIA > 99) calcoloIA = 99;
+                            if(calcoloIA < 1) calcoloIA = 1;
+
+                            // 3. Gestione Ruoli automatica (legge sia il formato Mantra che Standard)
+                            let ruoliArray = ["C"];
+                            if (giocatore.R) { ruoliArray = giocatore.R.split(';'); } 
+                            else if (giocatore.Ruolo) { ruoliArray = [giocatore.Ruolo]; } 
+                            else if (giocatore.ruoli) { ruoliArray = giocatore.ruoli; } 
+
+                            return {
+                                id: giocatore.Id || index + 1,
+                                nome: giocatore.Nome || giocatore.nome || "Sconosciuto",
+                                sq: giocatore.Squadra || giocatore.sq || "SVN",
+                                ruoli: ruoliArray,
+                                ia: calcoloIA, // IA generato al volo!
+                                prob: 80, // Titolare base stimato
+                                costoStim: qt
+                            };
+                        });
+
+                        state.db = processedDB;
                         salvaDati();
-                        alert(`Importati ${state.db.length} giocatori per la modalità ${currentMode.toUpperCase()}!`);
+                        alert(`Importati ${state.db.length} giocatori per la modalità ${currentMode.toUpperCase()}!\nL'IA è stato calcolato in automatico sulle quotazioni di quest'anno.`);
                         renderPlayerList();
                         toggleSidebar();
                     } else alert("Il file JSON non sembra valido.");
