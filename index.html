@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fanta Pro Universal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',
+                            card: '#1e293b',
+                            accent: '#3b82f6', // Blu per Mantra
+                            standard: '#f97316', // Arancione per Standard
+                            green: '#10b981',
+                            pitch: '#166534',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        #splash { transition: opacity 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        
+        .pitch-bg {
+            background-color: #228b22;
+            background-image: linear-gradient(rgba(255,255,255,.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.2) 1px, transparent 1px);
+            background-size: 50px 50px;
+            border: 4px solid white; border-radius: 8px;
+            position: relative; overflow: hidden; aspect-ratio: 3/4;
+        }
+        .pitch-lines::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: white; transform: translateY(-50%); }
+        .pitch-lines::after { content: ''; position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
+        .penalty-area-top { position: absolute; top: 0; left: 20%; right: 20%; height: 15%; border: 2px solid white; border-top: none; }
+        .penalty-area-bottom { position: absolute; bottom: 0; left: 20%; right: 20%; height: 15%; border: 2px solid white; border-bottom: none; }
+
+        .player-slot {
+            position: absolute; transform: translate(-50%, -50%);
+            width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(255,255,255,0.95); color: #000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: bold; font-family: 'Inter';
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 2px solid #3b82f6; cursor: pointer; z-index: 10;
+        }
+        .player-slot.filled { background: #3b82f6; color: white; border-color: white; }
+        .slot-name { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 44px; }
+        
+        .malus-badge {
+            position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white;
+        }
+
+        /* Colori Ruoli Universali (Mantra + Standard) */
+        .role-por, .role-p { background-color: #f59e0b; color: white; } 
+        .role-def, .role-d { background-color: #10b981; color: white; } 
+        .role-mid, .role-c { background-color: #3b82f6; color: white; } 
+        .role-att, .role-a { background-color: #ef4444; color: white; } 
+    </style>
+</head>
+<body class="bg-brand-dark text-slate-100 h-screen w-screen overflow-hidden flex flex-col">
+
+    <!-- SPLASH SCREEN -->
+    <div id="splash" class="fixed inset-0 z-[100] bg-brand-dark flex flex-col items-center justify-center">
+        <img src="./intro.jpg" alt="Intro Logo" onerror="this.src='https://placehold.co/800x1200/0f172a/3b82f6?text=Fanta+Pro'" class="w-full h-full object-cover opacity-80">
+        <div class="absolute bottom-20 text-center">
+            <h1 class="text-4xl font-display text-white mb-2 tracking-wider">FANTA PRO</h1>
+            <i class="fa-solid fa-circle-notch fa-spin text-brand-accent text-3xl"></i>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="hidden flex-col h-full w-full relative">
+        
+        <!-- HEADER (Nascosto nella Home) -->
+        <header id="main-header" class="bg-brand-card shadow-md p-4 justify-between items-center z-20 hidden">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="text-2xl text-slate-300 hover:text-white"><i class="fa-solid fa-bars"></i></button>
+                <h1 id="header-title" class="font-display text-xl tracking-wide text-brand-accent">MANTRA PRO</h1>
+            </div>
+            <div class="text-right bg-slate-900 px-3 py-1 rounded-lg border border-slate-700 cursor-pointer" onclick="openBudgetModal()">
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Budget</div>
+                <div class="font-display text-xl text-brand-green flex items-center gap-1">
+                    <i class="fa-solid fa-coins text-sm"></i> <span id="ui-budget">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-brand-card shadow-2xl transform -translate-x-full transition-transform duration-300 z-50 flex flex-col">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900">
+                <h2 class="font-display text-xl text-white">Menu</h2>
+                <button onclick="toggleSidebar()" class="text-2xl text-slate-400 hover:text-white"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <nav class="flex-1 p-4 flex flex-col gap-4 overflow-y-auto">
+                <button onclick="goHome(); toggleSidebar();" class="flex items-center gap-3 text-lg text-white hover:text-brand-accent bg-slate-800 p-2 rounded-lg border border-slate-700 font-bold justify-center mb-2">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Cambia Modalità
+                </button>
+                
+                <a href="#" onclick="switchView('list'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-brand-accent transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-list"></i></div> Listone</a>
+                <a href="#" onclick="switchView('favs'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-yellow-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-star"></i></div> Preferiti</a>
+                <a href="#" onclick="switchView('team'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-brand-green transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-shield-halved"></i></div> Mia Squadra</a>
+                <a href="#" onclick="switchView('pitch'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-emerald-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-futbol"></i></div> Campo Verde</a>
+                
+                <div class="my-2 border-t border-slate-700"></div>
+                
+                <div class="text-xs text-slate-500 uppercase tracking-widest mb-1 font-bold">Gestione Dati <span id="sidebar-mode-label" class="text-white"></span></div>
+                <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer bg-slate-800 p-2 rounded border border-slate-700">
+                    <div class="w-8 text-center"><i class="fa-solid fa-file-import text-brand-accent"></i></div> 
+                    <span>Importa JSON</span>
+                    <input type="file" accept=".json" class="hidden" id="jsonInput" onchange="importaJSON(event)">
+                </label>
+                <button onclick="resetData()" class="flex items-center gap-3 text-sm text-red-400 hover:text-red-300 p-2 text-left">
+                    <div class="w-8 text-center"><i class="fa-solid fa-trash-can"></i></div> Reset Dati Modalità
+                </button>
+            </nav>
+        </div>
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm"></div>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto pb-24 relative" id="main-content">
+            
+            <!-- VIEW: HOME (SELEZIONE MODALITÀ) -->
+            <div id="view-home" class="view-section flex flex-col items-center justify-center h-full p-6 bg-brand-dark relative">
+                <div class="text-center mb-10">
+                    <h1 class="font-display text-5xl text-white tracking-widest mb-2 shadow-black drop-shadow-lg">FANTA PRO</h1>
+                    <p class="text-slate-400">Scegli l'asta a cui vuoi partecipare</p>
+                </div>
+
+                <div class="w-full max-w-sm flex flex-col gap-6">
+                    <!-- Card Mantra -->
+                    <div onclick="selezionaModalita('mantra')" class="bg-gradient-to-br from-blue-900 to-slate-900 border-2 border-blue-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all shadow-xl shadow-blue-900/50 relative overflow-hidden">
+                        <i class="fa-solid fa-chess-knight absolute -bottom-4 -right-4 text-7xl text-blue-500/20"></i>
+                        <h2 class="font-display text-3xl text-white mb-1">MANTRA</h2>
+                        <p class="text-blue-200 text-sm mb-4">Ruoli specifici, moduli avanzati, -1 fuori ruolo.</p>
+                        <div class="bg-black/40 rounded-lg p-3 flex justify-between items-center">
+                            <span class="text-xs uppercase text-slate-400">Budget Residuo</span>
+                            <span class="font-bold text-xl text-brand-green"><i class="fa-solid fa-coins text-sm"></i> <span id="home-budget-mantra">0</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Card Standard -->
+                    <div onclick="selezionaModalita('standard')" class="bg-gradient-to-br from-orange-900 to-slate-900 border-2 border-orange-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all shadow-xl shadow-orange-900/50 relative overflow-hidden">
+                        <i class="fa-solid fa-bolt absolute -bottom-4 -right-4 text-7xl text-orange-500/20"></i>
+                        <h2 class="font-display text-3xl text-white mb-1">STANDARD</h2>
+                        <p class="text-orange-200 text-sm mb-4">Modalità Classica (P, D, C, A). Nessun malus.</p>
+                        <div class="bg-black/40 rounded-lg p-3 flex justify-between items-center">
+                            <span class="text-xs uppercase text-slate-400">Budget Residuo</span>
+                            <span class="font-bold text-xl text-brand-green"><i class="fa-solid fa-coins text-sm"></i> <span id="home-budget-standard">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: LISTA GIOCATORI -->
+            <div id="view-list" class="view-section hidden p-4">
+                <div class="sticky top-0 bg-brand-dark/95 backdrop-blur z-10 pb-4 pt-2">
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-400"></i>
+                        <input type="text" id="searchInput" onkeyup="renderPlayerList()" placeholder="Cerca giocatore, squadra o ruolo..." 
+                               class="w-full bg-brand-card text-white rounded-lg pl-10 pr-4 py-3 border border-slate-700 focus:outline-none shadow-lg">
+                    </div>
+                    <div class="flex justify-between items-center mt-3 text-xs text-slate-400">
+                        <span>Ordinamento per <b class="text-white">IA <i class="fa-solid fa-arrow-down-9-1"></i></b></span>
+                        <span id="player-count" class="bg-slate-800 px-2 py-1 rounded">0 trovati</span>
+                    </div>
+                </div>
+                <div id="player-list-container" class="flex flex-col gap-3"></div>
+            </div>
+
+            <!-- VIEW: PREFERITI -->
+            <div id="view-favs" class="view-section hidden p-4">
+                <h2 class="font-display text-2xl mb-4 text-yellow-400 flex items-center gap-2"><i class="fa-solid fa-star"></i> Preferiti</h2>
+                <div id="favs-container" class="flex flex-col gap-4"></div>
+            </div>
+
+            <!-- VIEW: LA MIA SQUADRA -->
+            <div id="view-team" class="view-section hidden p-4">
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="font-display text-2xl text-brand-green flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> La Mia Rosa</h2>
+                    <div class="text-right bg-slate-800 px-3 py-1 rounded border border-slate-700">
+                        <div class="text-[10px] text-slate-400 uppercase">Giocatori</div>
+                        <div class="text-xl font-bold"><span id="team-count" class="text-white">0</span><span class="text-slate-500 text-sm">/25+</span></div>
+                    </div>
+                </div>
+                <!-- Tracker Moduli -->
+                <div class="bg-brand-card rounded-xl p-4 mb-5 border border-slate-700 shadow-lg">
+                    <div class="text-xs text-slate-400 mb-3 uppercase tracking-wider font-bold">Fattibilità Moduli</div>
+                    <div id="formation-coverage" class="grid grid-cols-3 gap-2 text-center text-sm font-bold"></div>
+                </div>
+                <div id="team-container" class="flex flex-col gap-3"></div>
+            </div>
+
+            <!-- VIEW: CAMPO VERDE -->
+            <div id="view-pitch" class="view-section hidden p-4 h-full flex flex-col max-w-lg mx-auto">
+                <div class="flex justify-between items-center mb-3">
+                    <select id="formation-select" onchange="renderPitch()" class="bg-brand-card text-white border rounded p-2 outline-none font-bold shadow-lg"></select>
+                    <button onclick="autoSuggestFormation()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded font-bold shadow-lg text-sm flex items-center gap-2 hover:opacity-90">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Migliore
+                    </button>
+                </div>
+                
+                <div class="flex justify-between bg-brand-card p-3 rounded-lg border border-slate-700 mb-4 text-center shadow-lg">
+                    <div class="flex-1 border-r border-slate-700">
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wide">Forza (IA)</div>
+                        <div id="pitch-ia-total" class="font-display text-xl text-white">0</div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wide">Probabilità</div>
+                        <div id="pitch-prob-avg" class="font-display text-xl text-yellow-400">0%</div>
+                    </div>
+                </div>
+
+                <div class="pitch-bg pitch-lines flex-1 w-full mx-auto relative rounded-xl shadow-2xl mb-4">
+                    <div class="penalty-area-top"></div>
+                    <div class="penalty-area-bottom"></div>
+                    <div id="pitch-slots-container"></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM NAV (Nascosta nella Home) -->
+        <nav id="bottom-nav" class="bg-brand-dark/95 backdrop-blur-md border-t border-slate-800 justify-around p-2 pb-6 absolute bottom-0 w-full z-30 hidden">
+            <button onclick="switchView('list')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 transition-colors" data-target="list">
+                <i class="fa-solid fa-users text-xl"></i><span class="text-[10px] uppercase font-bold">Listone</span>
+            </button>
+            <button onclick="switchView('favs')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-yellow-400 transition-colors" data-target="favs">
+                <i class="fa-solid fa-star text-xl"></i><span class="text-[10px] uppercase font-bold">Preferiti</span>
+            </button>
+            <button onclick="switchView('team')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-brand-green transition-colors" data-target="team">
+                <i class="fa-solid fa-shield-halved text-xl"></i><span class="text-[10px] uppercase font-bold">Rosa</span>
+            </button>
+            <button onclick="switchView('pitch')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-emerald-400 transition-colors" data-target="pitch">
+                <i class="fa-solid fa-futbol text-xl"></i><span class="text-[10px] uppercase font-bold">Campo</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- MODAL DETTAGLIO, ACQUISTO E CAMPO VERDE (Ometto il codice HTML interno ripetitivo, lascio i div che verranno popolati dinamicamente come prima) -->
+    <!-- MODAL: DETTAGLIO GIOCATORE -->
+    <div id="player-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-sm hidden z-[60] flex flex-col justify-end">
+        <div class="bg-brand-card rounded-t-3xl p-6 h-[75vh] flex flex-col relative transform transition-transform translate-y-full border-t border-slate-700" id="player-modal-content">
+            <button onclick="closePlayerModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-chevron-down"></i></button>
+            <div class="flex gap-4 items-center mb-6 mt-2">
+                <div class="w-24 h-24 bg-slate-800 rounded-2xl overflow-hidden border-2 border-slate-600 flex-shrink-0" id="modal-img-container"></div>
+                <div>
+                    <h2 id="modal-name" class="font-display text-3xl font-bold text-white mb-1">Nome</h2>
+                    <p id="modal-team" class="text-slate-400 font-bold uppercase mb-2">Sq</p>
+                    <div id="modal-roles" class="flex gap-1 flex-wrap"></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="bg-slate-900 rounded-xl p-3 text-center border border-slate-700">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold">IA</div>
+                    <div id="modal-ia" class="font-display text-brand-accent text-2xl">0</div>
+                </div>
+                <div class="bg-slate-900 rounded-xl p-3 text-center border border-slate-700">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold">Prob.</div>
+                    <div id="modal-prob" class="font-display text-yellow-400 text-2xl">0%</div>
+                </div>
+                <div class="bg-slate-900 rounded-xl p-3 text-center border border-slate-700">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold">Costo</div>
+                    <div id="modal-costo" class="font-display text-emerald-400 text-2xl">0</div>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-auto pb-4">
+                <button id="btn-fav" onclick="toggleFavFromModal()" class="flex-1 py-4 rounded-xl font-bold border-2 border-yellow-500 text-yellow-500 flex justify-center gap-2 text-lg"><i class="fa-solid fa-star"></i> Preferito</button>
+                <button id="btn-buy" onclick="openPurchaseModal()" class="flex-1 py-4 rounded-xl font-bold bg-brand-green text-white flex justify-center gap-2 text-lg"><i class="fa-solid fa-gavel"></i> Acquista</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ACQUISTO -->
+    <div id="purchase-modal" class="fixed inset-0 bg-brand-dark/90 backdrop-blur-md hidden z-[70] flex items-center justify-center p-4">
+        <div class="bg-brand-card rounded-2xl p-6 w-full max-w-sm border border-slate-700 shadow-2xl text-center">
+            <h3 class="font-display text-2xl mb-1 text-white">Acquisto <span id="purchase-name" class="text-brand-green"></span></h3>
+            <input type="number" id="purchase-price" placeholder="Crediti" class="w-full bg-slate-900 text-white text-3xl font-display text-center rounded-xl p-4 border-2 border-slate-600 mb-6 mt-4 outline-none">
+            <div class="flex gap-3">
+                <button onclick="closePurchaseModal()" class="flex-1 py-3 rounded-xl bg-slate-700 text-white font-bold">Annulla</button>
+                <button onclick="confirmPurchase()" class="flex-1 py-3 rounded-xl bg-brand-green text-white font-bold">Conferma</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SELEZIONA PER CAMPO -->
+    <div id="pitch-select-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-md hidden z-[60] flex flex-col p-4">
+        <div class="flex justify-between items-center mb-2 mt-4 bg-slate-900 p-4 rounded-xl border border-slate-700">
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Ruolo Richiesto</div>
+                <h3 class="font-display text-2xl text-white" id="pitch-target-role"></h3>
+            </div>
+            <button onclick="closePitchSelectModal()" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div id="pitch-eligible-list" class="flex flex-col gap-3 overflow-y-auto flex-1 pb-10 px-1 mt-2"></div>
+        <div class="mt-4 pb-6">
+            <button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2">
+                <i class="fa-solid fa-user-minus"></i> Rimuovi dal campo
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGICA -->
+    <script>
+        // --- 1. DATI & STATO UNIVERSALE ---
+        let defaultState = {
+            mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] },
+            standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] }
+        };
+        
+        let appState = JSON.parse(localStorage.getItem('fantaProUniversal')) || defaultState;
+        let currentMode = null; // 'mantra' o 'standard'
+        let state = null; // Puntatore allo stato attivo (appState.mantra o appState.standard)
+        
+        let currentPlayerId = null; 
+        let currentPitchSlot = null; 
+
+        // Database di Prova
+        const mockMantra = [
+            { id: 1, nome: "Sommer", sq: "INT", ruoli: ["Por"], ia: 92, prob: 98, costoStim: 45 },
+            { id: 2, nome: "Bastoni", sq: "INT", ruoli: ["Dc"], ia: 86, prob: 90, costoStim: 26 },
+            { id: 3, nome: "Dimarco", sq: "INT", ruoli: ["Ds", "E"], ia: 95, prob: 88, costoStim: 42 },
+            { id: 4, nome: "Calhanoglu", sq: "INT", ruoli: ["M", "C"], ia: 96, prob: 95, costoStim: 60 },
+            { id: 5, nome: "Pulisic", sq: "MIL", ruoli: ["W", "T", "A"], ia: 91, prob: 90, costoStim: 50 },
+            { id: 6, nome: "Lautaro", sq: "INT", ruoli: ["Pc"], ia: 98, prob: 94, costoStim: 95 }
+        ];
+
+        const mockStandard = [
+            { id: 1, nome: "Sommer", sq: "INT", ruoli: ["P"], ia: 92, prob: 98, costoStim: 45 },
+            { id: 2, nome: "Bastoni", sq: "INT", ruoli: ["D"], ia: 86, prob: 90, costoStim: 26 },
+            { id: 3, nome: "Dimarco", sq: "INT", ruoli: ["D"], ia: 95, prob: 88, costoStim: 42 },
+            { id: 4, nome: "Calhanoglu", sq: "INT", ruoli: ["C"], ia: 96, prob: 95, costoStim: 60 },
+            { id: 5, nome: "Pulisic", sq: "MIL", ruoli: ["C"], ia: 91, prob: 90, costoStim: 50 },
+            { id: 6, nome: "Lautaro", sq: "INT", ruoli: ["A"], ia: 98, prob: 94, costoStim: 95 }
+        ];
+
+        // Configurazioni Moduli MANTRA
+        const formationsMantra = {
+            '433': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:50}, {role:'M|C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'W|A',x:80,y:25}, {role:'Pc',x:50,y:15}, {role:'W|A',x:20,y:25} ],
+            '352': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:78}, {role:'Dc',x:50,y:82}, {role:'Dc',x:25,y:78}, {role:'E',x:85,y:45}, {role:'M|C',x:65,y:55}, {role:'C|T',x:50,y:45}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:45}, {role:'Pc|A',x:65,y:18}, {role:'Pc|A',x:35,y:18} ]
+        };
+        // Configurazioni Moduli STANDARD
+        const formationsStandard = {
+            '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ],
+            '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ],
+            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ]
+        };
+
+        const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
+        
+        const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
+
+        // --- 2. INIT E NAVIGAZIONE GLOBALE ---
+        function initApp() {
+            updateHomeBudgets();
+            setTimeout(() => {
+                document.getElementById('splash').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('splash').style.display = 'none';
+                    document.getElementById('app').classList.remove('hidden');
+                    document.getElementById('app').classList.add('flex');
+                }, 500);
+            }, 2000); 
+        }
+
+        function updateHomeBudgets() {
+            document.getElementById('home-budget-mantra').innerText = appState.mantra.budgetIniziale - appState.mantra.creditiSpesi;
+            document.getElementById('home-budget-standard').innerText = appState.standard.budgetIniziale - appState.standard.creditiSpesi;
+        }
+
+        function selezionaModalita(mode) {
+            currentMode = mode;
+            state = appState[mode];
+
+            // Inizializza DB se vuoto
+            if(state.db.length === 0) {
+                state.db = mode === 'mantra' ? mockMantra : mockStandard;
+                salvaDati();
+            }
+
+            // UI Updates
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('main-header').classList.add('flex');
+            document.getElementById('bottom-nav').classList.remove('hidden');
+            document.getElementById('bottom-nav').classList.add('flex');
+            
+            const titleEl = document.getElementById('header-title');
+            titleEl.innerText = mode === 'mantra' ? 'MANTRA PRO' : 'STANDARD PRO';
+            titleEl.className = `font-display text-xl tracking-wide ${mode === 'mantra' ? 'text-blue-500' : 'text-orange-500'}`;
+            document.getElementById('sidebar-mode-label').innerText = `(${mode.toUpperCase()})`;
+
+            // Popola Select Formazioni
+            const selectEl = document.getElementById('formation-select');
+            selectEl.className = `bg-brand-card text-white border rounded p-2 outline-none font-bold shadow-lg ${mode === 'mantra' ? 'border-blue-500' : 'border-orange-500'}`;
+            selectEl.innerHTML = '';
+            const forms = mode === 'mantra' ? formationsMantra : formationsStandard;
+            for(let key in forms) {
+                selectEl.innerHTML += `<option value="${key}">${key} ${mode === 'mantra' ? 'Mantra' : 'Standard'}</option>`;
+            }
+            selectEl.value = state.pitchLayout; // Ripristina ultimo modulo
+
+            updateBudgetUI();
+            switchView('list');
+        }
+
+        function goHome() {
+            currentMode = null;
+            state = null;
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('bottom-nav').classList.add('hidden');
+            document.getElementById('main-header').classList.remove('flex');
+            document.getElementById('bottom-nav').classList.remove('flex');
+            updateHomeBudgets();
+            switchView('home');
+        }
+
+        function salvaDati() {
+            localStorage.setItem('fantaProUniversal', JSON.stringify(appState));
+            if(currentMode) updateBudgetUI();
+            else updateHomeBudgets();
+        }
+
+        function updateBudgetUI() { document.getElementById('ui-budget').innerText = state.budgetIniziale - state.creditiSpesi; }
+
+        function openBudgetModal() {
+            const res = prompt(`Imposta Budget Totale Iniziale (${currentMode.toUpperCase()}):`, state.budgetIniziale);
+            if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); }
+        }
+
+        function importaJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedDB = JSON.parse(e.target.result);
+                    if(Array.isArray(importedDB) && importedDB.length > 0) {
+                        state.db = importedDB;
+                        salvaDati();
+                        alert(`Importati ${state.db.length} giocatori per la modalità ${currentMode.toUpperCase()}!`);
+                        renderPlayerList();
+                        toggleSidebar();
+                    } else alert("Il file JSON non sembra valido.");
+                } catch (err) { alert("Errore lettura JSON: " + err); }
+                document.getElementById('jsonInput').value = ''; // Reset input
+            };
+            reader.readAsText(file);
+        }
+
+        function resetData() {
+            if(confirm(`Vuoi azzerare la rosa e i crediti della modalità ${currentMode.toUpperCase()}?`)) {
+                appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode]));
+                state = appState[currentMode];
+                salvaDati();
+                switchView('list');
+                toggleSidebar();
+            }
+        }
+
+        // --- 3. UI HELPER ---
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.toggle('hidden');
+        }
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            
+            if(viewName !== 'home') {
+                const accentClass = currentMode === 'mantra' ? 'text-blue-500' : 'text-orange-500';
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('text-blue-500', 'text-orange-500', 'bg-slate-800');
+                    if(!btn.classList.contains('text-slate-400')) btn.classList.add('text-slate-400');
+                });
+                const activeBtn = document.querySelector(`.nav-btn[data-target="${viewName}"]`);
+                if(activeBtn) {
+                    activeBtn.classList.add(accentClass, 'bg-slate-800');
+                    activeBtn.classList.remove('text-slate-400');
+                }
+                
+                if(viewName === 'list') renderPlayerList();
+                if(viewName === 'favs') renderFavs();
+                if(viewName === 'team') renderTeam();
+                if(viewName === 'pitch') renderPitch();
+            }
+        }
+
+        function getRoleBadgesHTML(ruoliArray) {
+            return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join('');
+        }
+
+        function createPlayerCardHTML(p, actionType = 'list', malus = 0) {
+            const isAcquistato = state.miaSquadra.find(x => x.id === p.id);
+            const opacity = (isAcquistato && actionType !== 'team') ? 'opacity-50 grayscale' : '';
+            const accent = currentMode === 'mantra' ? 'text-blue-400' : 'text-orange-400';
+            
+            let rightContent = '';
+            if(actionType === 'team') rightContent = `<div class="text-xl font-display text-brand-green font-bold text-right">${p.costoAcquisto}<br><span class="text-[10px] text-slate-400 font-sans font-normal uppercase">crediti</span></div>`;
+            else if (actionType === 'pitch') rightContent = malus < 0 ? `<div class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Adattato -1</div>` : `<div class="bg-brand-green text-white px-2 py-1 rounded text-xs font-bold shadow">Perfetto</div>`;
+            else rightContent = `<div class="text-xl font-bold ${p.ia > 90 ? accent : 'text-slate-300'}">${p.ia} <span class="text-[10px] text-slate-500 block text-right uppercase">IA</span></div>`;
+
+            return `
+                <div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow text-left border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" 
+                     onclick="${actionType === 'pitch' ? `assignToPitch(${p.id}, ${malus})` : `openPlayerModal(${p.id})`}">
+                    <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 flex items-center justify-center font-bold text-slate-400">
+                        ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : p.nome.substring(0,2).toUpperCase()}
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-lg leading-tight flex items-center gap-2">
+                            ${p.nome} ${state.preferitiIds.includes(p.id) && actionType !== 'favs' && actionType !== 'pitch' ? '<i class="fa-solid fa-star text-yellow-500 text-xs"></i>' : ''}
+                        </div>
+                        <div class="text-[11px] text-slate-400 flex gap-2 items-center mt-1"><span class="font-bold text-slate-300">${p.sq}</span> | ${getRoleBadgesHTML(p.ruoli)}</div>
+                    </div>
+                    <div>${rightContent}</div>
+                </div>
+            `;
+        }
+
+        // --- 4. RENDER VIEWS ---
+        function renderPlayerList() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = state.db.filter(p => p.nome.toLowerCase().includes(q) || p.sq.toLowerCase().includes(q) || p.ruoli.some(r => r.toLowerCase() === q));
+            filtered.sort((a, b) => b.ia - a.ia);
+            document.getElementById('player-count').innerHTML = `${filtered.length} trovati`;
+            document.getElementById('player-list-container').innerHTML = filtered.map(p => createPlayerCardHTML(p)).join('');
+        }
+
+        function renderFavs() {
+            let favs = state.db.filter(p => state.preferitiIds.includes(p.id)).sort((a,b) => b.ia - a.ia);
+            let grouped = favs.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
+            let html = favs.length ? '' : '<div class="text-slate-500 text-center py-10">Nessun preferito.</div>';
+            const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+            order.forEach(role => {
+                if(grouped[role]) {
+                    html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role}</div>`;
+                    html += grouped[role].map(p => createPlayerCardHTML(p, 'favs')).join('');
+                }
+            });
+            document.getElementById('favs-container').innerHTML = html;
+        }
+
+        function renderTeam() {
+            document.getElementById('team-count').innerText = state.miaSquadra.length;
+            let html = state.miaSquadra.length ? '' : '<div class="text-slate-500 text-center py-10">Rosa vuota.</div>';
+            if(state.miaSquadra.length) {
+                let grouped = state.miaSquadra.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
+                const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+                order.forEach(role => {
+                    if(grouped[role]) {
+                        html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role} (${grouped[role].length})</div>`;
+                        html += grouped[role].map(p => createPlayerCardHTML(p, 'team')).join('');
+                    }
+                });
+            }
+            document.getElementById('team-container').innerHTML = html;
+            calcFormationCoverage();
+        }
+
+        function calcFormationCoverage() {
+            let roleCount = {};
+            state.miaSquadra.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
+            const check = (reqs) => {
+                let passed = true;
+                Object.keys(reqs).forEach(r => {
+                    let found = 0;
+                    if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0));
+                    else found = roleCount[r] || 0;
+                    if(found < reqs[r]) passed = false;
+                });
+                return passed;
+            };
+
+            const rulesMantra = { '4-3-3':{'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, '3-5-2':{'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2} };
+            const rulesStandard = { '3-4-3':{'P':1,'D':3,'C':4,'A':3}, '4-3-3':{'P':1,'D':4,'C':3,'A':3}, '4-4-2':{'P':1,'D':4,'C':4,'A':2} };
+            const fRules = currentMode === 'mantra' ? rulesMantra : rulesStandard;
+
+            let html = '';
+            for (const [name, rules] of Object.entries(fRules)) {
+                let ok = check(rules);
+                html += `<div class="py-2 rounded-lg border ${ok ? 'bg-brand-green/20 border-brand-green text-brand-green' : 'bg-slate-800 border-slate-700 text-slate-500'}">
+                            ${name}<br>${ok ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark opacity-50"></i>'}
+                         </div>`;
+            }
+            document.getElementById('formation-coverage').innerHTML = html;
+        }
+
+        // --- 5. CAMPO VERDE & IA ---
+        function renderPitch() {
+            const selForm = document.getElementById('formation-select').value;
+            state.pitchLayout = selForm;
+            if(!state.pitchPlayers[selForm]) state.pitchPlayers[selForm] = {};
+            
+            const layout = currentMode === 'mantra' ? formationsMantra[selForm] : formationsStandard[selForm];
+            const container = document.getElementById('pitch-slots-container');
+            container.innerHTML = '';
+            
+            let totIA = 0, totProb = 0, countFilled = 0;
+            const accentText = currentMode === 'mantra' ? 'text-blue-400' : 'text-orange-400';
+
+            layout.forEach((pos, index) => {
+                const pitchData = state.pitchPlayers[selForm][index]; 
+                const p = pitchData ? state.miaSquadra.find(x => x.id === pitchData.id) : null;
+                const roleClass = roleColors[pos.role.split('|')[0]];
+                
+                if(p) {
+                    const malusBadge = pitchData.malus < 0 ? `<div class="malus-badge">${pitchData.malus}</div>` : '';
+                    container.innerHTML += `<div class="player-slot filled ${roleClass}" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')">${malusBadge}<div class="slot-name">${p.nome}</div></div>`;
+                    totIA += (p.ia + (pitchData.malus * 10)); 
+                    totProb += p.prob;
+                    countFilled++;
+                } else {
+                    container.innerHTML += `<div class="player-slot" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')"><div class="text-[9px] text-slate-500 mb-0.5">${pos.label || pos.role}</div><i class="fa-solid fa-plus ${accentText}"></i></div>`;
+                }
+            });
+
+            document.getElementById('pitch-ia-total').innerText = totIA;
+            document.getElementById('pitch-prob-avg').innerText = countFilled > 0 ? Math.round(totProb/countFilled) + '%' : '0%';
+        }
+
+        function openPitchSelector(slotIndex, reqRolesStr) {
+            currentPitchSlot = slotIndex;
+            document.getElementById('pitch-target-role').innerText = reqRolesStr.replace(/\|/g, ' o ');
+            
+            const reqRoles = reqRolesStr.split('|');
+            let schieratiIds = Object.values(state.pitchPlayers[state.pitchLayout] || {}).map(x => x.id);
+            let eligible = [];
+
+            state.miaSquadra.forEach(p => {
+                if(schieratiIds.includes(p.id) && state.pitchPlayers[state.pitchLayout][currentPitchSlot]?.id !== p.id) return;
+
+                let isPerfect = p.ruoli.some(r => reqRoles.includes(r));
+                let isAdapted = false;
+
+                if(!isPerfect && currentMode === 'mantra') {
+                    p.ruoli.forEach(pr => {
+                        if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true;
+                    });
+                }
+
+                if(isPerfect) eligible.push({p: p, malus: 0});
+                else if(isAdapted) eligible.push({p: p, malus: -1});
+            });
+            
+            eligible.sort((a, b) => (b.p.ia + (b.malus*20)) - (a.p.ia + (a.malus*20))); 
+            
+            let html = eligible.length ? '' : '<div class="text-slate-500 text-center py-10 bg-slate-800 rounded-xl">Nessun giocatore in rosa compatibile.</div>';
+            eligible.forEach(item => html += createPlayerCardHTML(item.p, 'pitch', item.malus));
+            
+            document.getElementById('pitch-eligible-list').innerHTML = html;
+            document.getElementById('pitch-select-modal').classList.remove('hidden');
+        }
+
+        function assignToPitch(id, malus) { state.pitchPlayers[state.pitchLayout][currentPitchSlot] = {id, malus}; salvaDati(); closePitchSelectModal(); renderPitch(); }
+        function removePlayerFromPitch() { delete state.pitchPlayers[state.pitchLayout][currentPitchSlot]; salvaDati(); closePitchSelectModal(); renderPitch(); }
+        function closePitchSelectModal() { document.getElementById('pitch-select-modal').classList.add('hidden'); }
+
+        function autoSuggestFormation() {
+            const layout = currentMode === 'mantra' ? formationsMantra[state.pitchLayout] : formationsStandard[state.pitchLayout];
+            let newPitchState = {};
+            let availablePlayers = [...state.miaSquadra];
+
+            layout.forEach((pos, index) => {
+                const reqRoles = pos.role.split('|');
+                let bestMatch = null, bestScore = -999, bestIndex = -1;
+
+                availablePlayers.forEach((p, i) => {
+                    let isPerfect = p.ruoli.some(r => reqRoles.includes(r));
+                    let isAdapted = false;
+                    if(!isPerfect && currentMode === 'mantra') p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true; });
+
+                    if(isPerfect || isAdapted) {
+                        let malus = isPerfect ? 0 : -1;
+                        let score = (p.ia * (p.prob/100)) + (malus * 20); 
+                        if(score > bestScore) { bestScore = score; bestMatch = {id: p.id, malus}; bestIndex = i; }
+                    }
+                });
+
+                if(bestMatch) { newPitchState[index] = bestMatch; availablePlayers.splice(bestIndex, 1); }
+            });
+
+            state.pitchPlayers[state.pitchLayout] = newPitchState;
+            salvaDati(); renderPitch();
+        }
+
+        // --- 6. MODALS BASE ---
+        function openPlayerModal(id) {
+            currentPlayerId = id; const p = state.db.find(x => x.id === id); if(!p) return;
+            document.getElementById('modal-name').innerText = p.nome; document.getElementById('modal-team').innerText = p.sq;
+            document.getElementById('modal-roles').innerHTML = getRoleBadgesHTML(p.ruoli);
+            document.getElementById('modal-ia').innerText = p.ia; document.getElementById('modal-prob').innerText = p.prob + '%'; document.getElementById('modal-costo').innerText = p.costoStim;
+            document.getElementById('modal-img-container').innerHTML = p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-4xl text-slate-500 font-bold">${p.nome.substring(0,2).toUpperCase()}</div>`;
+            
+            const btnFav = document.getElementById('btn-fav');
+            if(state.preferitiIds.includes(p.id)) { btnFav.classList.replace('text-yellow-500', 'text-brand-dark'); btnFav.classList.add('bg-yellow-500'); } 
+            else { btnFav.classList.replace('text-brand-dark', 'text-yellow-500'); btnFav.classList.remove('bg-yellow-500'); }
+
+            const btnBuy = document.getElementById('btn-buy');
+            if(state.miaSquadra.find(x => x.id === p.id)) { btnBuy.innerText = "Già in Rosa"; btnBuy.disabled = true; btnBuy.classList.replace('bg-brand-green', 'bg-slate-700'); } 
+            else { btnBuy.innerHTML = `<i class="fa-solid fa-gavel"></i> Acquista`; btnBuy.disabled = false; btnBuy.classList.replace('bg-slate-700', 'bg-brand-green'); }
+
+            document.getElementById('player-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('player-modal-content').classList.remove('translate-y-full'); }, 10);
+        }
+
+        function closePlayerModal() { document.getElementById('player-modal-content').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('player-modal').classList.add('hidden'); }, 300); }
+
+        function toggleFavFromModal() {
+            if(!currentPlayerId) return; const idx = state.preferitiIds.indexOf(currentPlayerId);
+            if(idx > -1) state.preferitiIds.splice(idx, 1); else state.preferitiIds.push(currentPlayerId);
+            salvaDati(); openPlayerModal(currentPlayerId); renderPlayerList(); 
+        }
+
+        function openPurchaseModal() { document.getElementById('purchase-name').innerText = state.db.find(x => x.id === currentPlayerId).nome; document.getElementById('purchase-price').value = ''; document.getElementById('purchase-modal').classList.remove('hidden'); }
+        function closePurchaseModal() { document.getElementById('purchase-modal').classList.add('hidden'); }
+
+        function confirmPurchase() {
+            const price = parseInt(document.getElementById('purchase-price').value);
+            if(isNaN(price) || price < 1) return alert("Prezzo non valido!");
+            if(state.budgetIniziale - state.creditiSpesi < price) return alert("Budget insufficiente!");
+
+            const p = state.db.find(x => x.id === currentPlayerId);
+            state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price;
+            const favIdx = state.preferitiIds.indexOf(p.id); if(favIdx > -1) state.preferitiIds.splice(favIdx, 1);
+
+            salvaDati(); closePurchaseModal(); closePlayerModal(); renderPlayerList();
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
