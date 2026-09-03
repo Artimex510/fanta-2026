@@ -4,30 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fanta Pro Universal</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Oswald', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Oswald', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            dark: '#0f172a',
-                            card: '#1e293b',
-                            accent: '#3b82f6', // Blu per Mantra
-                            standard: '#f97316', // Arancione per Standard
-                            green: '#10b981',
-                            pitch: '#166534',
-                        }
+                        brand: { dark: '#0f172a', card: '#1e293b', accent: '#3b82f6', standard: '#f97316', green: '#10b981', pitch: '#166534' }
                     }
                 }
             }
@@ -43,9 +30,7 @@
         .pitch-bg {
             background-color: #228b22;
             background-image: linear-gradient(rgba(255,255,255,.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.2) 1px, transparent 1px);
-            background-size: 50px 50px;
-            border: 4px solid white; border-radius: 8px;
-            position: relative; overflow: hidden; aspect-ratio: 3/4;
+            background-size: 50px 50px; border: 4px solid white; border-radius: 8px; position: relative; overflow: hidden; aspect-ratio: 3/4;
         }
         .pitch-lines::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: white; transform: translateY(-50%); }
         .pitch-lines::after { content: ''; position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
@@ -53,21 +38,15 @@
         .penalty-area-bottom { position: absolute; bottom: 0; left: 20%; right: 20%; height: 15%; border: 2px solid white; border-bottom: none; }
 
         .player-slot {
-            position: absolute; transform: translate(-50%, -50%);
-            width: 48px; height: 48px; border-radius: 50%;
-            background: rgba(255,255,255,0.95); color: #000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: bold; font-family: 'Inter';
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 2px solid #3b82f6; cursor: pointer; z-index: 10;
+            position: absolute; transform: translate(-50%, -50%); width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(255,255,255,0.95); color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: bold; font-family: 'Inter'; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 2px solid #3b82f6; cursor: pointer; z-index: 10;
         }
         .player-slot.filled { background: #3b82f6; color: white; border-color: white; }
         .slot-name { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 44px; }
         
-        .malus-badge {
-            position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white;
-        }
+        .malus-badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; }
 
-        /* Colori Ruoli Universali (Mantra + Standard) */
         .role-por, .role-p { background-color: #f59e0b; color: white; } 
         .role-def, .role-d { background-color: #10b981; color: white; } 
         .role-mid, .role-c { background-color: #3b82f6; color: white; } 
@@ -88,14 +67,14 @@
     <!-- MAIN APP CONTAINER -->
     <div id="app" class="hidden flex-col h-full w-full relative">
         
-        <!-- HEADER (Nascosto nella Home) -->
+        <!-- HEADER -->
         <header id="main-header" class="bg-brand-card shadow-md p-4 justify-between items-center z-20 hidden">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="text-2xl text-slate-300 hover:text-white"><i class="fa-solid fa-bars"></i></button>
                 <h1 id="header-title" class="font-display text-xl tracking-wide text-brand-accent">MANTRA PRO</h1>
             </div>
             <div class="text-right bg-slate-900 px-3 py-1 rounded-lg border border-slate-700 cursor-pointer" onclick="openBudgetModal()">
-                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Budget</div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Budget Max</div>
                 <div class="font-display text-xl text-brand-green flex items-center gap-1">
                     <i class="fa-solid fa-coins text-sm"></i> <span id="ui-budget">0</span>
                 </div>
@@ -123,7 +102,7 @@
                 <div class="text-xs text-slate-500 uppercase tracking-widest mb-1 font-bold">Gestione Dati <span id="sidebar-mode-label" class="text-white"></span></div>
                 <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer bg-slate-800 p-2 rounded border border-slate-700">
                     <div class="w-8 text-center"><i class="fa-solid fa-file-import text-brand-accent"></i></div> 
-                    <span>Importa JSON</span>
+                    <span>Importa JSON CSV</span>
                     <input type="file" accept=".json" class="hidden" id="jsonInput" onchange="importaJSON(event)">
                 </label>
                 <button onclick="resetData()" class="flex items-center gap-3 text-sm text-red-400 hover:text-red-300 p-2 text-left">
@@ -144,25 +123,23 @@
                 </div>
 
                 <div class="w-full max-w-sm flex flex-col gap-6">
-                    <!-- Card Mantra -->
-                    <div onclick="selezionaModalita('mantra')" class="bg-gradient-to-br from-blue-900 to-slate-900 border-2 border-blue-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all shadow-xl shadow-blue-900/50 relative overflow-hidden">
+                    <div onclick="selezionaModalita('mantra')" class="bg-gradient-to-br from-blue-900 to-slate-900 border-2 border-blue-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all shadow-xl relative overflow-hidden">
                         <i class="fa-solid fa-chess-knight absolute -bottom-4 -right-4 text-7xl text-blue-500/20"></i>
                         <h2 class="font-display text-3xl text-white mb-1">MANTRA</h2>
-                        <p class="text-blue-200 text-sm mb-4">Ruoli specifici, moduli avanzati, -1 fuori ruolo.</p>
+                        <p class="text-blue-200 text-sm mb-4">Ruoli specifici, moduli avanzati.</p>
                         <div class="bg-black/40 rounded-lg p-3 flex justify-between items-center">
                             <span class="text-xs uppercase text-slate-400">Budget Residuo</span>
-                            <span class="font-bold text-xl text-brand-green"><i class="fa-solid fa-coins text-sm"></i> <span id="home-budget-mantra">0</span></span>
+                            <span class="font-bold text-xl text-brand-green"><span id="home-budget-mantra">0</span></span>
                         </div>
                     </div>
 
-                    <!-- Card Standard -->
-                    <div onclick="selezionaModalita('standard')" class="bg-gradient-to-br from-orange-900 to-slate-900 border-2 border-orange-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all shadow-xl shadow-orange-900/50 relative overflow-hidden">
+                    <div onclick="selezionaModalita('standard')" class="bg-gradient-to-br from-orange-900 to-slate-900 border-2 border-orange-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all shadow-xl relative overflow-hidden">
                         <i class="fa-solid fa-bolt absolute -bottom-4 -right-4 text-7xl text-orange-500/20"></i>
                         <h2 class="font-display text-3xl text-white mb-1">STANDARD</h2>
-                        <p class="text-orange-200 text-sm mb-4">Modalità Classica (P, D, C, A). Nessun malus.</p>
+                        <p class="text-orange-200 text-sm mb-4">Modalità Classica (P, D, C, A).</p>
                         <div class="bg-black/40 rounded-lg p-3 flex justify-between items-center">
                             <span class="text-xs uppercase text-slate-400">Budget Residuo</span>
-                            <span class="font-bold text-xl text-brand-green"><i class="fa-solid fa-coins text-sm"></i> <span id="home-budget-standard">0</span></span>
+                            <span class="font-bold text-xl text-brand-green"><span id="home-budget-standard">0</span></span>
                         </div>
                     </div>
                 </div>
@@ -173,8 +150,7 @@
                 <div class="sticky top-0 bg-brand-dark/95 backdrop-blur z-10 pb-4 pt-2">
                     <div class="relative">
                         <i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-400"></i>
-                        <input type="text" id="searchInput" onkeyup="renderPlayerList()" placeholder="Cerca giocatore, squadra o ruolo..." 
-                               class="w-full bg-brand-card text-white rounded-lg pl-10 pr-4 py-3 border border-slate-700 focus:outline-none shadow-lg">
+                        <input type="text" id="searchInput" onkeyup="renderPlayerList()" placeholder="Cerca giocatore o squadra..." class="w-full bg-brand-card text-white rounded-lg pl-10 pr-4 py-3 border border-slate-700 focus:outline-none shadow-lg">
                     </div>
                     <div class="flex justify-between items-center mt-3 text-xs text-slate-400">
                         <span>Ordinamento per <b class="text-white">IA <i class="fa-solid fa-arrow-down-9-1"></i></b></span>
@@ -199,7 +175,6 @@
                         <div class="text-xl font-bold"><span id="team-count" class="text-white">0</span><span class="text-slate-500 text-sm">/25+</span></div>
                     </div>
                 </div>
-                <!-- Tracker Moduli -->
                 <div class="bg-brand-card rounded-xl p-4 mb-5 border border-slate-700 shadow-lg">
                     <div class="text-xs text-slate-400 mb-3 uppercase tracking-wider font-bold">Fattibilità Moduli</div>
                     <div id="formation-coverage" class="grid grid-cols-3 gap-2 text-center text-sm font-bold"></div>
@@ -215,7 +190,6 @@
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Migliore
                     </button>
                 </div>
-                
                 <div class="flex justify-between bg-brand-card p-3 rounded-lg border border-slate-700 mb-4 text-center shadow-lg">
                     <div class="flex-1 border-r border-slate-700">
                         <div class="text-[10px] text-slate-400 uppercase tracking-wide">Forza (IA)</div>
@@ -226,17 +200,15 @@
                         <div id="pitch-prob-avg" class="font-display text-xl text-yellow-400">0%</div>
                     </div>
                 </div>
-
                 <div class="pitch-bg pitch-lines flex-1 w-full mx-auto relative rounded-xl shadow-2xl mb-4">
                     <div class="penalty-area-top"></div>
                     <div class="penalty-area-bottom"></div>
                     <div id="pitch-slots-container"></div>
                 </div>
             </div>
-
         </main>
 
-        <!-- BOTTOM NAV (Nascosta nella Home) -->
+        <!-- BOTTOM NAV -->
         <nav id="bottom-nav" class="bg-brand-dark/95 backdrop-blur-md border-t border-slate-800 justify-around p-2 pb-6 absolute bottom-0 w-full z-30 hidden">
             <button onclick="switchView('list')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 transition-colors" data-target="list">
                 <i class="fa-solid fa-users text-xl"></i><span class="text-[10px] uppercase font-bold">Listone</span>
@@ -251,11 +223,9 @@
                 <i class="fa-solid fa-futbol text-xl"></i><span class="text-[10px] uppercase font-bold">Campo</span>
             </button>
         </nav>
-
     </div>
 
-    <!-- MODAL DETTAGLIO, ACQUISTO E CAMPO VERDE (Ometto il codice HTML interno ripetitivo, lascio i div che verranno popolati dinamicamente come prima) -->
-    <!-- MODAL: DETTAGLIO GIOCATORE -->
+    <!-- MODAL: DETTAGLIO GIOCATORE (AGGIORNATO MONEYBALL) -->
     <div id="player-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-sm hidden z-[60] flex flex-col justify-end">
         <div class="bg-brand-card rounded-t-3xl p-6 h-[85vh] flex flex-col relative transform transition-transform translate-y-full border-t border-slate-700 shadow-2xl" id="player-modal-content">
             <button onclick="closePlayerModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-chevron-down"></i></button>
@@ -286,7 +256,7 @@
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtA</div><div class="font-bold text-white text-lg" id="modal-qta">-</div></div>
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtI</div><div class="font-bold text-slate-300 text-lg" id="modal-qti">-</div></div>
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold text-brand-accent">FVM</div><div class="font-bold text-white text-lg" id="modal-fvm">-</div></div>
-                <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold text-yellow-400">Prob</div><div class="font-bold text-white text-lg">80%</div></div>
+                <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold text-yellow-400">Prob</div><div class="font-bold text-white text-lg" id="modal-prob">80%</div></div>
             </div>
 
             <!-- Griglia Rendimento -->
@@ -305,14 +275,9 @@
                 <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-red-600 font-bold mb-1">ESP/AU</div><div class="font-bold text-white" id="modal-esp-au">0</div></div>
             </div>
 
-            <!-- Azioni -->
             <div class="flex gap-3 mt-4 pb-4">
-                <button id="btn-fav" onclick="toggleFavFromModal()" class="flex-1 py-4 rounded-xl font-bold border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black transition-all flex items-center justify-center gap-2 text-lg">
-                    <i class="fa-solid fa-star"></i> Preferito
-                </button>
-                <button id="btn-buy" onclick="openPurchaseModal()" class="flex-1 py-4 rounded-xl font-bold bg-brand-green text-white hover:bg-emerald-500 transition-all shadow-lg flex items-center justify-center gap-2 text-lg">
-                    <i class="fa-solid fa-gavel"></i> Acquista
-                </button>
+                <button id="btn-fav" onclick="toggleFavFromModal()" class="flex-1 py-4 rounded-xl font-bold border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black transition-all flex items-center justify-center gap-2 text-lg"><i class="fa-solid fa-star"></i> Preferito</button>
+                <button id="btn-buy" onclick="openPurchaseModal()" class="flex-1 py-4 rounded-xl font-bold bg-brand-green text-white hover:bg-emerald-500 transition-all shadow-lg flex items-center justify-center gap-2 text-lg"><i class="fa-solid fa-gavel"></i> Acquista</button>
             </div>
         </div>
     </div>
@@ -321,21 +286,18 @@
     <div id="purchase-modal" class="fixed inset-0 bg-brand-dark/90 backdrop-blur-md hidden z-[70] flex items-center justify-center p-4">
         <div class="bg-brand-card rounded-2xl p-6 w-full max-w-sm border border-slate-700 shadow-2xl text-center">
             <h3 class="font-display text-2xl mb-1 text-white">Acquisto <span id="purchase-name" class="text-brand-green"></span></h3>
-            
-            <div class="bg-slate-800 rounded p-2 mt-2 mb-4">
-                <div class="text-xs text-slate-400">Prezzo Massimo Calcolato</div>
-                <div class="text-xl font-bold text-brand-accent" id="purchase-suggested">0</div>
+            <div class="bg-slate-800 rounded p-2 mt-2 mb-4 border border-slate-700">
+                <div class="text-xs text-slate-400 uppercase tracking-widest">Prezzo Max Calcolato</div>
+                <div class="text-2xl font-bold text-brand-accent" id="purchase-suggested">0</div>
             </div>
-
-            <input type="number" id="purchase-price" placeholder="Crediti spesi" class="w-full bg-slate-900 text-white text-3xl font-display text-center rounded-xl p-4 border-2 border-slate-600 focus:border-brand-green focus:outline-none mb-6">
-            
+            <input type="number" id="purchase-price" placeholder="Crediti spesi..." class="w-full bg-slate-900 text-white text-3xl font-display text-center rounded-xl p-4 border-2 border-slate-600 focus:border-brand-green focus:outline-none mb-6">
             <div class="flex gap-3">
                 <button onclick="closePurchaseModal()" class="flex-1 py-3 rounded-xl bg-slate-700 text-white font-bold hover:bg-slate-600">Annulla</button>
                 <button onclick="confirmPurchase()" class="flex-1 py-3 rounded-xl bg-brand-green text-white font-bold hover:bg-emerald-500">Conferma</button>
             </div>
         </div>
     </div>
-    
+
     <!-- MODAL: SELEZIONA PER CAMPO -->
     <div id="pitch-select-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-md hidden z-[60] flex flex-col p-4">
         <div class="flex justify-between items-center mb-2 mt-4 bg-slate-900 p-4 rounded-xl border border-slate-700">
@@ -347,47 +309,19 @@
         </div>
         <div id="pitch-eligible-list" class="flex flex-col gap-3 overflow-y-auto flex-1 pb-10 px-1 mt-2"></div>
         <div class="mt-4 pb-6">
-            <button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2">
-                <i class="fa-solid fa-user-minus"></i> Rimuovi dal campo
-            </button>
+            <button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2"><i class="fa-solid fa-user-minus"></i> Rimuovi dal campo</button>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGICA -->
+    <!-- JAVASCRIPT (CERVELLO) -->
     <script>
-        // --- 1. DATI & STATO UNIVERSALE ---
         let defaultState = {
             mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] },
             standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] }
         };
-        
         let appState = JSON.parse(localStorage.getItem('fantaProUniversal')) || defaultState;
-        let currentMode = null; // 'mantra' o 'standard'
-        let state = null; // Puntatore allo stato attivo (appState.mantra o appState.standard)
-        
-        let currentPlayerId = null; 
-        let currentPitchSlot = null; 
+        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0;
 
-        // Database di Prova
-        const mockMantra = [
-            { id: 1, nome: "Sommer", sq: "INT", ruoli: ["Por"], ia: 92, prob: 98, costoStim: 45 },
-            { id: 2, nome: "Bastoni", sq: "INT", ruoli: ["Dc"], ia: 86, prob: 90, costoStim: 26 },
-            { id: 3, nome: "Dimarco", sq: "INT", ruoli: ["Ds", "E"], ia: 95, prob: 88, costoStim: 42 },
-            { id: 4, nome: "Calhanoglu", sq: "INT", ruoli: ["M", "C"], ia: 96, prob: 95, costoStim: 60 },
-            { id: 5, nome: "Pulisic", sq: "MIL", ruoli: ["W", "T", "A"], ia: 91, prob: 90, costoStim: 50 },
-            { id: 6, nome: "Lautaro", sq: "INT", ruoli: ["Pc"], ia: 98, prob: 94, costoStim: 95 }
-        ];
-
-        const mockStandard = [
-            { id: 1, nome: "Sommer", sq: "INT", ruoli: ["P"], ia: 92, prob: 98, costoStim: 45 },
-            { id: 2, nome: "Bastoni", sq: "INT", ruoli: ["D"], ia: 86, prob: 90, costoStim: 26 },
-            { id: 3, nome: "Dimarco", sq: "INT", ruoli: ["D"], ia: 95, prob: 88, costoStim: 42 },
-            { id: 4, nome: "Calhanoglu", sq: "INT", ruoli: ["C"], ia: 96, prob: 95, costoStim: 60 },
-            { id: 5, nome: "Pulisic", sq: "MIL", ruoli: ["C"], ia: 91, prob: 90, costoStim: 50 },
-            { id: 6, nome: "Lautaro", sq: "INT", ruoli: ["A"], ia: 98, prob: 94, costoStim: 95 }
-        ];
-
-        // Configurazioni Moduli MANTRA
         const formationsMantra = {
             '433': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:50}, {role:'M|C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'W|A',x:80,y:25}, {role:'Pc',x:50,y:15}, {role:'W|A',x:20,y:25} ],
             '352': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:78}, {role:'Dc',x:50,y:82}, {role:'Dc',x:25,y:78}, {role:'E',x:85,y:45}, {role:'M|C',x:65,y:55}, {role:'C|T',x:50,y:45}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:45}, {role:'Pc|A',x:65,y:18}, {role:'Pc|A',x:35,y:18} ],
@@ -396,31 +330,17 @@
             '3421': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ],
             '4312': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:78}, {role:'Dc',x:65,y:82}, {role:'Dc',x:35,y:82}, {role:'Ds',x:15,y:78}, {role:'C',x:75,y:55}, {role:'M|C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'T',x:50,y:35}, {role:'Pc|A',x:65,y:15}, {role:'Pc',x:35,y:15} ]
         };
-        // Configurazioni Moduli STANDARD
         const formationsStandard = {
             '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ],
             '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ],
-            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
-            '352': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
-            '4231': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:80}, {role:'D',x:65,y:85}, {role:'D',x:35,y:85}, {role:'D',x:15,y:80}, {role:'C',x:65,y:58}, {role:'C',x:35,y:58}, {role:'C',x:80,y:35}, {role:'C',x:50,y:35}, {role:'C',x:20,y:35}, {role:'A',x:50,y:12} ],
-            '4312': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:78}, {role:'D',x:65,y:82}, {role:'D',x:35,y:82}, {role:'D',x:15,y:78}, {role:'C',x:75,y:55}, {role:'C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'C',x:50,y:35}, {role:'A',x:65,y:15}, {role:'A',x:35,y:15} ]
+            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ]
         };
-
         const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
-        
         const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
 
-        // --- 2. INIT E NAVIGAZIONE GLOBALE ---
         function initApp() {
             updateHomeBudgets();
-            setTimeout(() => {
-                document.getElementById('splash').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('splash').style.display = 'none';
-                    document.getElementById('app').classList.remove('hidden');
-                    document.getElementById('app').classList.add('flex');
-                }, 500);
-            }, 2000); 
+            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 2000); 
         }
 
         function updateHomeBudgets() {
@@ -429,64 +349,28 @@
         }
 
         function selezionaModalita(mode) {
-            currentMode = mode;
-            state = appState[mode];
-
-            // Inizializza DB se vuoto
-            if(state.db.length === 0) {
-                state.db = mode === 'mantra' ? mockMantra : mockStandard;
-                salvaDati();
-            }
-
-            // UI Updates
-            document.getElementById('main-header').classList.remove('hidden');
-            document.getElementById('main-header').classList.add('flex');
-            document.getElementById('bottom-nav').classList.remove('hidden');
-            document.getElementById('bottom-nav').classList.add('flex');
-            
-            const titleEl = document.getElementById('header-title');
-            titleEl.innerText = mode === 'mantra' ? 'MANTRA PRO' : 'STANDARD PRO';
-            titleEl.className = `font-display text-xl tracking-wide ${mode === 'mantra' ? 'text-blue-500' : 'text-orange-500'}`;
+            currentMode = mode; state = appState[mode];
+            document.getElementById('main-header').classList.remove('hidden'); document.getElementById('main-header').classList.add('flex');
+            document.getElementById('bottom-nav').classList.remove('hidden'); document.getElementById('bottom-nav').classList.add('flex');
+            document.getElementById('header-title').innerText = mode === 'mantra' ? 'MANTRA PRO' : 'STANDARD PRO';
+            document.getElementById('header-title').className = `font-display text-xl tracking-wide ${mode === 'mantra' ? 'text-blue-500' : 'text-orange-500'}`;
             document.getElementById('sidebar-mode-label').innerText = `(${mode.toUpperCase()})`;
 
-            // Popola Select Formazioni
             const selectEl = document.getElementById('formation-select');
             selectEl.className = `bg-brand-card text-white border rounded p-2 outline-none font-bold shadow-lg ${mode === 'mantra' ? 'border-blue-500' : 'border-orange-500'}`;
             selectEl.innerHTML = '';
             const forms = mode === 'mantra' ? formationsMantra : formationsStandard;
-            for(let key in forms) {
-                selectEl.innerHTML += `<option value="${key}">${key} ${mode === 'mantra' ? 'Mantra' : 'Standard'}</option>`;
-            }
-            selectEl.value = state.pitchLayout; // Ripristina ultimo modulo
+            for(let key in forms) selectEl.innerHTML += `<option value="${key}">${key} ${mode === 'mantra' ? 'Mantra' : 'Standard'}</option>`;
+            selectEl.value = state.pitchLayout;
 
-            updateBudgetUI();
-            switchView('list');
+            updateBudgetUI(); switchView('list');
         }
 
-        function goHome() {
-            currentMode = null;
-            state = null;
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('bottom-nav').classList.add('hidden');
-            document.getElementById('main-header').classList.remove('flex');
-            document.getElementById('bottom-nav').classList.remove('flex');
-            updateHomeBudgets();
-            switchView('home');
-        }
-
-        function salvaDati() {
-            localStorage.setItem('fantaProUniversal', JSON.stringify(appState));
-            if(currentMode) updateBudgetUI();
-            else updateHomeBudgets();
-        }
-
+        function goHome() { currentMode = null; state = null; document.getElementById('main-header').classList.replace('flex','hidden'); document.getElementById('bottom-nav').classList.replace('flex','hidden'); updateHomeBudgets(); switchView('home'); }
+        function salvaDati() { localStorage.setItem('fantaProUniversal', JSON.stringify(appState)); if(currentMode) updateBudgetUI(); else updateHomeBudgets(); }
         function updateBudgetUI() { document.getElementById('ui-budget').innerText = state.budgetIniziale - state.creditiSpesi; }
-
-        function openBudgetModal() {
-            const res = prompt(`Imposta Budget Totale Iniziale (${currentMode.toUpperCase()}):`, state.budgetIniziale);
-            if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); }
-        }
-
+        function openBudgetModal() { const res = prompt(`Imposta Budget Iniziale (${currentMode.toUpperCase()}):`, state.budgetIniziale); if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); } }
+        
         function importaJSON(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -495,256 +379,111 @@
                 try {
                     const rawData = JSON.parse(e.target.result);
                     if(Array.isArray(rawData) && rawData.length > 0) {
-                        
-                        // 1. Troviamo il giocatore più costoso del listone di quest'anno per creare il parametro massimo
-                        let maxQt = Math.max(...rawData.map(g => parseInt(g.QtA || g.Quotazione || g.costoStim || 1)));
-                        if (maxQt < 1) maxQt = 50; // Fallback di sicurezza
-
-                        // 2. Elaborazione di tutti i giocatori
+                        let maxFVM = Math.max(...rawData.map(g => parseInt(g.FVM || g.QtA || 1)));
+                        if (maxFVM < 1) maxFVM = 100;
                         const processedDB = rawData.map((giocatore, index) => {
-                            
-                            // Prendiamo la Quotazione di quest'anno
-                            let qt = parseInt(giocatore.QtA || giocatore.Quotazione || giocatore.costoStim || 1);
-                            
-                            // CALCOLO IA AUTOMATICO BASATO SULLA QUOTAZIONE ATTUALE
-                            // Trasforma la quotazione (es. 1-50) in un voto in stile calcistico (10-99)
-                            let calcoloIA = Math.round((qt / maxQt) * 90) + 9; 
-                            
-                            // Limiti di sicurezza
-                            if(calcoloIA > 99) calcoloIA = 99;
-                            if(calcoloIA < 1) calcoloIA = 1;
-
-                            // 3. Gestione Ruoli automatica (legge sia il formato Mantra che Standard)
+                            let qta = parseInt(giocatore.QtA || 1);
+                            let fvm = parseInt(giocatore.FVM || qta || 1);
+                            let calcoloIA = Math.round((fvm / maxFVM) * 90) + 9; 
+                            if(calcoloIA > 99) calcoloIA = 99; if(calcoloIA < 1) calcoloIA = 1;
                             let ruoliArray = ["C"];
-                            if (giocatore.R) { ruoliArray = giocatore.R.split(';'); } 
-                            else if (giocatore.Ruolo) { ruoliArray = [giocatore.Ruolo]; } 
-                            else if (giocatore.ruoli) { ruoliArray = giocatore.ruoli; } 
+                            if (giocatore.R) { ruoliArray = giocatore.R.split(';'); } else if (giocatore.Ruolo) { ruoliArray = [giocatore.Ruolo]; } 
 
                             return {
-                                id: giocatore.Id || index + 1,
-                                nome: giocatore.Nome || giocatore.nome || "Sconosciuto",
-                                sq: giocatore.Squadra || giocatore.sq || "SVN",
-                                ruoli: ruoliArray,
-                                ia: calcoloIA, // IA generato al volo!
-                                prob: 80, // Titolare base stimato
-                                costoStim: qt
+                                id: giocatore.Id || index + 1, nome: giocatore.Nome || giocatore.nome || "Sconosciuto", sq: giocatore.Squadra || giocatore.sq || "SVN",
+                                ruoli: ruoliArray, ia: calcoloIA, prob: parseInt(giocatore.PV || 80), qta: qta, qti: parseInt(giocatore.QtI || qta), fvm: fvm,
+                                pv: parseInt(giocatore.PV || 0), mv: parseFloat(giocatore.MV || 0).toFixed(2), fm: parseFloat(giocatore.FM || 0).toFixed(2),
+                                gf: parseInt(giocatore.GF || 0), gs: parseInt(giocatore.GS || 0), ass: parseInt(giocatore.ASS || 0), amm: parseInt(giocatore.AMM || 0),
+                                esp: parseInt(giocatore.ESP || 0), au: parseInt(giocatore.AU || 0)
                             };
                         });
-
-                        state.db = processedDB;
-                        salvaDati();
-                        alert(`Importati ${state.db.length} giocatori per la modalità ${currentMode.toUpperCase()}!\nL'IA è stato calcolato in automatico sulle quotazioni di quest'anno.`);
-                        renderPlayerList();
-                        toggleSidebar();
-                    } else alert("Il file JSON non sembra valido.");
-                } catch (err) { alert("Errore lettura JSON: " + err); }
-                document.getElementById('jsonInput').value = ''; // Reset input
+                        state.db = processedDB; salvaDati(); alert(`Importati ${state.db.length} giocatori con Database Completo!`); renderPlayerList(); toggleSidebar();
+                    } else alert("JSON non valido.");
+                } catch (err) { alert("Errore lettura: " + err); }
+                document.getElementById('jsonInput').value = ''; 
             };
             reader.readAsText(file);
         }
 
-        function resetData() {
-            if(confirm(`Vuoi azzerare la rosa e i crediti della modalità ${currentMode.toUpperCase()}?`)) {
-                appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode]));
-                state = appState[currentMode];
-                salvaDati();
-                switchView('list');
-                toggleSidebar();
-            }
-        }
-
-        // --- 3. UI HELPER ---
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
-            document.getElementById('sidebar-overlay').classList.toggle('hidden');
-        }
+        function resetData() { if(confirm(`Vuoi azzerare la rosa e i crediti della modalità ${currentMode.toUpperCase()}?`)) { appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode])); state = appState[currentMode]; salvaDati(); switchView('list'); toggleSidebar(); } }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); }
 
         function switchView(viewName) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`view-${viewName}`).classList.remove('hidden');
-            
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden')); document.getElementById(`view-${viewName}`).classList.remove('hidden');
             if(viewName !== 'home') {
                 const accentClass = currentMode === 'mantra' ? 'text-blue-500' : 'text-orange-500';
-                document.querySelectorAll('.nav-btn').forEach(btn => {
-                    btn.classList.remove('text-blue-500', 'text-orange-500', 'bg-slate-800');
-                    if(!btn.classList.contains('text-slate-400')) btn.classList.add('text-slate-400');
-                });
+                document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('text-blue-500', 'text-orange-500', 'bg-slate-800'); if(!btn.classList.contains('text-slate-400')) btn.classList.add('text-slate-400'); });
                 const activeBtn = document.querySelector(`.nav-btn[data-target="${viewName}"]`);
-                if(activeBtn) {
-                    activeBtn.classList.add(accentClass, 'bg-slate-800');
-                    activeBtn.classList.remove('text-slate-400');
-                }
-                
-                if(viewName === 'list') renderPlayerList();
-                if(viewName === 'favs') renderFavs();
-                if(viewName === 'team') renderTeam();
-                if(viewName === 'pitch') renderPitch();
+                if(activeBtn) { activeBtn.classList.add(accentClass, 'bg-slate-800'); activeBtn.classList.remove('text-slate-400'); }
+                if(viewName === 'list') renderPlayerList(); if(viewName === 'favs') renderFavs(); if(viewName === 'team') renderTeam(); if(viewName === 'pitch') renderPitch();
             }
         }
 
-        function getRoleBadgesHTML(ruoliArray) {
-            return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join('');
-        }
+        function getRoleBadgesHTML(ruoliArray) { return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); }
 
         function createPlayerCardHTML(p, actionType = 'list', malus = 0) {
-            const isAcquistato = state.miaSquadra.find(x => x.id === p.id);
-            const opacity = (isAcquistato && actionType !== 'team') ? 'opacity-50 grayscale' : '';
+            const isAcquistato = state.miaSquadra.find(x => x.id === p.id); const opacity = (isAcquistato && actionType !== 'team') ? 'opacity-50 grayscale' : '';
             const accent = currentMode === 'mantra' ? 'text-blue-400' : 'text-orange-400';
-            
             let rightContent = '';
-            if(actionType === 'team') rightContent = `<div class="text-xl font-display text-brand-green font-bold text-right">${p.costoAcquisto}<br><span class="text-[10px] text-slate-400 font-sans font-normal uppercase">crediti</span></div>`;
+            if(actionType === 'team') rightContent = `<div class="text-xl font-display text-brand-green font-bold text-right">${p.costoAcquisto}<br><span class="text-[10px] text-slate-400 font-normal uppercase">crediti</span></div>`;
             else if (actionType === 'pitch') rightContent = malus < 0 ? `<div class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Adattato -1</div>` : `<div class="bg-brand-green text-white px-2 py-1 rounded text-xs font-bold shadow">Perfetto</div>`;
             else rightContent = `<div class="text-xl font-bold ${p.ia > 90 ? accent : 'text-slate-300'}">${p.ia} <span class="text-[10px] text-slate-500 block text-right uppercase">IA</span></div>`;
-
             return `
-                <div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow text-left border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" 
-                     onclick="${actionType === 'pitch' ? `assignToPitch(${p.id}, ${malus})` : `openPlayerModal(${p.id})`}">
-                    <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 flex items-center justify-center font-bold text-slate-400">
-                        ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : p.nome.substring(0,2).toUpperCase()}
-                    </div>
-                    <div class="flex-1">
-                        <div class="font-bold text-lg leading-tight flex items-center gap-2">
-                            ${p.nome} ${state.preferitiIds.includes(p.id) && actionType !== 'favs' && actionType !== 'pitch' ? '<i class="fa-solid fa-star text-yellow-500 text-xs"></i>' : ''}
-                        </div>
-                        <div class="text-[11px] text-slate-400 flex gap-2 items-center mt-1"><span class="font-bold text-slate-300">${p.sq}</span> | ${getRoleBadgesHTML(p.ruoli)}</div>
-                    </div>
+                <div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow text-left border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" onclick="${actionType === 'pitch' ? `assignToPitch(${p.id}, ${malus})` : `openPlayerModal(${p.id})`}">
+                    <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 flex items-center justify-center font-bold text-slate-400">${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : p.nome.substring(0,2).toUpperCase()}</div>
+                    <div class="flex-1"><div class="font-bold text-lg leading-tight flex items-center gap-2">${p.nome} ${state.preferitiIds.includes(p.id) && actionType !== 'favs' && actionType !== 'pitch' ? '<i class="fa-solid fa-star text-yellow-500 text-xs"></i>' : ''}</div><div class="text-[11px] text-slate-400 flex gap-2 items-center mt-1"><span class="font-bold text-slate-300">${p.sq}</span> | ${getRoleBadgesHTML(p.ruoli)}</div></div>
                     <div>${rightContent}</div>
-                </div>
-            `;
+                </div>`;
         }
 
-        // --- 4. RENDER VIEWS ---
         function renderPlayerList() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = state.db.filter(p => p.nome.toLowerCase().includes(q) || p.sq.toLowerCase().includes(q) || p.ruoli.some(r => r.toLowerCase() === q));
-            filtered.sort((a, b) => b.ia - a.ia);
-            document.getElementById('player-count').innerHTML = `${filtered.length} trovati`;
-            document.getElementById('player-list-container').innerHTML = filtered.map(p => createPlayerCardHTML(p)).join('');
+            const q = document.getElementById('searchInput').value.toLowerCase(); let filtered = state.db.filter(p => p.nome.toLowerCase().includes(q) || p.sq.toLowerCase().includes(q) || p.ruoli.some(r => r.toLowerCase() === q));
+            filtered.sort((a, b) => b.ia - a.ia); document.getElementById('player-count').innerHTML = `${filtered.length} trovati`; document.getElementById('player-list-container').innerHTML = filtered.map(p => createPlayerCardHTML(p)).join('');
         }
 
         function renderFavs() {
-            let favs = state.db.filter(p => state.preferitiIds.includes(p.id)).sort((a,b) => b.ia - a.ia);
-            let grouped = favs.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
-            let html = favs.length ? '' : '<div class="text-slate-500 text-center py-10">Nessun preferito.</div>';
-            const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
-            order.forEach(role => {
-                if(grouped[role]) {
-                    html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role}</div>`;
-                    html += grouped[role].map(p => createPlayerCardHTML(p, 'favs')).join('');
-                }
-            });
-            document.getElementById('favs-container').innerHTML = html;
+            let favs = state.db.filter(p => state.preferitiIds.includes(p.id)).sort((a,b) => b.ia - a.ia); let grouped = favs.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
+            let html = favs.length ? '' : '<div class="text-slate-500 text-center py-10">Nessun preferito.</div>'; const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+            order.forEach(role => { if(grouped[role]) { html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role}</div>`; html += grouped[role].map(p => createPlayerCardHTML(p, 'favs')).join(''); } }); document.getElementById('favs-container').innerHTML = html;
         }
 
         function renderTeam() {
-            document.getElementById('team-count').innerText = state.miaSquadra.length;
-            let html = state.miaSquadra.length ? '' : '<div class="text-slate-500 text-center py-10">Rosa vuota.</div>';
-            if(state.miaSquadra.length) {
-                let grouped = state.miaSquadra.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
-                const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
-                order.forEach(role => {
-                    if(grouped[role]) {
-                        html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role} (${grouped[role].length})</div>`;
-                        html += grouped[role].map(p => createPlayerCardHTML(p, 'team')).join('');
-                    }
-                });
-            }
-            document.getElementById('team-container').innerHTML = html;
-            calcFormationCoverage();
+            document.getElementById('team-count').innerText = state.miaSquadra.length; let html = state.miaSquadra.length ? '' : '<div class="text-slate-500 text-center py-10">Rosa vuota.</div>';
+            if(state.miaSquadra.length) { let grouped = state.miaSquadra.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {}); const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+                order.forEach(role => { if(grouped[role]) { html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role} (${grouped[role].length})</div>`; html += grouped[role].map(p => createPlayerCardHTML(p, 'team')).join(''); } }); } document.getElementById('team-container').innerHTML = html; calcFormationCoverage();
         }
 
         function calcFormationCoverage() {
-            let roleCount = {};
-            state.miaSquadra.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
-            const check = (reqs) => {
-                let passed = true;
-                Object.keys(reqs).forEach(r => {
-                    let found = 0;
-                    if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0));
-                    else found = roleCount[r] || 0;
-                    if(found < reqs[r]) passed = false;
-                });
-                return passed;
-            };
-
-            const rulesMantra = { '4-3-3':{'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, '3-5-2':{'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2} };
-            const rulesStandard = { '3-4-3':{'P':1,'D':3,'C':4,'A':3}, '4-3-3':{'P':1,'D':4,'C':3,'A':3}, '4-4-2':{'P':1,'D':4,'C':4,'A':2} };
-            const fRules = currentMode === 'mantra' ? rulesMantra : rulesStandard;
-
-            let html = '';
-            for (const [name, rules] of Object.entries(fRules)) {
-                let ok = check(rules);
-                html += `<div class="py-2 rounded-lg border ${ok ? 'bg-brand-green/20 border-brand-green text-brand-green' : 'bg-slate-800 border-slate-700 text-slate-500'}">
-                            ${name}<br>${ok ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark opacity-50"></i>'}
-                         </div>`;
-            }
-            document.getElementById('formation-coverage').innerHTML = html;
+            let roleCount = {}; state.miaSquadra.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
+            const check = (reqs) => { let passed = true; Object.keys(reqs).forEach(r => { let found = 0; if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0)); else found = roleCount[r] || 0; if(found < reqs[r]) passed = false; }); return passed; };
+            const fRules = currentMode === 'mantra' ? { '4-3-3':{'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, '3-5-2':{'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2} } : { '3-4-3':{'P':1,'D':3,'C':4,'A':3}, '4-3-3':{'P':1,'D':4,'C':3,'A':3}, '4-4-2':{'P':1,'D':4,'C':4,'A':2} };
+            let html = ''; for (const [name, rules] of Object.entries(fRules)) { let ok = check(rules); html += `<div class="py-2 rounded-lg border ${ok ? 'bg-brand-green/20 border-brand-green text-brand-green' : 'bg-slate-800 border-slate-700 text-slate-500'}">${name}<br>${ok ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark opacity-50"></i>'}</div>`; } document.getElementById('formation-coverage').innerHTML = html;
         }
 
-        // --- 5. CAMPO VERDE & IA ---
         function renderPitch() {
-            const selForm = document.getElementById('formation-select').value;
-            state.pitchLayout = selForm;
-            if(!state.pitchPlayers[selForm]) state.pitchPlayers[selForm] = {};
-            
-            const layout = currentMode === 'mantra' ? formationsMantra[selForm] : formationsStandard[selForm];
-            const container = document.getElementById('pitch-slots-container');
-            container.innerHTML = '';
-            
-            let totIA = 0, totProb = 0, countFilled = 0;
-            const accentText = currentMode === 'mantra' ? 'text-blue-400' : 'text-orange-400';
-
+            const selForm = document.getElementById('formation-select').value; state.pitchLayout = selForm; if(!state.pitchPlayers[selForm]) state.pitchPlayers[selForm] = {};
+            const layout = currentMode === 'mantra' ? formationsMantra[selForm] : formationsStandard[selForm]; const container = document.getElementById('pitch-slots-container'); container.innerHTML = '';
+            let totIA = 0, totProb = 0, countFilled = 0; const accentText = currentMode === 'mantra' ? 'text-blue-400' : 'text-orange-400';
             layout.forEach((pos, index) => {
-                const pitchData = state.pitchPlayers[selForm][index]; 
-                const p = pitchData ? state.miaSquadra.find(x => x.id === pitchData.id) : null;
-                const roleClass = roleColors[pos.role.split('|')[0]];
-                
-                if(p) {
-                    const malusBadge = pitchData.malus < 0 ? `<div class="malus-badge">${pitchData.malus}</div>` : '';
-                    container.innerHTML += `<div class="player-slot filled ${roleClass}" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')">${malusBadge}<div class="slot-name">${p.nome}</div></div>`;
-                    totIA += (p.ia + (pitchData.malus * 10)); 
-                    totProb += p.prob;
-                    countFilled++;
-                } else {
-                    container.innerHTML += `<div class="player-slot" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')"><div class="text-[9px] text-slate-500 mb-0.5">${pos.label || pos.role}</div><i class="fa-solid fa-plus ${accentText}"></i></div>`;
-                }
+                const pitchData = state.pitchPlayers[selForm][index]; const p = pitchData ? state.miaSquadra.find(x => x.id === pitchData.id) : null; const roleClass = roleColors[pos.role.split('|')[0]];
+                if(p) { const malusBadge = pitchData.malus < 0 ? `<div class="malus-badge">${pitchData.malus}</div>` : ''; container.innerHTML += `<div class="player-slot filled ${roleClass}" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')">${malusBadge}<div class="slot-name">${p.nome}</div></div>`; totIA += (p.ia + (pitchData.malus * 10)); totProb += p.prob; countFilled++; }
+                else container.innerHTML += `<div class="player-slot" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')"><div class="text-[9px] text-slate-500 mb-0.5">${pos.label || pos.role}</div><i class="fa-solid fa-plus ${accentText}"></i></div>`;
             });
-
-            document.getElementById('pitch-ia-total').innerText = totIA;
-            document.getElementById('pitch-prob-avg').innerText = countFilled > 0 ? Math.round(totProb/countFilled) + '%' : '0%';
+            document.getElementById('pitch-ia-total').innerText = totIA; document.getElementById('pitch-prob-avg').innerText = countFilled > 0 ? Math.round(totProb/countFilled) + '%' : '0%';
         }
 
         function openPitchSelector(slotIndex, reqRolesStr) {
-            currentPitchSlot = slotIndex;
-            document.getElementById('pitch-target-role').innerText = reqRolesStr.replace(/\|/g, ' o ');
-            
-            const reqRoles = reqRolesStr.split('|');
-            let schieratiIds = Object.values(state.pitchPlayers[state.pitchLayout] || {}).map(x => x.id);
-            let eligible = [];
-
+            currentPitchSlot = slotIndex; document.getElementById('pitch-target-role').innerText = reqRolesStr.replace(/\|/g, ' o ');
+            const reqRoles = reqRolesStr.split('|'); let schieratiIds = Object.values(state.pitchPlayers[state.pitchLayout] || {}).map(x => x.id); let eligible = [];
             state.miaSquadra.forEach(p => {
                 if(schieratiIds.includes(p.id) && state.pitchPlayers[state.pitchLayout][currentPitchSlot]?.id !== p.id) return;
-
-                let isPerfect = p.ruoli.some(r => reqRoles.includes(r));
-                let isAdapted = false;
-
-                if(!isPerfect && currentMode === 'mantra') {
-                    p.ruoli.forEach(pr => {
-                        if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true;
-                    });
-                }
-
-                if(isPerfect) eligible.push({p: p, malus: 0});
-                else if(isAdapted) eligible.push({p: p, malus: -1});
+                let isPerfect = p.ruoli.some(r => reqRoles.includes(r)); let isAdapted = false;
+                if(!isPerfect && currentMode === 'mantra') p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true; });
+                if(isPerfect) eligible.push({p: p, malus: 0}); else if(isAdapted) eligible.push({p: p, malus: -1});
             });
-            
             eligible.sort((a, b) => (b.p.ia + (b.malus*20)) - (a.p.ia + (a.malus*20))); 
-            
-            let html = eligible.length ? '' : '<div class="text-slate-500 text-center py-10 bg-slate-800 rounded-xl">Nessun giocatore in rosa compatibile.</div>';
-            eligible.forEach(item => html += createPlayerCardHTML(item.p, 'pitch', item.malus));
-            
-            document.getElementById('pitch-eligible-list').innerHTML = html;
-            document.getElementById('pitch-select-modal').classList.remove('hidden');
+            let html = eligible.length ? '' : '<div class="text-slate-500 text-center py-10 bg-slate-800 rounded-xl">Nessun giocatore compatibile.</div>'; eligible.forEach(item => html += createPlayerCardHTML(item.p, 'pitch', item.malus));
+            document.getElementById('pitch-eligible-list').innerHTML = html; document.getElementById('pitch-select-modal').classList.remove('hidden');
         }
 
         function assignToPitch(id, malus) { state.pitchPlayers[state.pitchLayout][currentPitchSlot] = {id, malus}; salvaDati(); closePitchSelectModal(); renderPitch(); }
@@ -752,72 +491,53 @@
         function closePitchSelectModal() { document.getElementById('pitch-select-modal').classList.add('hidden'); }
 
         function autoSuggestFormation() {
-            const layout = currentMode === 'mantra' ? formationsMantra[state.pitchLayout] : formationsStandard[state.pitchLayout];
-            let newPitchState = {};
-            let availablePlayers = [...state.miaSquadra];
-
+            const layout = currentMode === 'mantra' ? formationsMantra[state.pitchLayout] : formationsStandard[state.pitchLayout]; let newPitchState = {}; let availablePlayers = [...state.miaSquadra];
             layout.forEach((pos, index) => {
-                const reqRoles = pos.role.split('|');
-                let bestMatch = null, bestScore = -999, bestIndex = -1;
-
+                const reqRoles = pos.role.split('|'); let bestMatch = null, bestScore = -999, bestIndex = -1;
                 availablePlayers.forEach((p, i) => {
-                    let isPerfect = p.ruoli.some(r => reqRoles.includes(r));
-                    let isAdapted = false;
+                    let isPerfect = p.ruoli.some(r => reqRoles.includes(r)); let isAdapted = false;
                     if(!isPerfect && currentMode === 'mantra') p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true; });
-
-                    if(isPerfect || isAdapted) {
-                        let malus = isPerfect ? 0 : -1;
-                        let score = (p.ia * (p.prob/100)) + (malus * 20); 
-                        if(score > bestScore) { bestScore = score; bestMatch = {id: p.id, malus}; bestIndex = i; }
-                    }
+                    if(isPerfect || isAdapted) { let malus = isPerfect ? 0 : -1; let score = (p.ia * (p.prob/100)) + (malus * 20); if(score > bestScore) { bestScore = score; bestMatch = {id: p.id, malus}; bestIndex = i; } }
                 });
-
                 if(bestMatch) { newPitchState[index] = bestMatch; availablePlayers.splice(bestIndex, 1); }
-            });
-
-            state.pitchPlayers[state.pitchLayout] = newPitchState;
-            salvaDati(); renderPitch();
+            }); state.pitchPlayers[state.pitchLayout] = newPitchState; salvaDati(); renderPitch();
         }
 
-        // --- 6. MODALS BASE ---
         function openPlayerModal(id) {
             currentPlayerId = id; const p = state.db.find(x => x.id === id); if(!p) return;
             document.getElementById('modal-name').innerText = p.nome; document.getElementById('modal-team').innerText = p.sq;
             document.getElementById('modal-roles').innerHTML = getRoleBadgesHTML(p.ruoli);
-            document.getElementById('modal-ia').innerText = p.ia; document.getElementById('modal-prob').innerText = p.prob + '%'; document.getElementById('modal-costo').innerText = p.costoStim;
-            document.getElementById('modal-img-container').innerHTML = p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-4xl text-slate-500 font-bold">${p.nome.substring(0,2).toUpperCase()}</div>`;
             
-            const btnFav = document.getElementById('btn-fav');
-            if(state.preferitiIds.includes(p.id)) { btnFav.classList.replace('text-yellow-500', 'text-brand-dark'); btnFav.classList.add('bg-yellow-500'); } 
-            else { btnFav.classList.replace('text-brand-dark', 'text-yellow-500'); btnFav.classList.remove('bg-yellow-500'); }
-
-            const btnBuy = document.getElementById('btn-buy');
-            if(state.miaSquadra.find(x => x.id === p.id)) { btnBuy.innerText = "Già in Rosa"; btnBuy.disabled = true; btnBuy.classList.replace('bg-brand-green', 'bg-slate-700'); } 
-            else { btnBuy.innerHTML = `<i class="fa-solid fa-gavel"></i> Acquista`; btnBuy.disabled = false; btnBuy.classList.replace('bg-slate-700', 'bg-brand-green'); }
-
+            let maxFVM = Math.max(...state.db.map(g => g.fvm)); if(maxFVM < 1) maxFVM = 100;
+            currentSuggestedPrice = Math.max(1, Math.round((p.fvm / maxFVM) * (state.budgetIniziale * 0.45)));
+            
+            document.getElementById('modal-prezzo-consigliato').innerText = currentSuggestedPrice;
+            document.getElementById('modal-ia').innerText = p.ia; document.getElementById('modal-qta').innerText = p.qta;
+            document.getElementById('modal-qti').innerText = p.qti; document.getElementById('modal-fvm').innerText = p.fvm;
+            document.getElementById('modal-pv').innerText = p.pv; document.getElementById('modal-mv').innerText = p.mv;
+            document.getElementById('modal-fm').innerText = p.fm; document.getElementById('modal-gf').innerText = p.gf;
+            document.getElementById('modal-gs').innerText = p.gs; document.getElementById('modal-ass').innerText = p.ass;
+            document.getElementById('modal-amm').innerText = p.amm; document.getElementById('modal-esp-au').innerText = p.esp + p.au;
+            document.getElementById('modal-prob').innerText = p.prob > 0 ? p.prob + '%' : '80%';
+            
+            document.getElementById('modal-img-container').innerHTML = p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-4xl text-slate-500 font-bold">${p.nome.substring(0,2).toUpperCase()}</div>`;
+            const btnFav = document.getElementById('btn-fav'); if(state.preferitiIds.includes(p.id)) { btnFav.classList.replace('text-yellow-500', 'text-brand-dark'); btnFav.classList.add('bg-yellow-500'); } else { btnFav.classList.replace('text-brand-dark', 'text-yellow-500'); btnFav.classList.remove('bg-yellow-500'); }
+            const btnBuy = document.getElementById('btn-buy'); if(state.miaSquadra.find(x => x.id === p.id)) { btnBuy.innerText = "Già in Rosa"; btnBuy.disabled = true; btnBuy.classList.replace('bg-brand-green', 'bg-slate-700'); } else { btnBuy.innerHTML = `<i class="fa-solid fa-gavel"></i> Acquista`; btnBuy.disabled = false; btnBuy.classList.replace('bg-slate-700', 'bg-brand-green'); }
             document.getElementById('player-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('player-modal-content').classList.remove('translate-y-full'); }, 10);
         }
 
-        function closePlayerModal() { document.getElementById('player-modal-content').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('player-modal').classList.add('hidden'); }, 300); }
-
-        function toggleFavFromModal() {
-            if(!currentPlayerId) return; const idx = state.preferitiIds.indexOf(currentPlayerId);
-            if(idx > -1) state.preferitiIds.splice(idx, 1); else state.preferitiIds.push(currentPlayerId);
-            salvaDati(); openPlayerModal(currentPlayerId); renderPlayerList(); 
-        }
-
-        function openPurchaseModal() { document.getElementById('purchase-name').innerText = state.db.find(x => x.id === currentPlayerId).nome; document.getElementById('purchase-price').value = ''; document.getElementById('purchase-modal').classList.remove('hidden'); }
+        function toggleFavFromModal() { if(!currentPlayerId) return; const idx = state.preferitiIds.indexOf(currentPlayerId); if(idx > -1) state.preferitiIds.splice(idx, 1); else state.preferitiIds.push(currentPlayerId); salvaDati(); openPlayerModal(currentPlayerId); renderPlayerList(); }
+        function openPurchaseModal() { document.getElementById('purchase-name').innerText = state.db.find(x => x.id === currentPlayerId).nome; document.getElementById('purchase-suggested').innerText = currentSuggestedPrice; document.getElementById('purchase-price').value = ''; document.getElementById('purchase-modal').classList.remove('hidden'); }
         function closePurchaseModal() { document.getElementById('purchase-modal').classList.add('hidden'); }
+        function closePlayerModal() { document.getElementById('player-modal-content').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('player-modal').classList.add('hidden'); }, 300); }
 
         function confirmPurchase() {
             const price = parseInt(document.getElementById('purchase-price').value);
             if(isNaN(price) || price < 1) return alert("Prezzo non valido!");
             if(state.budgetIniziale - state.creditiSpesi < price) return alert("Budget insufficiente!");
-
-            const p = state.db.find(x => x.id === currentPlayerId);
-            state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price;
+            if(price > (currentSuggestedPrice + (state.budgetIniziale * 0.05))) { if(!confirm(`ATTENZIONE! Stai pagando ${price} crediti per un giocatore valutato circa ${currentSuggestedPrice}. Sicuro?`)) return; }
+            const p = state.db.find(x => x.id === currentPlayerId); state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price;
             const favIdx = state.preferitiIds.indexOf(p.id); if(favIdx > -1) state.preferitiIds.splice(favIdx, 1);
-
             salvaDati(); closePurchaseModal(); closePlayerModal(); renderPlayerList();
         }
 
