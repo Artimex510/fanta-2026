@@ -35,9 +35,8 @@
         .malus-badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; }
         .role-por, .role-p { background-color: #f59e0b; color: white; } .role-def, .role-d { background-color: #10b981; color: white; } .role-mid, .role-c { background-color: #3b82f6; color: white; } .role-att, .role-a { background-color: #ef4444; color: white; } 
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .accordion-content.open { max-height: 2000px; }
+        .accordion-content.open { max-height: 2000px; padding-bottom: 1rem; }
         
-        /* Stile Filtri Ruolo */
         .filter-btn { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; border: 1px solid #334155; color: #94a3b8; transition: all 0.2s; white-space: nowrap; }
         .filter-btn.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
         .filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
@@ -53,7 +52,6 @@
             <i class="fa-solid fa-circle-notch fa-spin text-brand-accent text-3xl"></i>
         </div>
     </div>
-
     <div id="app" class="hidden flex-col h-full w-full relative">
         <!-- HEADER -->
         <header id="main-header" class="bg-brand-card shadow-md p-4 justify-between items-center z-20 hidden">
@@ -78,11 +76,11 @@
                 <a href="#" onclick="switchView('list'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-brand-accent transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-list"></i></div> Listone</a>
                 <a href="#" onclick="switchView('favs'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-yellow-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-star"></i></div> Preferiti</a>
                 <a href="#" onclick="switchView('team'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-brand-green transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-shield-halved"></i></div> Mia Squadra</a>
-                <a href="#" onclick="switchView('opponents'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-purple-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-users-rays"></i></div> Recap Rose (Asta)</a>
+                <a href="#" onclick="switchView('opponents'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-purple-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-users-rays"></i></div> Recap Rose & IA</a>
                 <a href="#" onclick="switchView('pitch'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-emerald-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-futbol"></i></div> Campo Verde</a>
                 <a href="#" onclick="switchView('scout'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-cyan-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-satellite-dish"></i></div> Scout Serie A</a>
                 <div class="my-2 border-t border-slate-700"></div>
-                <div class="text-xs text-slate-500 uppercase tracking-widest mb-1 font-bold">Backup & Dati <span id="sidebar-mode-label" class="text-white"></span></div>
+                <div class="text-xs text-slate-500 uppercase tracking-widest mb-1 font-bold">Backup & Dati</div>
                 <button onclick="exportBackup()" class="flex items-center gap-3 text-sm text-brand-green hover:text-emerald-300 cursor-pointer bg-slate-800 p-2 rounded border border-slate-700 text-left"><div class="w-8 text-center"><i class="fa-solid fa-download"></i></div> Salva Backup (Asta)</button>
                 <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer bg-slate-800 p-2 rounded border border-slate-700"><div class="w-8 text-center"><i class="fa-solid fa-upload text-yellow-400"></i></div> <span>Carica Backup</span><input type="file" accept=".json" class="hidden" id="backupInput" onchange="importBackup(event)"></label>
                 <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer bg-slate-800 p-2 rounded border border-slate-700 mt-2"><div class="w-8 text-center"><i class="fa-solid fa-database text-brand-accent"></i></div> <span>Aggiorna Database</span><input type="file" accept=".json,.txt" class="hidden" id="jsonInput" onchange="importaJSON(event)"></label>
@@ -107,19 +105,14 @@
                 </div>
             </div>
 
-            <!-- LISTONE CON FILTRI -->
+            <!-- LISTONE -->
             <div id="view-list" class="view-section hidden p-4">
                 <div class="sticky top-0 bg-brand-dark/95 backdrop-blur z-10 pb-4 pt-2">
                     <div class="flex gap-2 mb-2">
                         <div class="relative flex-1"><i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-400"></i><input type="text" id="searchInput" onkeyup="renderPlayerList()" placeholder="Cerca giocatore..." class="w-full bg-brand-card text-white rounded-lg pl-10 pr-4 py-3 border border-slate-700 focus:outline-none shadow-lg"></div>
                         <button id="btn-assistant" onclick="toggleAssistant()" class="bg-slate-800 text-slate-300 border border-slate-600 px-4 py-2 rounded-lg font-bold hover:bg-slate-700 transition-colors flex items-center justify-center"><i class="fa-solid fa-brain mr-2"></i> IA</button>
                     </div>
-                    
-                    <!-- BARRA FILTRI RUOLO DINAMICA -->
-                    <div id="role-filters" class="filter-scroll mt-2 mb-2 px-1">
-                        <!-- Generata da JS -->
-                    </div>
-
+                    <div id="role-filters" class="filter-scroll mt-2 mb-2 px-1"></div>
                     <div class="flex justify-between items-center text-xs text-slate-400"><span id="sort-label">Ordinamento per <b class="text-white">IA</b></span><span id="player-count" class="bg-slate-800 px-2 py-1 rounded">0 trovati</span></div>
                 </div>
                 <div id="player-list-container" class="flex flex-col gap-3"></div>
@@ -137,8 +130,11 @@
 
             <!-- AVVERSARI -->
             <div id="view-opponents" class="view-section hidden p-4">
-                <div class="flex justify-between items-center mb-4"><h2 class="font-display text-2xl text-purple-400 flex items-center gap-2"><i class="fa-solid fa-users-rays"></i> Recap Asta</h2><button onclick="addOpponent()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-plus"></i> Avversario</button></div>
-                <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-4" id="global-ai-insights"><div class="text-xs text-slate-400 uppercase tracking-widest font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-brain text-brand-accent"></i> Scansione IA Asta</div><p class="text-sm text-slate-300" id="ai-insights-text">In attesa di dati...</p></div>
+                <div class="flex justify-between items-center mb-4"><h2 class="font-display text-2xl text-purple-400 flex items-center gap-2"><i class="fa-solid fa-users-rays"></i> Analisi IA & Rose</h2><button onclick="addOpponent()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-plus"></i> Avversario</button></div>
+                <div class="bg-slate-900 border border-brand-accent/50 rounded-xl p-4 mb-4 shadow-lg shadow-brand-accent/10" id="global-ai-insights">
+                    <div class="text-xs text-brand-accent uppercase tracking-widest font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-brain"></i> Radar Mercato Globale</div>
+                    <p class="text-sm text-slate-300" id="ai-global-text">In attesa di elaborazione dati...</p>
+                </div>
                 <div id="opponents-container" class="flex flex-col gap-4"></div>
             </div>
 
@@ -152,17 +148,10 @@
                 <div class="pitch-bg pitch-lines flex-1 w-full mx-auto relative rounded-xl shadow-2xl mb-4"><div class="penalty-area-top"></div><div class="penalty-area-bottom"></div><div id="pitch-slots-container"></div></div>
             </div>
 
-            <!-- SCOUT SERIE A -->
+            <!-- SCOUT -->
             <div id="view-scout" class="view-section hidden p-4 h-full flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-display text-2xl text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Scout Live</h2>
-                    <button onclick="fetchExternalData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-rotate-right"></i> Sync
-                    </button>
-                </div>
-                <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center">
-                    <p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni e scaricare le news in tempo reale.</p>
-                </div>
+                <div class="flex justify-between items-center mb-4"><h2 class="font-display text-2xl text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Scout Live</h2><button onclick="fetchExternalData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Sync</button></div>
+                <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center"><p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni.</p></div>
                 <div id="api-results-container" class="flex flex-col gap-3 overflow-y-auto"></div>
             </div>
         </main>
@@ -172,7 +161,7 @@
             <button onclick="switchView('list')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 transition-colors" data-target="list"><i class="fa-solid fa-users text-xl"></i><span class="text-[10px] uppercase font-bold">Listone</span></button>
             <button onclick="switchView('favs')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-yellow-400 transition-colors" data-target="favs"><i class="fa-solid fa-star text-xl"></i><span class="text-[10px] uppercase font-bold">Preferiti</span></button>
             <button onclick="switchView('team')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-brand-green transition-colors" data-target="team"><i class="fa-solid fa-shield-halved text-xl"></i><span class="text-[10px] uppercase font-bold">Rosa</span></button>
-            <button onclick="switchView('opponents')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-purple-400 transition-colors" data-target="opponents"><i class="fa-solid fa-users-rays text-xl"></i><span class="text-[10px] uppercase font-bold">Avversari</span></button>
+            <button onclick="switchView('opponents')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-purple-400 transition-colors" data-target="opponents"><i class="fa-solid fa-brain text-xl"></i><span class="text-[10px] uppercase font-bold">Analisi IA</span></button>
         </nav>
     </div>
 
@@ -184,14 +173,11 @@
                 <div class="w-20 h-20 bg-slate-800 rounded-2xl overflow-hidden border-2 border-slate-600 flex-shrink-0" id="modal-img-container"></div>
                 <div><h2 id="modal-name" class="font-display text-2xl font-bold text-white mb-1 flex flex-col items-start gap-1">Nome</h2><p id="modal-team" class="text-slate-400 font-bold uppercase mb-1 mt-1">Sq</p><div id="modal-roles" class="flex gap-1 flex-wrap"></div></div>
             </div>
-            
             <div id="modal-gk-crosses"></div>
-
             <div class="bg-slate-900 rounded-xl p-4 mb-4 border border-brand-accent/30 shadow-inner flex justify-between items-center">
                 <div><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Prezzo Max Consigliato (IA)</div><div class="font-display text-3xl text-brand-green" id="modal-prezzo-consigliato">0</div></div>
                 <div class="text-right"><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Indice FVM/IA</div><div class="font-display text-3xl text-brand-accent" id="modal-ia">0</div></div>
             </div>
-            
             <div class="grid grid-cols-4 gap-2 mb-3 text-center border-b border-slate-700 pb-3">
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtA</div><div class="font-bold text-white text-lg" id="modal-qta">-</div></div>
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtI</div><div class="font-bold text-slate-300 text-lg" id="modal-qti">-</div></div>
@@ -210,7 +196,6 @@
                 <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-yellow-500 font-bold mb-1">AMM</div><div class="font-bold text-white" id="modal-amm">0</div></div>
                 <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-red-600 font-bold mb-1">ESP/AU</div><div class="font-bold text-white" id="modal-esp-au">0</div></div>
             </div>
-
             <div class="flex gap-3 mt-4 pb-4">
                 <button id="btn-fav" onclick="toggleFavFromModal()" class="w-16 py-3 rounded-xl font-bold border-2 border-yellow-500 text-yellow-500 flex justify-center items-center text-lg"><i class="fa-solid fa-star"></i></button>
                 <button id="btn-buy" onclick="openPurchaseModal('me')" class="flex-1 py-3 rounded-xl font-bold bg-brand-green text-white flex justify-center items-center gap-2 text-lg transition-colors"><i class="fa-solid fa-gavel"></i> Tuo</button>
@@ -224,6 +209,7 @@
     <div id="purchase-modal" class="fixed inset-0 bg-brand-dark/90 backdrop-blur-md hidden z-[70] flex items-center justify-center p-4">
         <div class="bg-brand-card rounded-2xl p-6 w-full max-w-sm border border-slate-700 shadow-2xl text-center">
             <h3 class="font-display text-2xl mb-1 text-white"><span id="purchase-action-title">Acquisto</span> <span id="purchase-name" class="text-brand-green"></span></h3>
+            
             <div id="purchase-team-select-container" class="hidden text-left mt-4 mb-2"><label class="text-xs text-slate-400 uppercase font-bold">Seleziona Avversario</label><select id="purchase-team-select" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-lg outline-none mt-1"></select></div>
             <div class="bg-slate-800 rounded p-2 mt-4 mb-4 border border-slate-700"><div class="text-xs text-slate-400 uppercase tracking-widest">Prezzo Max Consigliato</div><div class="text-2xl font-bold text-brand-accent" id="purchase-suggested">0</div></div>
             <input type="number" id="purchase-price" placeholder="Crediti pagati..." class="w-full bg-slate-900 text-white text-3xl font-display text-center rounded-xl p-4 border-2 border-slate-600 focus:border-brand-green focus:outline-none mb-6">
@@ -240,7 +226,6 @@
         <div id="pitch-eligible-list" class="flex flex-col gap-3 overflow-y-auto flex-1 pb-10 px-1 mt-2"></div>
         <div class="mt-4 pb-6"><button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2"><i class="fa-solid fa-user-minus"></i> Rimuovi dal campo</button></div>
     </div>
-
     <script>
         // --- 1. STATO, CONFIGURAZIONI E LIMITI ---
         let defaultState = { mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } };
@@ -260,18 +245,22 @@
             '352': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:78}, {role:'Dc',x:50,y:82}, {role:'Dc',x:25,y:78}, {role:'E',x:85,y:45}, {role:'M|C',x:65,y:55}, {role:'C|T',x:50,y:45}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:45}, {role:'Pc|A',x:65,y:18}, {role:'Pc|A',x:35,y:18} ],
             '442': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'W|E',x:85,y:50}, {role:'M|C',x:60,y:55}, {role:'M|C',x:40,y:55}, {role:'W|E',x:15,y:50}, {role:'Pc|A',x:65,y:18}, {role:'Pc',x:35,y:18} ],
             '4231': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:80}, {role:'Dc',x:65,y:85}, {role:'Dc',x:35,y:85}, {role:'Ds',x:15,y:80}, {role:'M|C',x:65,y:58}, {role:'M|C',x:35,y:58}, {role:'W|T|A',x:80,y:35}, {role:'T',x:50,y:35}, {role:'W|T|A',x:20,y:35}, {role:'Pc',x:50,y:12} ],
-            '3421': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ]
+            '3421': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ],
+            '4312': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:78}, {role:'Dc',x:65,y:82}, {role:'Dc',x:35,y:82}, {role:'Ds',x:15,y:78}, {role:'C',x:75,y:55}, {role:'M|C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'T',x:50,y:35}, {role:'Pc|A',x:65,y:15}, {role:'Pc',x:35,y:15} ]
         };
         const formationsStandard = { 
             '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ], 
             '352': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
             '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ],
-            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ]
+            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
+            '451': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:50,y:15} ],
+            '532': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
+            '541': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:50,y:15} ]
         };
         const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
         const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
 
-        // --- 2. UTILITY & MOTORE F.P.F (Fair Play Finanziario) ---
+        // --- 2. UTILITY & MOTORE F.P.F E PROBABILITA' ---
         function getAvatarUrl(nome) { const encodedName = encodeURIComponent(nome.replace(/[^a-zA-Z ]/g, "")); return `https://ui-avatars.com/api/?name=${encodedName}&background=0f172a&color=3b82f6&bold=true&rounded=true&size=128`; }
         function getRoleBadgesHTML(ruoliArray) { return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); }
         function getTeamOwner(id) { if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'}; for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; } return null; }
@@ -297,7 +286,7 @@
             return Math.min(Math.max(1, finalPrice), maxBidAbs);
         }
 
-        // --- 3. INIZIALIZZAZIONE & AUTO-CARICAMENTO (Anti-Cache) ---
+        // --- 3. INIZIALIZZAZIONE & AUTO-CARICAMENTO ---
         async function autoLoadDatabases() {
             try {
                 const v = new Date().getTime(); 
@@ -309,7 +298,7 @@
                     const resS = await fetch('./standard.json?v=' + v);
                     if (resS.ok) { const rawS = await resS.json(); processAutoLoadData(rawS, 'standard'); }
                 }
-            } catch (e) { console.log("JSON offline o mancanti su GitHub. Procedere manualmente."); }
+            } catch (e) { console.log("JSON offline. Procedere manualmente."); }
         }
 
         function mapToStandardRole(ruoliArray) { let res = new Set(); ruoliArray.forEach(r => { if(['Por','P'].includes(r)) res.add('P'); else if(['Dc','Dd','Ds','E','D'].includes(r)) res.add('D'); else if(['M','C','T'].includes(r)) res.add('C'); else if(['W','A','Pc'].includes(r)) res.add('A'); else res.add('C'); }); return Array.from(res); }
@@ -320,18 +309,14 @@
                 let qta = parseInt(g.QtA || 1); let fvm = parseInt(g.FVM || qta || 1); let ia = Math.round((fvm / maxFVM) * 90) + 9; if(ia > 99) ia = 99;
                 let ruoliArray = ["C"]; if (g.R) ruoliArray = g.R.split(';'); else if (g.Ruolo) ruoliArray = [g.Ruolo]; 
                 if(mode === 'standard') ruoliArray = mapToStandardRole(ruoliArray);
-                let titProb = parseInt(g.TIT || 0); let probEffettiva = titProb === 100 ? 95 : (titProb === 50 ? 55 : 15);
+                let titProb = parseInt(g.TIT || 0); let probEffettiva = 15;
+                if(titProb === 100) probEffettiva = 95; else if(titProb === 50) probEffettiva = 55;
                 return { id: g.Id ? parseInt(g.Id) : (index + 1), nome: g.Nome || g.nome || "Sconosciuto", sq: g.Squadra || g.sq || "SVN", ruoli: ruoliArray, ia: ia, tit: titProb, prob: probEffettiva, qta: qta, qti: parseInt(g.QtI || qta), fvm: fvm, pv: parseInt(g.PV || 0), mv: parseFloat(g.MV || 0).toFixed(2), fm: parseFloat(g.FM || 0).toFixed(2), gf: parseInt(g.GF || 0), gs: parseInt(g.GS || 0), ass: parseInt(g.ASS || 0), amm: parseInt(g.AMM || 0), esp: parseInt(g.ESP || 0), au: parseInt(g.AU || 0) };
             });
             localStorage.setItem('fantaProUniversal', JSON.stringify(appState));
         }
 
-        async function initApp() { 
-            await autoLoadDatabases(); 
-            updateHomeBudgets(); 
-            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); 
-        }
-
+        async function initApp() { await autoLoadDatabases(); updateHomeBudgets(); setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); }
         function updateHomeBudgets() { document.getElementById('home-budget-mantra').innerText = appState.mantra.budgetIniziale - appState.mantra.creditiSpesi; document.getElementById('home-budget-standard').innerText = appState.standard.budgetIniziale - appState.standard.creditiSpesi; }
         
         function selezionaModalita(mode) {
@@ -348,11 +333,7 @@
         function updateBudgetUI() { document.getElementById('ui-budget').innerText = state.budgetIniziale - state.creditiSpesi; }
         function openBudgetModal() { const res = prompt(`Imposta Budget Iniziale:`, state.budgetIniziale); if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); switchView('list'); } }
 
-        function importaJSON(event) {
-            const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-            reader.onload = function(e) { try { const rawData = JSON.parse(e.target.result); processAutoLoadData(rawData, currentMode); alert("Database manuale aggiornato!"); renderPlayerList(); toggleSidebar(); } catch (err) { alert("Errore lettura: " + err); } }; reader.readAsText(file);
-        }
-
+        function importaJSON(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const rawData = JSON.parse(e.target.result); processAutoLoadData(rawData, currentMode); alert("Database manuale aggiornato!"); renderPlayerList(); toggleSidebar(); } catch (err) { alert("Errore lettura: " + err); } }; reader.readAsText(file); }
         function exportBackup() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `fantapro_backup.json`); dlAnchorElem.click(); toggleSidebar(); }
         function importBackup(event) { const file = event.target.files[0]; if (!file) return; if(!confirm("Sovrascrivere TUTTI i dati attuali?")) return; const reader = new FileReader(); reader.onload = function(e) { try { const backupData = JSON.parse(e.target.result); if(backupData.mantra && backupData.standard) { appState = backupData; state = appState[currentMode]; salvaDati(); alert("Backup ripristinato!"); switchView('list'); toggleSidebar(); } else alert("File non valido."); } catch (err) { alert("Errore: " + err); } document.getElementById('backupInput').value = ''; }; reader.readAsText(file); }
         function resetData() { if(confirm(`Vuoi azzerare la rosa in ${currentMode.toUpperCase()}?`)) { appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode])); appState[currentMode].db = state.db; state = appState[currentMode]; salvaDati(); switchView('list'); toggleSidebar(); } }
@@ -365,7 +346,6 @@
         }
 
         function setFilterRole(role) { currentFilterRole = role; generateFilterBar(); renderPlayerList(); }
-
         function toggleAssistant() { assistantMode = !assistantMode; renderPlayerList(); const btn = document.getElementById('btn-assistant'); if(assistantMode){ btn.classList.replace('bg-slate-800','bg-brand-accent'); btn.classList.replace('text-slate-300','text-white'); document.getElementById('sort-label').innerHTML=`Assistente <b class="text-yellow-400">Attivo</b>`;}else{btn.classList.replace('bg-brand-accent','bg-slate-800'); btn.classList.replace('text-white','text-slate-300'); document.getElementById('sort-label').innerHTML=`Ordinamento per <b class="text-white">IA</b>`;} }
         
         function createPlayerCardHTML(p, actionType = 'list', malus = 0) {
@@ -406,54 +386,81 @@
             let limitText = currentMode === 'standard' ? '/28' : '/25+';
             document.getElementById('team-count').innerHTML = `${state.miaSquadra.length}<span class="text-slate-500 text-sm">${limitText}</span>`; 
             let html = state.miaSquadra.length ? '' : '<div class="text-slate-500 text-center py-10">Rosa vuota.</div>';
-            
             if(state.miaSquadra.length) { 
                 let grouped = state.miaSquadra.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {}); 
                 const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
                 order.forEach(role => { 
                     if(grouped[role] || (currentMode === 'standard' && standardLimits[role])) { 
-                        let count = grouped[role] ? grouped[role].length : 0;
-                        let maxText = currentMode === 'standard' ? `/${standardLimits[role]}` : '';
+                        let count = grouped[role] ? grouped[role].length : 0; let maxText = currentMode === 'standard' ? `/${standardLimits[role]}` : '';
                         html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role} (${count}${maxText})</div>`; 
                         if(grouped[role]) html += grouped[role].map(p => createPlayerCardHTML(p, 'team')).join(''); 
                     } 
                 }); 
-            } 
-            document.getElementById('team-container').innerHTML = html; calcFormationCoverage();
+            } document.getElementById('team-container').innerHTML = html; calcFormationCoverage();
         }
 
-        // --- 5. GESTIONE AVVERSARI E INSIGHTS IA AVANZATI ---
+        // --- 5. GESTIONE AVVERSARI E INTELLIGENZA ARTIFICIALE AVANZATA ---
         function addOpponent() { const name = prompt("Inserisci nome squadra avversaria:"); if(name) { state.squadre.push({ id: Date.now(), nome: name, roster: [] }); salvaDati(); renderOpponents(); } }
         function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
         function removeOpponent(id) { if(confirm("Eliminare la squadra?")) { state.squadre = state.squadre.filter(s => s.id !== id); salvaDati(); renderOpponents(); } }
         
-        function getAIInsightsForTeam(roster, budgetResiduo) {
-            let roleCount = {}; roster.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
+        function getMacroRole(r) {
+            if(r.includes('P') || r.includes('Por')) return 'P';
+            if(['Dc','Dd','Ds','E','D'].some(x => r.includes(x))) return 'D';
+            if(['M','C','T','W'].some(x => r.includes(x))) return 'C';
+            if(['A','Pc'].some(x => r.includes(x))) return 'A';
+            return 'C';
+        }
+
+        // Calcola Medie, Soglie Top Player e Frasi Avanzate
+        function analyzeMarketAndRosters() {
+            let thresholds = { P: 0, D: 0, C: 0, A: 0 }; let counts = { P: 0, D: 0, C: 0, A: 0 };
+            state.db.forEach(p => { if(p.qta > 1) { let mr = getMacroRole(p.ruoli[0]); thresholds[mr] += p.qta; counts[mr]++; } });
+            for(let k in thresholds) thresholds[k] = counts[k] > 0 ? (thresholds[k]/counts[k]) : 10;
+
+            let freeTop = { P: 0, D: 0, C: 0, A: 0 };
+            state.db.forEach(p => { if(!getTeamOwner(p.id)) { let mr = getMacroRole(p.ruoli[0]); if(p.qta >= thresholds[mr]) freeTop[mr]++; } });
+            return { thresholds, freeTop };
+        }
+
+        function getRoleRating(roster, macroRole, threshold) {
+            let players = roster.filter(p => getMacroRole(p.ruoli[0]) === macroRole);
+            let topCount = players.filter(p => p.qta >= threshold).length;
+            let score = 0; // 0=Scarso, 1=Suff, 2=Buono, 3=Ottimo
+
+            if(macroRole === 'P') score = topCount >= 1 ? 2 : (players.length > 0 ? 1 : 0);
+            if(macroRole === 'D') score = topCount >= 2 ? 3 : (topCount === 1 ? 2 : (players.length >= 3 ? 1 : 0));
+            if(macroRole === 'C') score = topCount >= 3 ? 3 : (topCount === 2 ? 2 : (topCount === 1 || players.length >= 3 ? 1 : 0));
+            if(macroRole === 'A') score = topCount >= 2 ? 3 : (topCount === 1 ? 2 : (players.length >= 2 ? 1 : 0));
+            if(players.length === 0) score = 0;
+
+            let texts = ['Scarso', 'Suff.', 'Buono', 'Ottimo']; let colors = ['text-red-500', 'text-yellow-400', 'text-brand-green', 'text-blue-400']; let bgs = ['bg-red-500/20 border-red-500', 'bg-yellow-400/20 border-yellow-400', 'bg-brand-green/20 border-brand-green', 'bg-blue-400/20 border-blue-400'];
+            return { score, text: texts[score], color: colors[score], bg: bgs[score], topCount, totalCount: players.length };
+        }
+
+        function generateInsights(ratings, freeTop) {
             let insights = [];
-            if(currentMode === 'standard') {
-                if((roleCount['P']||0) < 1 && roster.length > 2) insights.push("<span class='text-red-400'>Disperato bisogno di un Portiere.</span>");
-                if((roleCount['D']||0) < 3 && roster.length > 5) insights.push("<span class='text-orange-400'>Difesa sguarnita, cercherà D.</span>");
-                if((roleCount['A']||0) < 2 && budgetResiduo > 100) insights.push("<span class='text-yellow-400'>Ha tanti crediti per l'Attacco. Rilancerà.</span>");
-                if((roleCount['A']||0) === standardLimits['A']) insights.push("<span class='text-brand-green'>Attacco chiuso.</span>");
-            } else {
-                if((roleCount['Por']||0) < 1 && roster.length > 3) insights.push("<span class='text-red-400'>Cerca un Por disperatamente.</span>");
-                if((roleCount['Dc']||0) < 2 && roster.length > 8) insights.push("<span class='text-orange-400'>Carenza grave di centrali (Dc).</span>");
-                if((roleCount['Pc']||0) < 1 && (roleCount['A']||0) < 1 && budgetResiduo > 100) insights.push("<span class='text-yellow-400'>Manca una punta. Ha budget.</span>");
-            }
-            if(insights.length === 0 && roster.length > 0) insights.push("<span class='text-slate-400'>Rosa bilanciata al momento.</span>");
+            if(ratings['P'].topCount === 0) { if(freeTop['P'] < 5) insights.push("<span class='text-red-400'>Disperato bisogno di un Portiere top.</span>"); else insights.push("<span class='text-yellow-400'>Ha bisogno di un Portiere.</span>"); }
+            if(ratings['D'].topCount <= 1) { if(ratings['D'].topCount === 0) insights.push("<span class='text-red-400'>Disperato bisogno di un Difensore.</span>"); else insights.push("<span class='text-yellow-400'>Ha bisogno di difensori per completare.</span>"); }
+            if(ratings['C'].topCount <= 1) { if(ratings['C'].topCount === 0) insights.push("<span class='text-red-400'>Disperato bisogno di un Centrocampista.</span>"); else insights.push("<span class='text-yellow-400'>Cerca centrocampisti per completare.</span>"); }
+            if(ratings['A'].topCount === 0) { insights.push("<span class='text-red-400'>Disperato bisogno di un Attaccante.</span>"); } else if(ratings['A'].topCount === 1) { insights.push("<span class='text-yellow-400'>Ha bisogno di attaccanti per completare.</span>"); }
+            if(insights.length === 0) insights.push("<span class='text-brand-green'>Rosa ben bilanciata.</span>");
             return insights.join(" ");
         }
 
         function renderOpponents() {
             let html = '';
-            // Includiamo la "Mia Squadra" nel recap globale per confronto
+            let market = analyzeMarketAndRosters();
             let allTeams = [ { id: 'me', nome: '⭐ LA MIA SQUADRA', roster: state.miaSquadra, isMe: true }, ...state.squadre ];
             
             allTeams.forEach(s => {
-                let spesa = s.roster.reduce((sum, p) => sum + p.costoAcquisto, 0); 
-                let budgetResiduo = state.budgetIniziale - spesa; 
-                let insights = getAIInsightsForTeam(s.roster, budgetResiduo);
+                let spesa = s.roster.reduce((sum, p) => sum + p.costoAcquisto, 0); let budgetResiduo = state.budgetIniziale - spesa; 
                 
+                let ratings = { 'P': getRoleRating(s.roster, 'P', market.thresholds['P']), 'D': getRoleRating(s.roster, 'D', market.thresholds['D']), 'C': getRoleRating(s.roster, 'C', market.thresholds['C']), 'A': getRoleRating(s.roster, 'A', market.thresholds['A']) };
+                let avgScore = (ratings['P'].score + ratings['D'].score + ratings['C'].score + ratings['A'].score) / 4;
+                let globalEval = avgScore >= 2.5 ? {t:'OTTIMA', c:'text-blue-400'} : avgScore >= 1.75 ? {t:'BUONA', c:'text-brand-green'} : avgScore >= 1 ? {t:'SUFFICIENTE', c:'text-yellow-400'} : {t:'SCARSA', c:'text-red-500'};
+                let insightsText = generateInsights(ratings, market.freeTop);
+
                 let grouped = s.roster.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
                 const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
                 let rosterHtml = ''; order.forEach(role => { if(grouped[role]) { rosterHtml += `<div class="text-[10px] font-bold text-slate-400 mt-2">${role}</div>`; rosterHtml += grouped[role].map(p => createPlayerCardHTML(p, 'opponent')).join(''); } });
@@ -465,16 +472,24 @@
                     <div class="bg-brand-card border ${borderClass} rounded-xl overflow-hidden mb-4">
                         <div class="p-4 cursor-pointer hover:bg-slate-800 transition-colors" onclick="toggleAccordion('acc-${s.id}')">
                             <div class="flex justify-between items-center mb-2"><h3 class="font-display text-xl ${s.isMe ? 'text-brand-accent' : 'text-white'}">${s.nome}</h3><div class="font-bold flex items-center gap-1 text-sm"><i class="fa-solid fa-users text-slate-400"></i> ${s.roster.length}</div></div>
-                            <div class="flex gap-4 text-sm mt-3"><div><div class="text-[10px] uppercase text-slate-400">Budget</div><div class="font-bold text-brand-green">${budgetResiduo}</div></div><div class="flex-1"><div class="text-[10px] uppercase text-slate-400">IA Report</div><div class="text-xs font-bold leading-tight mt-0.5">${insights}</div></div></div>
+                            <div class="flex gap-4 text-sm mt-3"><div><div class="text-[10px] uppercase text-slate-400">Budget</div><div class="font-bold text-brand-green">${budgetResiduo}</div></div><div class="flex-1"><div class="text-[10px] uppercase text-slate-400">Voto Globale IA</div><div class="font-bold text-lg leading-none ${globalEval.c}">${globalEval.t}</div></div></div>
+                            
+                            <div class="grid grid-cols-4 gap-1 text-center mt-3 border-t border-slate-700/50 pt-3">
+                                <div class="border rounded-lg p-1 ${ratings['P'].bg}"><div class="text-[9px] font-bold">POR</div><div class="text-[10px] ${ratings['P'].color}">${ratings['P'].text}</div></div>
+                                <div class="border rounded-lg p-1 ${ratings['D'].bg}"><div class="text-[9px] font-bold">DIF</div><div class="text-[10px] ${ratings['D'].color}">${ratings['D'].text}</div></div>
+                                <div class="border rounded-lg p-1 ${ratings['C'].bg}"><div class="text-[9px] font-bold">CEN</div><div class="text-[10px] ${ratings['C'].color}">${ratings['C'].text}</div></div>
+                                <div class="border rounded-lg p-1 ${ratings['A'].bg}"><div class="text-[9px] font-bold">ATT</div><div class="text-[10px] ${ratings['A'].color}">${ratings['A'].text}</div></div>
+                            </div>
+                            <div class="text-xs bg-slate-900 rounded p-2 mt-2 border border-slate-700 leading-tight"><b>Consiglio IA:</b> ${insightsText}</div>
                         </div>
                         <div id="acc-${s.id}" class="accordion-content bg-slate-900 border-t border-slate-800 px-4 pb-4">${rosterHtml}${!s.isMe ? `<button onclick="removeOpponent(${s.id})" class="mt-4 text-xs text-red-500 hover:text-red-400 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Elimina Squadra</button>` : ''}</div>
                     </div>`;
             });
-            document.getElementById('ai-insights-text').innerHTML = "L'IA sta monitorando gli acquisti in tempo reale.";
+            document.getElementById('ai-global-text').innerHTML = `L'IA monitora il mercato in tempo reale valutando la media quotazioni. Rimasti Liberi Top: <b>P: ${market.freeTop.P} | D: ${market.freeTop.D} | C: ${market.freeTop.C} | A: ${market.freeTop.A}</b>`;
             document.getElementById('opponents-container').innerHTML = html;
         }
 
-        // --- 6. CAMPO VERDE & LOGICA PITCH ---
+        // --- 6. CAMPO VERDE E FORMAZIONI ---
         function calcFormationCoverage() {
             let roleCount = {}; state.miaSquadra.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
             const check = (reqs) => { let passed = true; Object.keys(reqs).forEach(r => { let found = 0; if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0)); else found = roleCount[r] || 0; if(found < reqs[r]) passed = false; }); return passed; };
@@ -526,7 +541,7 @@
             }); state.pitchPlayers[state.pitchLayout] = newPitchState; salvaDati(); renderPitch();
         }
 
-        // --- 7. MODALS ACQUISTO (CON REGOLE FPF BLOCCANTI) ---
+        // --- 7. MODALS ACQUISTO (CON REGOLE FPF RIGIDE) ---
         function openPlayerModal(id) {
             currentPlayerId = id; const p = state.db.find(x => x.id == id); if(!p) return;
             
@@ -543,20 +558,12 @@
             document.getElementById('modal-fvm').innerText = p.fvm;
             document.getElementById('modal-prob').innerText = p.prob > 0 ? p.prob + '%' : 'N/D';
             
-            document.getElementById('modal-pv').innerText = p.pv || 0;
-            document.getElementById('modal-mv').innerText = p.mv || 0;
-            document.getElementById('modal-fm').innerText = p.fm || 0;
-            document.getElementById('modal-gf').innerText = p.gf || 0;
-            document.getElementById('modal-gs').innerText = p.gs || 0;
-            document.getElementById('modal-ass').innerText = p.ass || 0;
-            document.getElementById('modal-amm').innerText = p.amm || 0;
-            document.getElementById('modal-esp-au').innerText = (parseInt(p.esp) || 0) + (parseInt(p.au) || 0);
+            document.getElementById('modal-pv').innerText = p.pv || 0; document.getElementById('modal-mv').innerText = p.mv || 0; document.getElementById('modal-fm').innerText = p.fm || 0;
+            document.getElementById('modal-gf').innerText = p.gf || 0; document.getElementById('modal-gs').innerText = p.gs || 0; document.getElementById('modal-ass').innerText = p.ass || 0;
+            document.getElementById('modal-amm').innerText = p.amm || 0; document.getElementById('modal-esp-au').innerText = (parseInt(p.esp) || 0) + (parseInt(p.au) || 0);
             document.getElementById('modal-img-container').innerHTML = `<img src="${getAvatarUrl(p.nome)}" class="w-full h-full object-cover">`;
 
-            const owner = getTeamOwner(p.id); 
-            const btnBuy = document.getElementById('btn-buy'); 
-            const btnAssign = document.getElementById('btn-assign-other'); 
-            const btnRelease = document.getElementById('btn-release');
+            const owner = getTeamOwner(p.id); const btnBuy = document.getElementById('btn-buy'); const btnAssign = document.getElementById('btn-assign-other'); const btnRelease = document.getElementById('btn-release');
             
             // Check Limite Ruoli Solo per ME per il bottone rapido
             let isRoleFullForMe = false;
@@ -567,8 +574,7 @@
             }
 
             if(owner) { 
-                btnBuy.classList.add('hidden'); btnAssign.classList.add('hidden'); btnRelease.classList.remove('hidden'); 
-                btnRelease.innerHTML = `<i class="fa-solid fa-trash-can"></i> Svincola da ${owner.name}`; 
+                btnBuy.classList.add('hidden'); btnAssign.classList.add('hidden'); btnRelease.classList.remove('hidden'); btnRelease.innerHTML = `<i class="fa-solid fa-trash-can"></i> Svincola da ${owner.name}`; 
             } else {
                 btnBuy.classList.remove('hidden'); btnAssign.classList.remove('hidden'); btnRelease.classList.add('hidden'); 
                 if(isRoleFullForMe) {
@@ -600,14 +606,14 @@
             let spesaPre = teamId === 'me' ? state.creditiSpesi : roster.reduce((a,b)=>a+b.costoAcquisto, 0);
             let budgetResiduo = state.budgetIniziale - spesaPre;
             
-            // FPF CHECK: BLOCCO BUDGET ASSOLUTO
+            // CONTROLLO BLOCCO FPF: Limite Assoluto di Spesa
             let maxBid = getMaxAbsoluteBid(roster.length, budgetResiduo);
-            if(price > maxBid) return alert(`BLOCCO FPF!\nLa squadra può spendere al massimo ${maxBid} crediti per garantire 1 cr per ogni slot vuoto obbligatorio.`);
+            if(price > maxBid) return alert(`BLOCCO FPF!\nLa squadra ha solo ${budgetResiduo} crediti e deve ancora comprare i giocatori mancanti.\nOfferta massima consentita: ${maxBid} crediti.`);
             
-            // FPF CHECK: BLOCCO RUOLI STANDARD
+            // CONTROLLO BLOCCO FPF: Limite Ruoli Standard
             if(currentMode === 'standard') {
                 let roleCount = roster.filter(x => x.ruoli.includes(p.ruoli[0])).length;
-                if(roleCount >= standardLimits[p.ruoli[0]]) return alert(`BLOCCO FPF!\nLimite ruolo raggiunto per ${p.ruoli[0]} (${standardLimits[p.ruoli[0]]} max).`);
+                if(roleCount >= standardLimits[p.ruoli[0]]) return alert(`BLOCCO FPF!\nLimite massimo di giocatori raggiunto in questo ruolo (${standardLimits[p.ruoli[0]]}).`);
             }
 
             if(teamId === 'me') { state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price; } 
