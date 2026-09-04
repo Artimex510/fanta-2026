@@ -227,14 +227,19 @@
 
     <script>
         // --- 1. STATO E CONFIGURAZIONI ---
-        let defaultState = { mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } };
+        let defaultState = { 
+            mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, 
+            standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } 
+        };
         let appState = JSON.parse(localStorage.getItem('fantaProUniversal')) || defaultState;
         
+        // Retrocompatibilità
         if(!appState.mantra.squadre) appState.mantra.squadre = [];
         if(!appState.standard.squadre) appState.standard.squadre = [];
 
-        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0; let assistantMode = false; let purchaseTarget = 'me';
-        
+        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0;
+        let assistantMode = false; let purchaseTarget = 'me';
+
         const standardLimits = { 'P': 4, 'D': 9, 'C': 9, 'A': 6 };
         const gkCrosses = { 'Inter': 'Milan', 'Milan': 'Inter', 'Juventus': 'Torino', 'Torino': 'Juventus', 'Roma': 'Lazio', 'Lazio': 'Roma', 'Empoli': 'Fiorentina', 'Fiorentina': 'Empoli', 'Genoa': 'Lecce', 'Lecce': 'Genoa', 'Parma': 'Bologna', 'Bologna': 'Parma', 'Napoli': 'Venezia', 'Venezia': 'Napoli', 'Verona': 'Udinese', 'Udinese': 'Verona', 'Atalanta': 'Como', 'Como': 'Atalanta', 'Monza': 'Cagliari', 'Cagliari': 'Monza' };
         
@@ -258,36 +263,66 @@
         const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
         const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
 
-        // --- 2. UTILITY & AVATAR ---
         function getAvatarUrl(nome) { const encodedName = encodeURIComponent(nome.replace(/[^a-zA-Z ]/g, "")); return `https://ui-avatars.com/api/?name=${encodedName}&background=0f172a&color=3b82f6&bold=true&rounded=true&size=128`; }
         function getRoleBadgesHTML(ruoliArray) { return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); }
         function getTeamOwner(id) { if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'}; for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; } return null; }
 
-        // --- 3. MOTORE ECONOMIA IA (CORRETTO FAIR VALUE RESIDUO) ---
         function calculateDynamicMaxBid(p, rosterSize, budgetResiduo) {
             const minRoster = currentMode === 'mantra' ? 25 : 28; 
             const slotsNeeded = Math.max(1, minRoster - rosterSize);
-            const creditiDiSicurezza = slotsNeeded - 1; // Devo tenere 1 cr per ogni giocatore mancante tranne 1
+            const creditiDiSicurezza = slotsNeeded - 1; 
             const budgetRealeSpendibile = budgetResiduo - creditiDiSicurezza; 
-            
             if (budgetRealeSpendibile <= 0) return 1;
 
             let maxFVM = Math.max(...state.db.map(g => g.fvm)); 
             if(maxFVM < 1) maxFVM = 100;
 
-            // L'IA applica la percentuale SUL BUDGET SPENDIBILE, non su quello di inizio anno.
             let topPercent = 0.45; 
             if (rosterSize >= 10) topPercent = 0.30;
             if (rosterSize >= 18) topPercent = 0.15;
 
             let valAssolutoMax = budgetRealeSpendibile * topPercent;
             let finalPrice = Math.round((p.fvm / maxFVM) * valAssolutoMax);
-
             return Math.min(Math.max(1, finalPrice), budgetRealeSpendibile);
         }
 
-        // --- 4. INIZIALIZZAZIONE & DATI ---
-        async function initApp() { updateHomeBudgets(); setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); }
+        // --- AUTOLOADING DEI JSON ---
+        async function autoLoadDatabases() {
+            try {
+                // Aggiungiamo il timestamp per evitare che il cellulare legga la cache vecchia
+                const v = new Date().getTime(); 
+                if (appState.mantra.db.length === 0) {
+                    const resM = await fetch('./mantra.json?v=' + v);
+                    if (resM.ok) { const rawM = await resM.json(); processAutoLoadData(rawM, 'mantra'); }
+                }
+                if (appState.standard.db.length === 0) {
+                    const resS = await fetch('./standard.json?v=' + v);
+                    if (resS.ok) { const rawS = await resS.json(); processAutoLoadData(rawS, 'standard'); }
+                }
+            } catch (e) {
+                console.log("JSON non trovati. Forse l'app è offline o i file mancano su GitHub.");
+            }
+        }
+
+        function mapToStandardRole(ruoliArray) { let res = new Set(); ruoliArray.forEach(r => { if(['Por','P'].includes(r)) res.add('P'); else if(['Dc','Dd','Ds','E','D'].includes(r)) res.add('D'); else if(['M','C','T'].includes(r)) res.add('C'); else if(['W','A','Pc'].includes(r)) res.add('A'); else res.add('C'); }); return Array.from(res); }
+
+        function processAutoLoadData(rawData, mode) {
+            let maxFVM = Math.max(...rawData.map(g => parseInt(g.FVM || g.QtA || 1))); if (maxFVM < 1) maxFVM = 100;
+            appState[mode].db = rawData.map((g, index) => {
+                let qta = parseInt(g.QtA || 1); let fvm = parseInt(g.FVM || qta || 1); let ia = Math.round((fvm / maxFVM) * 90) + 9; if(ia > 99) ia = 99;
+                let ruoliArray = ["C"]; if (g.R) ruoliArray = g.R.split(';'); else if (g.Ruolo) ruoliArray = [g.Ruolo]; 
+                if(mode === 'standard') ruoliArray = mapToStandardRole(ruoliArray);
+                return { id: g.Id ? parseInt(g.Id) : (index + 1), nome: g.Nome || g.nome || "Sconosciuto", sq: g.Squadra || g.sq || "SVN", ruoli: ruoliArray, ia: ia, tit: parseInt(g.TIT || 0), prob: parseInt(g.PV || 80), qta: qta, qti: parseInt(g.QtI || qta), fvm: fvm, pv: parseInt(g.PV || 0), mv: parseFloat(g.MV || 0).toFixed(2), fm: parseFloat(g.FM || 0).toFixed(2), gf: parseInt(g.GF || 0), gs: parseInt(g.GS || 0), ass: parseInt(g.ASS || 0), amm: parseInt(g.AMM || 0), esp: parseInt(g.ESP || 0), au: parseInt(g.AU || 0) };
+            });
+            localStorage.setItem('fantaProUniversal', JSON.stringify(appState));
+        }
+
+        async function initApp() { 
+            await autoLoadDatabases(); 
+            updateHomeBudgets(); 
+            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); 
+        }
+
         function updateHomeBudgets() { document.getElementById('home-budget-mantra').innerText = appState.mantra.budgetIniziale - appState.mantra.creditiSpesi; document.getElementById('home-budget-standard').innerText = appState.standard.budgetIniziale - appState.standard.creditiSpesi; }
         
         function selezionaModalita(mode) {
@@ -304,21 +339,12 @@
         function updateBudgetUI() { document.getElementById('ui-budget').innerText = state.budgetIniziale - state.creditiSpesi; }
         function openBudgetModal() { const res = prompt(`Imposta Budget Iniziale:`, state.budgetIniziale); if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); switchView('list'); } }
 
-        function mapToStandardRole(ruoliArray) { let res = new Set(); ruoliArray.forEach(r => { if(['Por','P'].includes(r)) res.add('P'); else if(['Dc','Dd','Ds','E','D'].includes(r)) res.add('D'); else if(['M','C','T'].includes(r)) res.add('C'); else if(['W','A','Pc'].includes(r)) res.add('A'); else res.add('C'); }); return Array.from(res); }
-
         function importaJSON(event) {
             const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const rawData = JSON.parse(e.target.result);
-                    let maxFVM = Math.max(...rawData.map(g => parseInt(g.FVM || g.QtA || 1))); if (maxFVM < 1) maxFVM = 100;
-                    appState[currentMode].db = rawData.map((g, index) => {
-                        let qta = parseInt(g.QtA || 1); let fvm = parseInt(g.FVM || qta || 1); let ia = Math.round((fvm / maxFVM) * 90) + 9; if(ia > 99) ia = 99;
-                        let ruoliArray = ["C"]; if (g.R) ruoliArray = g.R.split(';'); else if (g.Ruolo) ruoliArray = [g.Ruolo]; 
-                        if(currentMode === 'standard') ruoliArray = mapToStandardRole(ruoliArray);
-                        return { id: g.Id ? parseInt(g.Id) : (index + 1), nome: g.Nome || g.nome || "Sconosciuto", sq: g.Squadra || g.sq || "SVN", ruoli: ruoliArray, ia: ia, tit: parseInt(g.TIT || 0), prob: parseInt(g.PV || 80), qta: qta, qti: parseInt(g.QtI || qta), fvm: fvm, pv: parseInt(g.PV || 0), mv: parseFloat(g.MV || 0).toFixed(2), fm: parseFloat(g.FM || 0).toFixed(2), gf: parseInt(g.GF || 0), gs: parseInt(g.GS || 0), ass: parseInt(g.ASS || 0), amm: parseInt(g.AMM || 0), esp: parseInt(g.ESP || 0), au: parseInt(g.AU || 0) };
-                    });
-                    salvaDati(); alert("Database aggiornato!"); renderPlayerList(); toggleSidebar();
+                    const rawData = JSON.parse(e.target.result); processAutoLoadData(rawData, currentMode);
+                    alert("Database manuale aggiornato!"); renderPlayerList(); toggleSidebar();
                 } catch (err) { alert("Errore lettura: " + err); }
             }; reader.readAsText(file);
         }
@@ -327,7 +353,6 @@
         function importBackup(event) { const file = event.target.files[0]; if (!file) return; if(!confirm("Sovrascrivere TUTTI i dati attuali?")) return; const reader = new FileReader(); reader.onload = function(e) { try { const backupData = JSON.parse(e.target.result); if(backupData.mantra && backupData.standard) { appState = backupData; state = appState[currentMode]; salvaDati(); alert("Backup ripristinato!"); switchView('list'); toggleSidebar(); } else alert("File non valido."); } catch (err) { alert("Errore: " + err); } document.getElementById('backupInput').value = ''; }; reader.readAsText(file); }
         function resetData() { if(confirm(`Vuoi azzerare la rosa in ${currentMode.toUpperCase()}?`)) { appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode])); appState[currentMode].db = state.db; state = appState[currentMode]; salvaDati(); switchView('list'); toggleSidebar(); } }
 
-        // --- 5. RENDER LISTE (TITOLARITÀ AGGIUNTA) ---
         function createPlayerCardHTML(p, actionType = 'list', malus = 0) {
             const owner = getTeamOwner(p.id); const isAcquistato = owner !== null; const opacity = (isAcquistato && actionType === 'list') ? 'opacity-40 grayscale' : '';
             let rightContent = '';
@@ -338,9 +363,7 @@
                 else if (assistantMode) rightContent = `<div class="text-lg font-bold text-brand-green"><i class="fa-solid fa-coins text-sm"></i> ${calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi)}</div>`;
                 else rightContent = `<div class="text-xl font-bold text-slate-300">${p.ia} <span class="text-[10px] block text-right">IA</span></div>`;
             }
-            // Badge Titolarità Chiara
             let titBadge = p.tit === 100 ? '<span class="bg-brand-green text-white text-[9px] px-1.5 py-0.5 rounded ml-2 shadow uppercase tracking-wide">Titolare</span>' : p.tit === 50 ? '<span class="bg-yellow-500 text-black text-[9px] px-1.5 py-0.5 rounded ml-2 shadow uppercase tracking-wide">Ballottaggio</span>' : '<span class="bg-slate-600 text-white text-[9px] px-1.5 py-0.5 rounded ml-2 shadow uppercase tracking-wide">Riserva</span>';
-            
             return `<div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" onclick="${actionType === 'pitch' ? `assignToPitch(${p.id}, ${malus})` : `openPlayerModal(${p.id})`}">
                     <div class="w-12 h-12 flex-shrink-0"><img src="${getAvatarUrl(p.nome)}" class="w-full h-full rounded-full border border-slate-600"></div>
                     <div class="flex-1"><div class="font-bold text-lg flex items-center flex-wrap gap-1 leading-tight">${p.nome} ${titBadge} ${state.preferitiIds.includes(p.id) && actionType !== 'favs' && actionType !== 'pitch' ? '<i class="fa-solid fa-star text-yellow-500 text-xs"></i>' : ''}</div><div class="text-[11px] text-slate-400 mt-1">${p.sq} | ${getRoleBadgesHTML(p.ruoli)}</div></div><div>${rightContent}</div></div>`;
@@ -364,7 +387,6 @@
             order.forEach(role => { if(grouped[role]) { html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role}</div>`; html += grouped[role].map(p => createPlayerCardHTML(p, 'favs')).join(''); } }); document.getElementById('favs-container').innerHTML = html;
         }
 
-        // --- 6. LIMITI ROSA STANDARD & TEAM ---
         function renderTeam() {
             let limitText = currentMode === 'standard' ? '/28' : '/25+';
             document.getElementById('team-count').innerHTML = `${state.miaSquadra.length}<span class="text-slate-500 text-sm">${limitText}</span>`; 
@@ -394,10 +416,10 @@
             document.getElementById('formation-coverage').innerHTML = html;
         }
 
-        // --- AVVERSARI ---
         function addOpponent() { const name = prompt("Inserisci nome squadra avversaria:"); if(name) { state.squadre.push({ id: Date.now(), nome: name, roster: [] }); salvaDati(); renderOpponents(); } }
         function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
         function removeOpponent(id) { if(confirm("Eliminare la squadra?")) { state.squadre = state.squadre.filter(s => s.id !== id); salvaDati(); renderOpponents(); } }
+        
         function evaluateTeam(roster) {
             if(roster.length === 0) return { evalText: 'In Attesa', colorClass: 'text-slate-400', icon: 'fa-clock' };
             let avgIA = roster.reduce((sum, p) => sum + p.ia, 0) / roster.length;
@@ -409,12 +431,13 @@
             if(score >= 2) return { evalText: 'Sufficiente', colorClass: 'text-yellow-400', icon: 'fa-minus' };
             return { evalText: 'Scarso', colorClass: 'text-red-500', icon: 'fa-thumbs-down' };
         }
+
         function renderOpponents() {
             let html = ''; let missingSomething = false; let insights = "";
             state.squadre.forEach(s => {
                 let roleCount = {}; s.roster.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
-                if(s.roster.length > 3 && !roleCount['Por'] && !roleCount['P']) { insights += `<span class="text-red-400">${s.nome}</span> cerca disperatamente un <b>Portiere</b>.<br>`; missingSomething = true; }
-                if(s.roster.length > 5 && (!roleCount['Pc'] && !roleCount['A'])) { insights += `<span class="text-yellow-400">${s.nome}</span> non ha ancora <b>Attaccanti</b>, preparati a rilanciare.<br>`; missingSomething = true; }
+                if(s.roster.length > 3 && !roleCount['Por'] && !roleCount['P']) { insights += `<span class="text-red-400">${s.nome}</span> cerca un <b>Portiere</b>.<br>`; missingSomething = true; }
+                if(s.roster.length > 5 && (!roleCount['Pc'] && !roleCount['A'])) { insights += `<span class="text-yellow-400">${s.nome}</span> non ha <b>Attaccanti</b>, preparati a rilanciare.<br>`; missingSomething = true; }
                 
                 let spesa = s.roster.reduce((sum, p) => sum + p.costoAcquisto, 0); let budgetResiduo = state.budgetIniziale - spesa; let evaluation = evaluateTeam(s.roster);
                 let grouped = s.roster.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
@@ -431,13 +454,12 @@
                         <div id="acc-${s.id}" class="accordion-content bg-slate-900 border-t border-slate-800 px-4 pb-4">${rosterHtml}<button onclick="removeOpponent(${s.id})" class="mt-4 text-xs text-red-500 hover:text-red-400 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Elimina Squadra</button></div>
                     </div>`;
             });
-            if(!missingSomething && state.squadre.length > 0 && state.squadre[0].roster.length > 0) insights = "Le rose sono bilanciate. Punta sulla qualità (IA) senza strapagare.";
-            else if (state.squadre.length === 0) insights = "Aggiungi le squadre avversarie per l'analisi IA.";
-            document.getElementById('ai-insights-text').innerHTML = insights || "Nessun dato sufficiente per l'analisi.";
+            if(!missingSomething && state.squadre.length > 0 && state.squadre[0].roster.length > 0) insights = "Le rose sono bilanciate. L'IA abbassa i prezzi consigliati.";
+            else if (state.squadre.length === 0) insights = "Aggiungi le squadre avversarie per attivare l'analisi IA.";
+            document.getElementById('ai-insights-text').innerHTML = insights || "In attesa di dati...";
             document.getElementById('opponents-container').innerHTML = html || '<div class="text-center text-slate-500 py-10">Nessuna squadra aggiunta.</div>';
         }
 
-        // --- 7. PITCH & FORMAZIONI ---
         function renderPitch() {
             const selForm = document.getElementById('formation-select').value; state.pitchLayout = selForm; if(!state.pitchPlayers[selForm]) state.pitchPlayers[selForm] = {};
             const layout = currentMode === 'mantra' ? formationsMantra[selForm] : formationsStandard[selForm]; const container = document.getElementById('pitch-slots-container'); container.innerHTML = '';
@@ -478,11 +500,9 @@
             }); state.pitchPlayers[state.pitchLayout] = newPitchState; salvaDati(); renderPitch();
         }
 
-        // --- 8. MODALS (ACQUISTO, LIMITI STANDARD) ---
         function openPlayerModal(id) {
             currentPlayerId = id; const p = state.db.find(x => x.id == id); if(!p) return;
             
-            // Badge Titolarità Chiara
             let titB = p.tit === 100 ? `<span class="bg-brand-green text-white text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Titolare</span>` : p.tit === 50 ? `<span class="bg-yellow-500 text-black text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Ballottaggio</span>` : `<span class="bg-slate-600 text-white text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Riserva</span>`;
             document.getElementById('modal-name').innerHTML = `${p.nome} ${titB}`; 
             document.getElementById('modal-team').innerText = p.sq;
@@ -519,10 +539,9 @@
             const btnAssign = document.getElementById('btn-assign-other'); 
             const btnRelease = document.getElementById('btn-release');
             
-            // LOGICA LIMITI ROSA STANDARD
             let isRoleFull = false;
             if(currentMode === 'standard') {
-                const playerRole = p.ruoli[0]; // P, D, C, A
+                const playerRole = p.ruoli[0];
                 const currentCountInRole = state.miaSquadra.filter(x => x.ruoli.includes(playerRole)).length;
                 if(currentCountInRole >= standardLimits[playerRole]) isRoleFull = true;
             }
@@ -546,7 +565,7 @@
             document.getElementById('player-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('player-modal-content').classList.remove('translate-y-full'); }, 10);
         }
 
-        function toggleFavFromModal() { if(!currentPlayerId) return; const idx = state.preferitiIds.indexOf(currentPlayerId); if(idx > -1) state.preferitiIds.splice(idx, 1); else state.preferitiIds.push(currentPlayerId); salvaDati(); openPlayerModal(currentPlayerId); renderPlayerList(); }
+        function toggleFavFromModal() { if(!currentPlayerId) return; const idx = state.preferitiIds.indexOf(currentPlayerId); if(idx > -1) state.preferitiIds.splice(idx, 1); else state.preferitiIds.push(currentPlayerId); salvaDati(); openPlayerModal(currentPlayerId); renderActiveView(); }
         function openPurchaseModal(target) { purchaseTarget = target; document.getElementById('purchase-team-select-container').classList[target === 'other' ? 'remove' : 'add']('hidden'); document.getElementById('purchase-team-select').innerHTML = state.squadre.map(s => `<option value="${s.id}">${s.nome}</option>`).join(''); document.getElementById('purchase-suggested').innerText = currentSuggestedPrice; document.getElementById('purchase-price').value = ''; document.getElementById('purchase-modal').classList.remove('hidden'); }
         function closePurchaseModal() { document.getElementById('purchase-modal').classList.add('hidden'); }
         function closePlayerModal() { document.getElementById('player-modal-content').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('player-modal').classList.add('hidden'); }, 300); }
@@ -557,8 +576,7 @@
             if(purchaseTarget === 'me') { 
                 if(state.budgetIniziale - state.creditiSpesi < price) return alert("Budget insufficiente!");
                 state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price; 
-            } 
-            else { 
+            } else { 
                 const t = state.squadre.find(s => s.id == document.getElementById('purchase-team-select').value); 
                 if(!t) return alert("Seleziona una squadra!");
                 t.roster.push({...p, costoAcquisto: price}); 
@@ -573,7 +591,6 @@
             salvaDati(); closePlayerModal(); updateBudgetUI(); renderActiveView();
         }
 
-        // --- 9. NAVIGAZIONE ---
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); }
         function switchView(v) { 
             document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden')); document.getElementById(`view-${v}`).classList.remove('hidden'); 
@@ -587,7 +604,6 @@
             if(active==='list') renderPlayerList(); if(active==='favs') renderFavs(); if(active==='team') renderTeam(); if(active==='opponents') renderOpponents(); if(active==='pitch') renderPitch();
         }
 
-        // --- 10. MODULO SANDBOX API ESTERNE (DOPPIA API CON CORS PROXY) ---
         async function fetchExternalData() {
             const banner = document.getElementById('api-status-banner');
             const container = document.getElementById('api-results-container');
@@ -596,79 +612,39 @@
             container.innerHTML = '';
             let finalHtml = '';
 
-            // --- API 1: API-FOOTBALL ---
             try {
                 let apiKey1 = localStorage.getItem('footballApiKey');
-                if (!apiKey1) {
-                    apiKey1 = prompt("API 1 (API-Football)\nInserisci la tua API Key gratuita:");
-                    if (apiKey1) localStorage.setItem('footballApiKey', apiKey1);
-                }
-
+                if (!apiKey1) { apiKey1 = prompt("API 1 (API-Football)\nInserisci la tua API Key gratuita:"); if (apiKey1) localStorage.setItem('footballApiKey', apiKey1); }
                 if(apiKey1) {
-                    const response1 = await fetch("https://v3.football.api-sports.io/injuries?league=135&season=2024", {
-                        "method": "GET",
-                        "headers": { "x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": apiKey1 }
-                    });
-                    
+                    const response1 = await fetch("https://v3.football.api-sports.io/injuries?league=135&season=2024", { "method": "GET", "headers": { "x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": apiKey1 } });
                     if (!response1.ok) throw new Error(`API 1 Error: ${response1.status}`);
                     const data1 = await response1.json();
-                    
-                    if(data1.errors && Object.keys(data1.errors).length > 0) {
-                        console.log("Errore API 1:", data1.errors);
-                        localStorage.removeItem('footballApiKey'); 
-                    } else {
+                    if(data1.errors && Object.keys(data1.errors).length > 0) { localStorage.removeItem('footballApiKey'); } 
+                    else {
                         const infortuni = data1.response ? data1.response.slice(0, 10) : []; 
                         infortuni.forEach((item) => {
                             const matchLocale = state.db.find(p => p.nome.toLowerCase().includes(item.player.name.toLowerCase()));
                             const tagMatch = matchLocale ? `<span class="bg-brand-green text-white text-[9px] px-1 rounded ml-2">Nel Listone</span>` : '';
-                            finalHtml += `
-                            <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-red-500 mb-2">
-                                <div class="text-xs text-red-400 font-bold uppercase mb-1"><i class="fa-solid fa-truck-medical"></i> Infortunio/Squalifica (API 1)</div>
-                                <div class="text-sm text-white font-bold flex items-center">${item.player.name} ${tagMatch}</div>
-                                <div class="text-xs text-slate-300 mt-1"><b>Squadra:</b> ${item.team.name} | <b>Motivo:</b> ${item.fixture.reason || "Assente"}</div>
-                            </div>`;
+                            finalHtml += `<div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-red-500 mb-2"><div class="text-xs text-red-400 font-bold uppercase mb-1"><i class="fa-solid fa-truck-medical"></i> Infortunio/Squalifica (API 1)</div><div class="text-sm text-white font-bold flex items-center">${item.player.name} ${tagMatch}</div><div class="text-xs text-slate-300 mt-1"><b>Squadra:</b> ${item.team.name} | <b>Motivo:</b> ${item.fixture.reason || "Assente"}</div></div>`;
                         });
                     }
                 }
-            } catch (error) {
-                console.error("Scout API 1 Fallita:", error);
-                finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Infortuni (API 1): Dati non disponibili o chiave errata.</div>`;
-            }
+            } catch (error) { finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Infortuni (API 1): Dati non disponibili.</div>`; }
 
-            // --- API 2: FOOTBALL-DATA.ORG ---
             try {
                 let apiKey2 = localStorage.getItem('footballDataKey');
-                if (!apiKey2) {
-                    apiKey2 = prompt("API 2 (Football-Data.org)\nInserisci il tuo X-Auth-Token:");
-                    if (apiKey2) localStorage.setItem('footballDataKey', apiKey2);
-                }
-
+                if (!apiKey2) { apiKey2 = prompt("API 2 (Football-Data.org)\nInserisci il tuo X-Auth-Token:"); if (apiKey2) localStorage.setItem('footballDataKey', apiKey2); }
                 if(apiKey2) {
                     const targetUrl = encodeURIComponent("https://api.football-data.org/v4/competitions/SA/standings");
-                    const response2 = await fetch("https://api.allorigins.win/raw?url=" + targetUrl, {
-                        "method": "GET",
-                        "headers": { "X-Auth-Token": apiKey2 }
-                    });
-                    
+                    const response2 = await fetch("https://api.allorigins.win/raw?url=" + targetUrl, { "method": "GET", "headers": { "X-Auth-Token": apiKey2 } });
                     if (!response2.ok) throw new Error(`API 2 Error: ${response2.status}`);
                     const data2 = await response2.json();
-                    
                     const classifica = data2.standings ? data2.standings[0].table.slice(0, 5) : [];
-                    classifica.forEach((team) => {
-                        finalHtml += `
-                        <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-blue-500 mb-2">
-                            <div class="text-xs text-blue-400 font-bold uppercase mb-1"><i class="fa-solid fa-chart-line"></i> Top 5 Serie A (API 2)</div>
-                            <div class="text-sm text-white font-bold flex items-center">${team.position}. ${team.team.shortName}</div>
-                            <div class="text-xs text-slate-300 mt-1"><b>Punti:</b> ${team.points} | <b>Forma (Ultime 5):</b> ${team.form || "N/D"}</div>
-                        </div>`;
-                    });
+                    classifica.forEach((team) => { finalHtml += `<div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-blue-500 mb-2"><div class="text-xs text-blue-400 font-bold uppercase mb-1"><i class="fa-solid fa-chart-line"></i> Top 5 Serie A (API 2)</div><div class="text-sm text-white font-bold flex items-center">${team.position}. ${team.team.shortName}</div><div class="text-xs text-slate-300 mt-1"><b>Punti:</b> ${team.points} | <b>Forma:</b> ${team.form || "N/D"}</div></div>`; });
                 }
-            } catch (error) {
-                console.error("Scout API 2 Fallita:", error);
-                finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Statistiche (API 2): Bloccata dal server o chiave errata.</div>`;
-            }
+            } catch (error) { finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Statistiche (API 2): Bloccata dal server.</div>`; }
 
-            if(finalHtml === '') finalHtml = '<div class="text-slate-500 text-center py-4">Nessun dato recuperato. Controlla di aver inserito le API Key.</div>';
+            if(finalHtml === '') finalHtml = '<div class="text-slate-500 text-center py-4">Nessun dato recuperato.</div>';
             container.innerHTML = finalHtml;
             banner.innerHTML = `<div class="text-brand-green font-bold"><i class="fa-solid fa-check-circle"></i> Radar Scout Aggiornato</div>`;
         }
