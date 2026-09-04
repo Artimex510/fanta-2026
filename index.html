@@ -152,7 +152,7 @@
                 </div>
                 
                 <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center">
-                    <p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni (API-Football) e scaricare le ultime news.</p>
+                    <p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni (Football-Data & API-Football) e scaricare le ultime news.</p>
                 </div>
 
                 <div id="api-results-container" class="flex flex-col gap-3 overflow-y-auto"></div>
@@ -184,7 +184,6 @@
                 <div class="text-right"><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Indice IA</div><div class="font-display text-3xl text-brand-accent" id="modal-ia">0</div></div>
             </div>
             
-            <!-- STATISTICHE RESTAURATE -->
             <div class="grid grid-cols-4 gap-2 mb-3 text-center border-b border-slate-700 pb-3">
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtA</div><div class="font-bold text-white text-lg" id="modal-qta">-</div></div>
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtI</div><div class="font-bold text-slate-300 text-lg" id="modal-qti">-</div></div>
@@ -225,25 +224,82 @@
     </div>
 
     <script>
-        let defaultState = { mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } };
+        // --- 1. STATO E CONFIGURAZIONI ---
+        let defaultState = { 
+            mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, 
+            standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } 
+        };
         let appState = JSON.parse(localStorage.getItem('fantaProUniversal')) || defaultState;
-        let currentMode = null; let state = null; let currentPlayerId = null; let currentSuggestedPrice = 0; let assistantMode = false; let purchaseTarget = 'me';
         
+        // Retrocompatibilità
+        if(!appState.mantra.squadre) appState.mantra.squadre = [];
+        if(!appState.standard.squadre) appState.standard.squadre = [];
+
+        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0;
+        let assistantMode = false; let purchaseTarget = 'me';
+
         const gkCrosses = { 'Inter': 'Milan', 'Milan': 'Inter', 'Juventus': 'Torino', 'Torino': 'Juventus', 'Roma': 'Lazio', 'Lazio': 'Roma', 'Empoli': 'Fiorentina', 'Fiorentina': 'Empoli', 'Genoa': 'Lecce', 'Lecce': 'Genoa', 'Parma': 'Bologna', 'Bologna': 'Parma', 'Napoli': 'Venezia', 'Venezia': 'Napoli', 'Verona': 'Udinese', 'Udinese': 'Verona', 'Atalanta': 'Como', 'Como': 'Atalanta', 'Monza': 'Cagliari', 'Cagliari': 'Monza' };
-        const formationsMantra = { '433': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:50}, {role:'M|C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'W|A',x:80,y:25}, {role:'Pc',x:50,y:15}, {role:'W|A',x:20,y:25} ], '352': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:78}, {role:'Dc',x:50,y:82}, {role:'Dc',x:25,y:78}, {role:'E',x:85,y:45}, {role:'M|C',x:65,y:55}, {role:'C|T',x:50,y:45}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:45}, {role:'Pc|A',x:65,y:18}, {role:'Pc|A',x:35,y:18} ] };
-        const formationsStandard = { '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ], '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ] };
-        const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
         
-        // FUNZIONE GENERAZIONE AVATAR RESTAURATA
+        const formationsMantra = { 
+            '433': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:50}, {role:'M|C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'W|A',x:80,y:25}, {role:'Pc',x:50,y:15}, {role:'W|A',x:20,y:25} ], 
+            '352': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:78}, {role:'Dc',x:50,y:82}, {role:'Dc',x:25,y:78}, {role:'E',x:85,y:45}, {role:'M|C',x:65,y:55}, {role:'C|T',x:50,y:45}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:45}, {role:'Pc|A',x:65,y:18}, {role:'Pc|A',x:35,y:18} ],
+            '442': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'W|E',x:85,y:50}, {role:'M|C',x:60,y:55}, {role:'M|C',x:40,y:55}, {role:'W|E',x:15,y:50}, {role:'Pc|A',x:65,y:18}, {role:'Pc',x:35,y:18} ],
+            '4231': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:80}, {role:'Dc',x:65,y:85}, {role:'Dc',x:35,y:85}, {role:'Ds',x:15,y:80}, {role:'M|C',x:65,y:58}, {role:'M|C',x:35,y:58}, {role:'W|T|A',x:80,y:35}, {role:'T',x:50,y:35}, {role:'W|T|A',x:20,y:35}, {role:'Pc',x:50,y:12} ],
+            '3421': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ],
+            '4312': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:78}, {role:'Dc',x:65,y:82}, {role:'Dc',x:35,y:82}, {role:'Ds',x:15,y:78}, {role:'C',x:75,y:55}, {role:'M|C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'T',x:50,y:35}, {role:'Pc|A',x:65,y:15}, {role:'Pc',x:35,y:15} ]
+        };
+        const formationsStandard = { 
+            '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ], 
+            '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ],
+            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ]
+        };
+        const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
+        const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
+
+        // --- 2. UTILITY & AVATAR ---
         function getAvatarUrl(nome) {
             const encodedName = encodeURIComponent(nome.replace(/[^a-zA-Z ]/g, ""));
             return `https://ui-avatars.com/api/?name=${encodedName}&background=0f172a&color=3b82f6&bold=true&rounded=true&size=128`;
         }
-        function getRoleBadgesHTML(ruoliArray) { 
-            return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); 
+        function getRoleBadgesHTML(ruoliArray) { return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); }
+
+        function getTeamOwner(id) {
+            if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'};
+            for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; }
+            return null;
         }
 
-        async function initApp() { updateHomeBudgets(); setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); }
+        // --- 3. MOTORE ECONOMIA IA (CORRETTO) ---
+        function calculateDynamicMaxBid(p, rosterSize, budgetResiduo) {
+            const minRoster = currentMode === 'mantra' ? 25 : 28; 
+            const slotsNeeded = Math.max(1, minRoster - rosterSize);
+            
+            // Il massimo assoluto che PUOI spendere senza rimanere a 0 per gli slot vuoti
+            const maxBidAbs = budgetResiduo - (slotsNeeded - 1); 
+            if (maxBidAbs <= 1) return 1; // Se sei al limite, puoi offrire solo 1.
+
+            let maxFVM = Math.max(...state.db.map(g => g.fvm)); 
+            if(maxFVM < 1) maxFVM = 100;
+
+            // Fanta-Economy Dinamica
+            let topPlayerMaxPercent = 0.40; 
+            if (rosterSize >= 10) topPlayerMaxPercent = 0.20;
+            if (rosterSize >= 16) topPlayerMaxPercent = 0.10;
+            if (rosterSize >= 20) topPlayerMaxPercent = 0.05;
+
+            // Calcola sul budget iniziale per stabilire il "valore" del giocatore, ma lo incrocia col residuo
+            let maxTopPrice = state.budgetIniziale * topPlayerMaxPercent;
+            let baseSuggest = Math.round((p.fvm / maxFVM) * maxTopPrice);
+
+            // Garantisce che il prezzo suggerito NON superi MAI il massimo che puoi fisicamente spendere
+            return Math.min(Math.max(1, baseSuggest), maxBidAbs);
+        }
+
+        // --- 4. INIZIALIZZAZIONE ---
+        async function initApp() { 
+            updateHomeBudgets(); 
+            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); 
+        }
         function updateHomeBudgets() { document.getElementById('home-budget-mantra').innerText = appState.mantra.budgetIniziale - appState.mantra.creditiSpesi; document.getElementById('home-budget-standard').innerText = appState.standard.budgetIniziale - appState.standard.creditiSpesi; }
         
         function selezionaModalita(mode) {
@@ -258,7 +314,7 @@
         function goHome() { currentMode = null; state = null; document.getElementById('main-header').classList.replace('flex','hidden'); document.getElementById('bottom-nav').classList.replace('flex','hidden'); updateHomeBudgets(); switchView('home'); }
         function salvaDati() { localStorage.setItem('fantaProUniversal', JSON.stringify(appState)); if(currentMode) updateBudgetUI(); else updateHomeBudgets(); }
         function updateBudgetUI() { document.getElementById('ui-budget').innerText = state.budgetIniziale - state.creditiSpesi; }
-        function openBudgetModal() { const res = prompt(`Imposta Budget Iniziale:`, state.budgetIniziale); if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); } }
+        function openBudgetModal() { const res = prompt(`Imposta Budget Iniziale:`, state.budgetIniziale); if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); switchView('list'); } }
 
         function mapToStandardRole(ruoliArray) {
             let res = new Set();
@@ -266,6 +322,7 @@
             return Array.from(res);
         }
 
+        // --- 5. GESTIONE FILE E DATI ---
         function importaJSON(event) {
             const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
             reader.onload = function(e) {
@@ -279,62 +336,169 @@
                         return { id: g.Id ? parseInt(g.Id) : (index + 1), nome: g.Nome || g.nome || "Sconosciuto", sq: g.Squadra || g.sq || "SVN", ruoli: ruoliArray, ia: ia, tit: parseInt(g.TIT || 0), prob: parseInt(g.PV || 80), qta: qta, qti: parseInt(g.QtI || qta), fvm: fvm, pv: parseInt(g.PV || 0), mv: parseFloat(g.MV || 0).toFixed(2), fm: parseFloat(g.FM || 0).toFixed(2), gf: parseInt(g.GF || 0), gs: parseInt(g.GS || 0), ass: parseInt(g.ASS || 0), amm: parseInt(g.AMM || 0), esp: parseInt(g.ESP || 0), au: parseInt(g.AU || 0) };
                     });
                     salvaDati(); alert("Database aggiornato!"); renderPlayerList(); toggleSidebar();
-                } catch (err) { alert("Errore: " + err); }
+                } catch (err) { alert("Errore lettura: " + err); }
             }; reader.readAsText(file);
         }
-        function getTeamOwner(id) { if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'}; for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; } return null; }
-        
-        // NUOVA LOGICA IA: ECONOMIA REALISTICA
-        function calculateDynamicMaxBid(p, rosterSize, budgetResiduo) {
-            const minRoster = currentMode === 'mantra' ? 25 : 28; 
-            const slotsNeeded = Math.max(1, minRoster - rosterSize);
-            const maxBidAbs = budgetResiduo - (slotsNeeded - 1); // Crediti max garantendo 1cr per le riserve
-            if (maxBidAbs <= 1) return 1;
 
-            let maxFVM = Math.max(...state.db.map(g => g.fvm)); 
-            if(maxFVM < 1) maxFVM = 100;
-
-            // Fanta-Economy: Un top assoluto costa al massimo il 40% del budget iniziale (es. 240 su 600)
-            let topPlayerMaxPercent = 0.40; 
-            
-            // L'IA abbassa il tetto di spesa man mano che la rosa si riempie
-            if (rosterSize >= 10) topPlayerMaxPercent = 0.25;
-            if (rosterSize >= 16) topPlayerMaxPercent = 0.10;
-            if (rosterSize >= 20) topPlayerMaxPercent = 0.05;
-            if (rosterSize >= 24) topPlayerMaxPercent = 0.02;
-
-            let maxTopPrice = state.budgetIniziale * topPlayerMaxPercent;
-            let baseSuggest = Math.round((p.fvm / maxFVM) * maxTopPrice);
-
-            return Math.min(Math.max(1, baseSuggest), maxBidAbs);
+        function exportBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState));
+            const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `fantapro_backup.json`); dlAnchorElem.click(); toggleSidebar();
         }
 
-        // CARDS CON AVATAR RESTAURATO
-        function createPlayerCardHTML(p, actionType = 'list') {
+        function importBackup(event) {
+            const file = event.target.files[0]; if (!file) return;
+            if(!confirm("Sovrascrivere TUTTI i dati attuali?")) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    if(backupData.mantra && backupData.standard) { appState = backupData; state = appState[currentMode]; salvaDati(); alert("Backup ripristinato!"); switchView('list'); toggleSidebar(); } 
+                    else alert("File non valido.");
+                } catch (err) { alert("Errore: " + err); }
+                document.getElementById('backupInput').value = ''; 
+            }; reader.readAsText(file);
+        }
+
+        function resetData() { if(confirm(`Vuoi azzerare la rosa, gli avversari e i crediti in ${currentMode.toUpperCase()}?`)) { appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode])); appState[currentMode].db = state.db; state = appState[currentMode]; salvaDati(); switchView('list'); toggleSidebar(); } }
+
+        // --- 6. RENDER LISTE (LISTONE, PREFERITI, TEAM, AVVERSARI) ---
+        function createPlayerCardHTML(p, actionType = 'list', malus = 0) {
             const owner = getTeamOwner(p.id); const isAcquistato = owner !== null; const opacity = (isAcquistato && actionType === 'list') ? 'opacity-40 grayscale' : '';
             let rightContent = '';
             if(actionType === 'team' || actionType === 'opponent') rightContent = `<div class="text-xl font-bold text-brand-green">${p.costoAcquisto}<br><span class="text-[10px] text-slate-400">CREDITI</span></div>`;
+            else if (actionType === 'pitch') rightContent = malus < 0 ? `<div class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Adattato -1</div>` : `<div class="bg-brand-green text-white px-2 py-1 rounded text-xs font-bold shadow">Perfetto</div>`;
             else {
                 if (isAcquistato) rightContent = `<div class="text-[9px] text-slate-400 uppercase text-right leading-tight">Preso da<br><b class="text-white">${owner.name}</b></div>`;
                 else if (assistantMode) rightContent = `<div class="text-lg font-bold text-brand-green"><i class="fa-solid fa-coins text-sm"></i> ${calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi)}</div>`;
-                else rightContent = `<div class="text-xl font-bold text-slate-300">${p.ia} <span class="text-[10px] block">IA</span></div>`;
+                else rightContent = `<div class="text-xl font-bold text-slate-300">${p.ia} <span class="text-[10px] block text-right">IA</span></div>`;
             }
             let titBadge = p.tit === 100 ? '<div class="w-2 h-2 rounded-full bg-brand-green" title="Titolare"></div>' : p.tit === 50 ? '<div class="w-2 h-2 rounded-full bg-yellow-500" title="Ballottaggio"></div>' : p.tit === 10 ? '<div class="w-2 h-2 rounded-full bg-slate-500" title="Riserva"></div>' : '';
-            return `<div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" onclick="openPlayerModal(${p.id})">
+            return `<div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" onclick="${actionType === 'pitch' ? `assignToPitch(${p.id}, ${malus})` : `openPlayerModal(${p.id})`}">
                     <div class="w-12 h-12 flex-shrink-0"><img src="${getAvatarUrl(p.nome)}" class="w-full h-full rounded-full border border-slate-600"></div>
-                    <div class="flex-1"><div class="font-bold text-lg flex items-center gap-2">${p.nome} ${titBadge}</div><div class="text-[11px] text-slate-400 mt-1">${p.sq} | ${getRoleBadgesHTML(p.ruoli)}</div></div><div>${rightContent}</div></div>`;
+                    <div class="flex-1"><div class="font-bold text-lg flex items-center gap-2">${p.nome} ${titBadge} ${state.preferitiIds.includes(p.id) && actionType !== 'favs' && actionType !== 'pitch' ? '<i class="fa-solid fa-star text-yellow-500 text-xs"></i>' : ''}</div><div class="text-[11px] text-slate-400 mt-1">${p.sq} | ${getRoleBadgesHTML(p.ruoli)}</div></div><div>${rightContent}</div></div>`;
         }
 
-        function toggleAssistant() { assistantMode = !assistantMode; renderPlayerList(); }
+        function toggleAssistant() { assistantMode = !assistantMode; renderPlayerList(); const btn = document.getElementById('btn-assistant'); if(assistantMode){ btn.classList.replace('bg-slate-800','bg-brand-accent'); btn.classList.replace('text-slate-300','text-white'); document.getElementById('sort-label').innerHTML=`Assistente <b class="text-yellow-400">Attivo</b>`;}else{btn.classList.replace('bg-brand-accent','bg-slate-800'); btn.classList.replace('text-white','text-slate-300'); document.getElementById('sort-label').innerHTML=`Ordinamento per <b class="text-white">IA</b>`;} }
+        
         function renderPlayerList() {
             let filtered = state.db.filter(p => p.nome.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase()));
             if (assistantMode) {
                 let budgetRimanente = state.budgetIniziale - state.creditiSpesi;
                 filtered = filtered.filter(p => getTeamOwner(p.id) === null && calculateDynamicMaxBid(p, state.miaSquadra.length, budgetRimanente) <= budgetRimanente).sort((a, b) => b.ia - a.ia);
             } else { filtered.sort((a, b) => b.ia - a.ia); }
+            document.getElementById('player-count').innerText = `${filtered.length} trovati`;
             document.getElementById('player-list-container').innerHTML = filtered.map(p => createPlayerCardHTML(p)).join('');
         }
 
+        function renderFavs() {
+            let favs = state.db.filter(p => state.preferitiIds.includes(p.id)).sort((a,b) => b.ia - a.ia); let grouped = favs.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
+            let html = favs.length ? '' : '<div class="text-slate-500 text-center py-10">Nessun preferito.</div>'; const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+            order.forEach(role => { if(grouped[role]) { html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role}</div>`; html += grouped[role].map(p => createPlayerCardHTML(p, 'favs')).join(''); } }); document.getElementById('favs-container').innerHTML = html;
+        }
+
+        function renderTeam() {
+            document.getElementById('team-count').innerText = state.miaSquadra.length; let html = state.miaSquadra.length ? '' : '<div class="text-slate-500 text-center py-10">Rosa vuota.</div>';
+            if(state.miaSquadra.length) { let grouped = state.miaSquadra.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {}); const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+                order.forEach(role => { if(grouped[role]) { html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role} (${grouped[role].length})</div>`; html += grouped[role].map(p => createPlayerCardHTML(p, 'team')).join(''); } }); } document.getElementById('team-container').innerHTML = html; calcFormationCoverage();
+        }
+
+        function calcFormationCoverage() {
+            let roleCount = {}; state.miaSquadra.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
+            const check = (reqs) => { let passed = true; Object.keys(reqs).forEach(r => { let found = 0; if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0)); else found = roleCount[r] || 0; if(found < reqs[r]) passed = false; }); return passed; };
+            const fRules = currentMode === 'mantra' ? { '4-3-3':{'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, '3-5-2':{'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2} } : { '3-4-3':{'P':1,'D':3,'C':4,'A':3}, '4-3-3':{'P':1,'D':4,'C':3,'A':3}, '4-4-2':{'P':1,'D':4,'C':4,'A':2} };
+            let html = ''; for (const [name, rules] of Object.entries(fRules)) { let ok = check(rules); html += `<div class="py-2 rounded-lg border ${ok ? 'bg-brand-green/20 border-brand-green text-brand-green' : 'bg-slate-800 border-slate-700 text-slate-500'}">${name}<br>${ok ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark opacity-50"></i>'}</div>`; } 
+            document.getElementById('formation-coverage').innerHTML = html;
+        }
+
+        function addOpponent() {
+            const name = prompt("Inserisci nome squadra avversaria:");
+            if(name) { state.squadre.push({ id: Date.now(), nome: name, roster: [] }); salvaDati(); renderOpponents(); }
+        }
+        function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
+        function removeOpponent(id) { if(confirm("Eliminare la squadra?")) { state.squadre = state.squadre.filter(s => s.id !== id); salvaDati(); renderOpponents(); } }
+
+        function evaluateTeam(roster) {
+            if(roster.length === 0) return { evalText: 'In Attesa', colorClass: 'text-slate-400', icon: 'fa-clock' };
+            let avgIA = roster.reduce((sum, p) => sum + p.ia, 0) / roster.length;
+            let roleCount = new Set(roster.map(p => p.ruoli[0])).size; let reqRoles = currentMode === 'mantra' ? 8 : 4; 
+            let score = 0; if(avgIA > 75) score += 3; else if(avgIA > 65) score += 2; else if(avgIA > 50) score += 1;
+            if(roleCount >= reqRoles) score += 2; else if(roleCount >= reqRoles-2) score += 1;
+            if(score >= 4) return { evalText: 'Ottimo', colorClass: 'text-blue-400', icon: 'fa-trophy' };
+            if(score >= 3) return { evalText: 'Buono', colorClass: 'text-brand-green', icon: 'fa-thumbs-up' };
+            if(score >= 2) return { evalText: 'Sufficiente', colorClass: 'text-yellow-400', icon: 'fa-minus' };
+            return { evalText: 'Scarso', colorClass: 'text-red-500', icon: 'fa-thumbs-down' };
+        }
+
+        function renderOpponents() {
+            let html = ''; let missingSomething = false; let insights = "";
+            state.squadre.forEach(s => {
+                let roleCount = {}; s.roster.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
+                if(s.roster.length > 3 && !roleCount['Por'] && !roleCount['P']) { insights += `<span class="text-red-400">${s.nome}</span> cerca disperatamente un <b>Portiere</b>.<br>`; missingSomething = true; }
+                if(s.roster.length > 5 && (!roleCount['Pc'] && !roleCount['A'])) { insights += `<span class="text-yellow-400">${s.nome}</span> non ha ancora <b>Attaccanti</b>, preparati a rilanciare.<br>`; missingSomething = true; }
+                
+                let spesa = s.roster.reduce((sum, p) => sum + p.costoAcquisto, 0); let budgetResiduo = state.budgetIniziale - spesa; let evaluation = evaluateTeam(s.roster);
+                let grouped = s.roster.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {});
+                const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+                let rosterHtml = ''; order.forEach(role => { if(grouped[role]) { rosterHtml += `<div class="text-[10px] font-bold text-slate-400 mt-2">${role}</div>`; rosterHtml += grouped[role].map(p => createPlayerCardHTML(p, 'opponent')).join(''); } });
+                if(s.roster.length === 0) rosterHtml = '<div class="text-sm text-slate-500 py-2">Rosa vuota</div>';
+
+                html += `
+                    <div class="bg-brand-card border border-slate-700 rounded-xl overflow-hidden shadow-lg">
+                        <div class="p-4 cursor-pointer hover:bg-slate-800 transition-colors" onclick="toggleAccordion('acc-${s.id}')">
+                            <div class="flex justify-between items-center mb-2"><h3 class="font-display text-xl text-white">${s.nome}</h3><div class="${evaluation.colorClass} font-bold flex items-center gap-1 text-sm"><i class="fa-solid ${evaluation.icon}"></i> ${evaluation.evalText}</div></div>
+                            <div class="flex gap-4 text-sm mt-3"><div><div class="text-[10px] uppercase text-slate-400">Budget</div><div class="font-bold text-brand-green">${budgetResiduo}</div></div><div><div class="text-[10px] uppercase text-slate-400">Giocatori</div><div class="font-bold text-white">${s.roster.length}</div></div></div>
+                        </div>
+                        <div id="acc-${s.id}" class="accordion-content bg-slate-900 border-t border-slate-800 px-4 pb-4">${rosterHtml}<button onclick="removeOpponent(${s.id})" class="mt-4 text-xs text-red-500 hover:text-red-400 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Elimina Squadra</button></div>
+                    </div>`;
+            });
+            if(!missingSomething && state.squadre.length > 0 && state.squadre[0].roster.length > 0) insights = "Le rose sono bilanciate. Punta sulla qualità (IA) senza strapagare.";
+            else if (state.squadre.length === 0) insights = "Aggiungi le squadre avversarie per l'analisi IA.";
+            document.getElementById('ai-insights-text').innerHTML = insights || "Nessun dato sufficiente per l'analisi.";
+            document.getElementById('opponents-container').innerHTML = html || '<div class="text-center text-slate-500 py-10">Nessuna squadra aggiunta.</div>';
+        }
+
+        // --- 7. PITCH & FORMAZIONI ---
+        function renderPitch() {
+            const selForm = document.getElementById('formation-select').value; state.pitchLayout = selForm; if(!state.pitchPlayers[selForm]) state.pitchPlayers[selForm] = {};
+            const layout = currentMode === 'mantra' ? formationsMantra[selForm] : formationsStandard[selForm]; const container = document.getElementById('pitch-slots-container'); container.innerHTML = '';
+            let totIA = 0, totProb = 0, countFilled = 0; const accentText = currentMode === 'mantra' ? 'text-blue-400' : 'text-orange-400';
+            layout.forEach((pos, index) => {
+                const pitchData = state.pitchPlayers[selForm][index]; const p = pitchData ? state.miaSquadra.find(x => x.id == pitchData.id) : null; const roleClass = roleColors[pos.role.split('|')[0]];
+                if(p) { const malusBadge = pitchData.malus < 0 ? `<div class="malus-badge">${pitchData.malus}</div>` : ''; container.innerHTML += `<div class="player-slot filled ${roleClass}" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')">${malusBadge}<div class="slot-name">${p.nome}</div></div>`; totIA += (p.ia + (pitchData.malus * 10)); totProb += p.prob; countFilled++; }
+                else container.innerHTML += `<div class="player-slot" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')"><div class="text-[9px] text-slate-500 mb-0.5">${pos.label || pos.role}</div><i class="fa-solid fa-plus ${accentText}"></i></div>`;
+            });
+            document.getElementById('pitch-ia-total').innerText = totIA; document.getElementById('pitch-prob-avg').innerText = countFilled > 0 ? Math.round(totProb/countFilled) + '%' : '0%';
+        }
+        function openPitchSelector(slotIndex, reqRolesStr) {
+            currentPitchSlot = slotIndex; document.getElementById('pitch-target-role').innerText = reqRolesStr.replace(/\|/g, ' o ');
+            const reqRoles = reqRolesStr.split('|'); let schieratiIds = Object.values(state.pitchPlayers[state.pitchLayout] || {}).map(x => x.id); let eligible = [];
+            state.miaSquadra.forEach(p => {
+                if(schieratiIds.includes(p.id) && state.pitchPlayers[state.pitchLayout][currentPitchSlot]?.id != p.id) return;
+                let isPerfect = p.ruoli.some(r => reqRoles.includes(r)); let isAdapted = false;
+                if(!isPerfect && currentMode === 'mantra') p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true; });
+                if(isPerfect) eligible.push({p: p, malus: 0}); else if(isAdapted) eligible.push({p: p, malus: -1});
+            });
+            eligible.sort((a, b) => (b.p.ia + (b.malus*20)) - (a.p.ia + (a.malus*20))); 
+            let html = eligible.length ? '' : '<div class="text-slate-500 text-center py-10 bg-slate-800 rounded-xl">Nessun giocatore compatibile.</div>'; eligible.forEach(item => html += createPlayerCardHTML(item.p, 'pitch', item.malus));
+            document.getElementById('pitch-eligible-list').innerHTML = html; document.getElementById('pitch-select-modal').classList.remove('hidden');
+        }
+        function assignToPitch(id, malus) { state.pitchPlayers[state.pitchLayout][currentPitchSlot] = {id, malus}; salvaDati(); closePitchSelectModal(); renderPitch(); }
+        function removePlayerFromPitch() { delete state.pitchPlayers[state.pitchLayout][currentPitchSlot]; salvaDati(); closePitchSelectModal(); renderPitch(); }
+        function closePitchSelectModal() { document.getElementById('pitch-select-modal').classList.add('hidden'); }
+        function autoSuggestFormation() {
+            const layout = currentMode === 'mantra' ? formationsMantra[state.pitchLayout] : formationsStandard[state.pitchLayout]; let newPitchState = {}; let availablePlayers = [...state.miaSquadra];
+            layout.forEach((pos, index) => {
+                const reqRoles = pos.role.split('|'); let bestMatch = null, bestScore = -999, bestIndex = -1;
+                availablePlayers.forEach((p, i) => {
+                    let isPerfect = p.ruoli.some(r => reqRoles.includes(r)); let isAdapted = false;
+                    if(!isPerfect && currentMode === 'mantra') p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true; });
+                    if(isPerfect || isAdapted) { let malus = isPerfect ? 0 : -1; let score = (p.ia * (p.prob/100)) + (malus * 20); if(score > bestScore) { bestScore = score; bestMatch = {id: p.id, malus}; bestIndex = i; } }
+                });
+                if(bestMatch) { newPitchState[index] = bestMatch; availablePlayers.splice(bestIndex, 1); }
+            }); state.pitchPlayers[state.pitchLayout] = newPitchState; salvaDati(); renderPitch();
+        }
+
+        // --- 8. MODALS (ACQUISTO E DETTAGLIO) ---
         function openPlayerModal(id) {
             currentPlayerId = id; const p = state.db.find(x => x.id == id); if(!p) return;
             let titB = p.tit === 100 ? `<span class="bg-brand-green text-white text-[10px] px-2 py-0.5 rounded ml-2">Titolare</span>` : p.tit === 50 ? `<span class="bg-yellow-500 text-black text-[10px] px-2 py-0.5 rounded ml-2">Ballottaggio</span>` : '';
@@ -342,7 +506,6 @@
             document.getElementById('modal-team').innerText = p.sq;
             document.getElementById('modal-roles').innerHTML = getRoleBadgesHTML(p.ruoli);
             
-            // Popolamento Statistiche Restaurato
             currentSuggestedPrice = calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi);
             document.getElementById('modal-prezzo-consigliato').innerText = currentSuggestedPrice; 
             document.getElementById('modal-ia').innerText = p.ia; 
@@ -350,7 +513,6 @@
             document.getElementById('modal-qti').innerText = p.qti;
             document.getElementById('modal-fvm').innerText = p.fvm;
             document.getElementById('modal-prob').innerText = p.prob > 0 ? p.prob + '%' : 'N/D';
-            
             document.getElementById('modal-pv').innerText = p.pv || 0;
             document.getElementById('modal-mv').innerText = p.mv || 0;
             document.getElementById('modal-fm').innerText = p.fm || 0;
@@ -359,8 +521,6 @@
             document.getElementById('modal-ass').innerText = p.ass || 0;
             document.getElementById('modal-amm').innerText = p.amm || 0;
             document.getElementById('modal-esp-au').innerText = (parseInt(p.esp) || 0) + (parseInt(p.au) || 0);
-
-            // Popolamento Immagine
             document.getElementById('modal-img-container').innerHTML = `<img src="${getAvatarUrl(p.nome)}" class="w-full h-full object-cover">`;
 
             let gkHtml = '';
@@ -374,28 +534,53 @@
             const owner = getTeamOwner(p.id); const btnBuy = document.getElementById('btn-buy'); const btnAssign = document.getElementById('btn-assign-other'); const btnRelease = document.getElementById('btn-release');
             if(owner) { btnBuy.classList.add('hidden'); btnAssign.classList.add('hidden'); btnRelease.classList.remove('hidden'); btnRelease.innerHTML = `<i class="fa-solid fa-trash-can"></i> Svincola da ${owner.name}`; } 
             else { btnBuy.classList.remove('hidden'); btnAssign.classList.remove('hidden'); btnRelease.classList.add('hidden'); }
+            
+            const btnFav = document.getElementById('btn-fav'); if(state.preferitiIds.includes(p.id)) { btnFav.classList.replace('text-yellow-500', 'text-brand-dark'); btnFav.classList.add('bg-yellow-500'); } else { btnFav.classList.replace('text-brand-dark', 'text-yellow-500'); btnFav.classList.remove('bg-yellow-500'); }
             document.getElementById('player-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('player-modal-content').classList.remove('translate-y-full'); }, 10);
         }
 
-        function openPurchaseModal(target) { purchaseTarget = target; document.getElementById('purchase-team-select-container').classList[target === 'other' ? 'remove' : 'add']('hidden'); document.getElementById('purchase-team-select').innerHTML = state.squadre.map(s => `<option value="${s.id}">${s.nome}</option>`).join(''); document.getElementById('purchase-suggested').innerText = currentSuggestedPrice; document.getElementById('purchase-modal').classList.remove('hidden'); }
+        function toggleFavFromModal() { if(!currentPlayerId) return; const idx = state.preferitiIds.indexOf(currentPlayerId); if(idx > -1) state.preferitiIds.splice(idx, 1); else state.preferitiIds.push(currentPlayerId); salvaDati(); openPlayerModal(currentPlayerId); renderPlayerList(); }
+        function openPurchaseModal(target) { purchaseTarget = target; document.getElementById('purchase-team-select-container').classList[target === 'other' ? 'remove' : 'add']('hidden'); document.getElementById('purchase-team-select').innerHTML = state.squadre.map(s => `<option value="${s.id}">${s.nome}</option>`).join(''); document.getElementById('purchase-suggested').innerText = currentSuggestedPrice; document.getElementById('purchase-price').value = ''; document.getElementById('purchase-modal').classList.remove('hidden'); }
         function closePurchaseModal() { document.getElementById('purchase-modal').classList.add('hidden'); }
         function closePlayerModal() { document.getElementById('player-modal-content').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('player-modal').classList.add('hidden'); }, 300); }
+        
         function confirmPurchase() {
             const price = parseInt(document.getElementById('purchase-price').value); const p = state.db.find(x => x.id == currentPlayerId);
-            if(purchaseTarget === 'me') { state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price; } 
-            else { const t = state.squadre.find(s => s.id == document.getElementById('purchase-team-select').value); t.roster.push({...p, costoAcquisto: price}); }
-            salvaDati(); closePurchaseModal(); closePlayerModal(); renderPlayerList();
+            if(isNaN(price) || price < 1) return alert("Prezzo non valido!");
+            if(purchaseTarget === 'me') { 
+                if(state.budgetIniziale - state.creditiSpesi < price) return alert("Budget insufficiente!");
+                state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price; 
+            } 
+            else { 
+                const t = state.squadre.find(s => s.id == document.getElementById('purchase-team-select').value); 
+                if(!t) return alert("Seleziona una squadra!");
+                t.roster.push({...p, costoAcquisto: price}); 
+            }
+            salvaDati(); closePurchaseModal(); closePlayerModal(); updateBudgetUI(); renderActiveView();
         }
+        
         function releasePlayer() {
             const myIdx = state.miaSquadra.findIndex(x => x.id == currentPlayerId);
             if(myIdx > -1) { state.creditiSpesi -= state.miaSquadra[myIdx].costoAcquisto; state.miaSquadra.splice(myIdx, 1); } 
             else { state.squadre.forEach(s => { const oIdx = s.roster.findIndex(x => x.id == currentPlayerId); if(oIdx > -1) s.roster.splice(oIdx, 1); }); }
-            salvaDati(); closePlayerModal(); renderPlayerList();
+            salvaDati(); closePlayerModal(); updateBudgetUI(); renderActiveView();
         }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); }
-        function switchView(v) { document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden')); document.getElementById(`view-${v}`).classList.remove('hidden'); if(v==='list') renderPlayerList(); }
 
-        // --- MODULO SANDBOX API ESTERNE (DOPPIA API REALE) ---
+        // --- 9. NAVIGAZIONE ---
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); }
+        function switchView(v) { 
+            document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden')); document.getElementById(`view-${v}`).classList.remove('hidden'); 
+            document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('text-blue-500', 'text-orange-500', 'bg-slate-800'); if(!btn.classList.contains('text-slate-400')) btn.classList.add('text-slate-400'); });
+            const activeBtn = document.querySelector(`.nav-btn[data-target="${v}"]`);
+            if(activeBtn) { activeBtn.classList.add(currentMode === 'mantra' ? 'text-blue-500' : 'text-orange-500', 'bg-slate-800'); activeBtn.classList.remove('text-slate-400'); }
+            renderActiveView(v);
+        }
+        function renderActiveView(v = null) {
+            const active = v || document.querySelector('.view-section:not(.hidden)').id.replace('view-', '');
+            if(active==='list') renderPlayerList(); if(active==='favs') renderFavs(); if(active==='team') renderTeam(); if(active==='opponents') renderOpponents(); if(active==='pitch') renderPitch();
+        }
+
+        // --- 10. MODULO SANDBOX API ESTERNE (DOPPIA API CON CORS PROXY) ---
         async function fetchExternalData() {
             const banner = document.getElementById('api-status-banner');
             const container = document.getElementById('api-results-container');
@@ -404,69 +589,80 @@
             container.innerHTML = '';
             let finalHtml = '';
 
-            // --- API 1: API-FOOTBALL (Infortuni e Squalifiche) ---
+            // --- API 1: API-FOOTBALL ---
             try {
-                const response1 = await fetch("https://v3.football.api-sports.io/injuries?league=135&season=2024", {
-                    "method": "GET",
-                    "headers": {
-                        "x-rapidapi-host": "v3.football.api-sports.io",
-                        "x-rapidapi-key": "INCOLLA_QUI_LA_CHIAVE_API_FOOTBALL" // <-- TUA CHIAVE 1
+                let apiKey1 = localStorage.getItem('footballApiKey');
+                if (!apiKey1) {
+                    apiKey1 = prompt("API 1 (API-Football)\nInserisci la tua API Key gratuita:");
+                    if (apiKey1) localStorage.setItem('footballApiKey', apiKey1);
+                }
+
+                if(apiKey1) {
+                    const response1 = await fetch("https://v3.football.api-sports.io/injuries?league=135&season=2024", {
+                        "method": "GET",
+                        "headers": { "x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": apiKey1 }
+                    });
+                    
+                    if (!response1.ok) throw new Error(`API 1 Error: ${response1.status}`);
+                    const data1 = await response1.json();
+                    
+                    if(data1.errors && Object.keys(data1.errors).length > 0) {
+                        console.log("Errore API 1:", data1.errors);
+                        localStorage.removeItem('footballApiKey'); // Reset chiave errata
+                    } else {
+                        const infortuni = data1.response ? data1.response.slice(0, 10) : []; 
+                        infortuni.forEach((item) => {
+                            const matchLocale = state.db.find(p => p.nome.toLowerCase().includes(item.player.name.toLowerCase()));
+                            const tagMatch = matchLocale ? `<span class="bg-brand-green text-white text-[9px] px-1 rounded ml-2">Nel Listone</span>` : '';
+                            finalHtml += `
+                            <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-red-500 mb-2">
+                                <div class="text-xs text-red-400 font-bold uppercase mb-1"><i class="fa-solid fa-truck-medical"></i> Infortunio/Squalifica (API 1)</div>
+                                <div class="text-sm text-white font-bold flex items-center">${item.player.name} ${tagMatch}</div>
+                                <div class="text-xs text-slate-300 mt-1"><b>Squadra:</b> ${item.team.name} | <b>Motivo:</b> ${item.fixture.reason || "Assente"}</div>
+                            </div>`;
+                        });
                     }
-                });
-                
-                if (!response1.ok) throw new Error(`API 1 Error: ${response1.status}`);
-                const data1 = await response1.json();
-                
-                if(data1.errors && Object.keys(data1.errors).length > 0) {
-                    console.log("Errore API 1:", data1.errors);
-                } else {
-                    const infortuni = data1.response ? data1.response.slice(0, 10) : []; 
-                    infortuni.forEach((item) => {
-                        const matchLocale = state.db.find(p => p.nome.toLowerCase().includes(item.player.name.toLowerCase()));
-                        const tagMatch = matchLocale ? `<span class="bg-brand-green text-white text-[9px] px-1 rounded ml-2">Nel Listone</span>` : '';
+                }
+            } catch (error) {
+                console.error("Scout API 1 Fallita:", error);
+                finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Infortuni (API 1): Dati non disponibili o chiave errata.</div>`;
+            }
+
+            // --- API 2: FOOTBALL-DATA.ORG (CON CORS PROXY DI SICUREZZA) ---
+            try {
+                let apiKey2 = localStorage.getItem('footballDataKey');
+                if (!apiKey2) {
+                    apiKey2 = prompt("API 2 (Football-Data.org)\nInserisci il tuo X-Auth-Token:");
+                    if (apiKey2) localStorage.setItem('footballDataKey', apiKey2);
+                }
+
+                if(apiKey2) {
+                    // Uso di un proxy per evitare blocchi CORS sui siti gratuiti
+                    const targetUrl = encodeURIComponent("https://api.football-data.org/v4/competitions/SA/standings");
+                    const response2 = await fetch("https://api.allorigins.win/raw?url=" + targetUrl, {
+                        "method": "GET",
+                        "headers": { "X-Auth-Token": apiKey2 }
+                    });
+                    
+                    if (!response2.ok) throw new Error(`API 2 Error: ${response2.status}`);
+                    const data2 = await response2.json();
+                    
+                    const classifica = data2.standings ? data2.standings[0].table.slice(0, 5) : [];
+                    classifica.forEach((team) => {
                         finalHtml += `
-                        <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-red-500 mb-2">
-                            <div class="text-xs text-red-400 font-bold uppercase mb-1"><i class="fa-solid fa-truck-medical"></i> API-Football (Infortuni)</div>
-                            <div class="text-sm text-white font-bold flex items-center">${item.player.name} ${tagMatch}</div>
-                            <div class="text-xs text-slate-300 mt-1"><b>Squadra:</b> ${item.team.name} | <b>Motivo:</b> ${item.fixture.reason || "Assente"}</div>
+                        <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-blue-500 mb-2">
+                            <div class="text-xs text-blue-400 font-bold uppercase mb-1"><i class="fa-solid fa-chart-line"></i> Top 5 Serie A (API 2)</div>
+                            <div class="text-sm text-white font-bold flex items-center">${team.position}. ${team.team.shortName}</div>
+                            <div class="text-xs text-slate-300 mt-1"><b>Punti:</b> ${team.points} | <b>Forma (Ultime 5):</b> ${team.form || "N/D"}</div>
                         </div>`;
                     });
                 }
             } catch (error) {
-                console.error("Scout API 1 Fallita:", error);
-                finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Infortuni (API 1): Dati non disponibili al momento.</div>`;
-            }
-
-            // --- API 2: FOOTBALL-DATA.ORG (Esempio: Classifica/Forma Squadre) ---
-            try {
-                // Esempio URL per la Serie A (SA)
-                const response2 = await fetch("https://api.football-data.org/v4/competitions/SA/standings", {
-                    "method": "GET",
-                    "headers": {
-                        "X-Auth-Token": "eeeb821ce9bc4d27a1269ee54b3f4e99" // <-- TUA CHIAVE 2
-                    }
-                });
-                
-                if (!response2.ok) throw new Error(`API 2 Error: ${response2.status}`);
-                const data2 = await response2.json();
-                
-                const classifica = data2.standings ? data2.standings[0].table.slice(0, 5) : [];
-                classifica.forEach((team) => {
-                    finalHtml += `
-                    <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-blue-500 mb-2">
-                        <div class="text-xs text-blue-400 font-bold uppercase mb-1"><i class="fa-solid fa-chart-line"></i> Football-Data (Top 5 Serie A)</div>
-                        <div class="text-sm text-white font-bold flex items-center">${team.position}. ${team.team.shortName}</div>
-                        <div class="text-xs text-slate-300 mt-1"><b>Punti:</b> ${team.points} | <b>Forma (Ultime 5):</b> ${team.form || "N/D"}</div>
-                    </div>`;
-                });
-                
-            } catch (error) {
                 console.error("Scout API 2 Fallita:", error);
-                finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Statistiche (API 2): Dati non disponibili al momento.</div>`;
+                finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Statistiche (API 2): Bloccata dal server o chiave errata.</div>`;
             }
 
-            // --- CHIUSURA ED ESPOSIZIONE DATI ---
-            if(finalHtml === '') finalHtml = '<div class="text-slate-500 text-center py-4">Nessun dato recuperato dalle API esterne.</div>';
+            if(finalHtml === '') finalHtml = '<div class="text-slate-500 text-center py-4">Nessun dato recuperato. Controlla di aver inserito le API Key.</div>';
             container.innerHTML = finalHtml;
             banner.innerHTML = `<div class="text-brand-green font-bold"><i class="fa-solid fa-check-circle"></i> Radar Scout Aggiornato</div>`;
         }
