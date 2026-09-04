@@ -223,6 +223,20 @@
         </div>
     </div>
 
+    <!-- MODAL: SELEZIONA PER CAMPO (RIPRISTINATA) -->
+    <div id="pitch-select-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-md hidden z-[60] flex flex-col p-4">
+        <div class="flex justify-between items-center mb-2 mt-4 bg-slate-900 p-4 rounded-xl border border-slate-700">
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Ruolo Richiesto</div>
+                <h3 class="font-display text-2xl text-white" id="pitch-target-role"></h3>
+            </div>
+            <button onclick="closePitchSelectModal()" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div id="pitch-eligible-list" class="flex flex-col gap-3 overflow-y-auto flex-1 pb-10 px-1 mt-2"></div>
+        <div class="mt-4 pb-6">
+            <button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2"><i class="fa-solid fa-user-minus"></i> Rimuovi dal campo</button>
+        </div>
+    </div>
     <script>
         // --- 1. STATO E CONFIGURAZIONI ---
         let defaultState = { 
@@ -250,8 +264,12 @@
         };
         const formationsStandard = { 
             '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ], 
+            '352': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
             '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ],
-            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ]
+            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
+            '451': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:50,y:15} ],
+            '532': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
+            '541': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:50,y:15} ]
         };
         const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
         const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
@@ -269,29 +287,28 @@
             return null;
         }
 
-        // --- 3. MOTORE ECONOMIA IA (CORRETTO) ---
+        // --- 3. MOTORE ECONOMIA IA (CORRETTO - BASATO SUL BUDGET RESIDUO) ---
         function calculateDynamicMaxBid(p, rosterSize, budgetResiduo) {
             const minRoster = currentMode === 'mantra' ? 25 : 28; 
             const slotsNeeded = Math.max(1, minRoster - rosterSize);
             
             // Il massimo assoluto che PUOI spendere senza rimanere a 0 per gli slot vuoti
             const maxBidAbs = budgetResiduo - (slotsNeeded - 1); 
-            if (maxBidAbs <= 1) return 1; // Se sei al limite, puoi offrire solo 1.
+            if (maxBidAbs <= 1) return 1;
 
             let maxFVM = Math.max(...state.db.map(g => g.fvm)); 
             if(maxFVM < 1) maxFVM = 100;
 
-            // Fanta-Economy Dinamica
+            // Fanta-Economy: Percentuali calcolate in base allo stato della rosa
             let topPlayerMaxPercent = 0.40; 
-            if (rosterSize >= 10) topPlayerMaxPercent = 0.20;
+            if (rosterSize >= 10) topPlayerMaxPercent = 0.25;
             if (rosterSize >= 16) topPlayerMaxPercent = 0.10;
             if (rosterSize >= 20) topPlayerMaxPercent = 0.05;
 
-            // Calcola sul budget iniziale per stabilire il "valore" del giocatore, ma lo incrocia col residuo
-            let maxTopPrice = state.budgetIniziale * topPlayerMaxPercent;
+            // IL SEGRETO È QUI: La percentuale si applica al BUDGET RESIDUO, non a quello iniziale!
+            let maxTopPrice = budgetResiduo * topPlayerMaxPercent;
             let baseSuggest = Math.round((p.fvm / maxFVM) * maxTopPrice);
 
-            // Garantisce che il prezzo suggerito NON superi MAI il massimo che puoi fisicamente spendere
             return Math.min(Math.max(1, baseSuggest), maxBidAbs);
         }
 
@@ -637,7 +654,6 @@
                 }
 
                 if(apiKey2) {
-                    // Uso di un proxy per evitare blocchi CORS sui siti gratuiti
                     const targetUrl = encodeURIComponent("https://api.football-data.org/v4/competitions/SA/standings");
                     const response2 = await fetch("https://api.allorigins.win/raw?url=" + targetUrl, {
                         "method": "GET",
