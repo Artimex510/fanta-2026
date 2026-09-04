@@ -39,7 +39,6 @@
     </style>
 </head>
 <body class="bg-brand-dark text-slate-100 h-screen w-screen overflow-hidden flex flex-col">
-    <!-- SPLASH SCREEN -->
     <div id="splash" class="fixed inset-0 z-[100] bg-brand-dark flex flex-col items-center justify-center">
         <div class="absolute bottom-20 text-center w-full">
             <h1 class="text-4xl font-display text-white mb-2 tracking-wider">FANTA PRO</h1>
@@ -48,9 +47,7 @@
         </div>
     </div>
 
-    <!-- MAIN APP CONTAINER -->
     <div id="app" class="hidden flex-col h-full w-full relative">
-        <!-- HEADER -->
         <header id="main-header" class="bg-brand-card shadow-md p-4 justify-between items-center z-20 hidden">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="text-2xl text-slate-300 hover:text-white"><i class="fa-solid fa-bars"></i></button>
@@ -62,7 +59,6 @@
             </div>
         </header>
 
-        <!-- SIDEBAR -->
         <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-brand-card shadow-2xl transform -translate-x-full transition-transform duration-300 z-50 flex flex-col">
             <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900">
                 <h2 class="font-display text-xl text-white">Menu</h2>
@@ -86,7 +82,6 @@
         </div>
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm"></div>
 
-        <!-- MAIN CONTENT AREA -->
         <main class="flex-1 overflow-y-auto pb-24 relative" id="main-content">
             <!-- HOME -->
             <div id="view-home" class="view-section flex flex-col items-center justify-center h-full p-6 bg-brand-dark relative">
@@ -97,7 +92,7 @@
                         <div class="bg-black/40 rounded-lg p-3 flex justify-between items-center"><span class="text-xs uppercase text-slate-400">Mio Budget</span><span class="font-bold text-xl text-brand-green"><span id="home-budget-mantra">0</span></span></div>
                     </div>
                     <div onclick="selezionaModalita('standard')" class="bg-gradient-to-br from-orange-900 to-slate-900 border-2 border-orange-500 rounded-2xl p-6 cursor-pointer transform hover:scale-105 transition-all shadow-xl relative overflow-hidden">
-                        <h2 class="font-display text-3xl text-white mb-1">STANDARD</h2><p class="text-orange-200 text-sm mb-4">Modalità Classica (P, D, C, A).</p>
+                        <h2 class="font-display text-3xl text-white mb-1">STANDARD</h2><p class="text-orange-200 text-sm mb-4">Modalità Classica (4P, 9D, 9C, 6A).</p>
                         <div class="bg-black/40 rounded-lg p-3 flex justify-between items-center"><span class="text-xs uppercase text-slate-400">Mio Budget</span><span class="font-bold text-xl text-brand-green"><span id="home-budget-standard">0</span></span></div>
                     </div>
                 </div>
@@ -120,8 +115,8 @@
 
             <!-- SQUADRA -->
             <div id="view-team" class="view-section hidden p-4">
-                <div class="flex justify-between items-end mb-4"><h2 class="font-display text-2xl text-brand-green flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> La Mia Rosa</h2><div class="text-right bg-slate-800 px-3 py-1 rounded border border-slate-700"><div class="text-[10px] text-slate-400 uppercase">Giocatori</div><div class="text-xl font-bold"><span id="team-count" class="text-white">0</span><span class="text-slate-500 text-sm">/25+</span></div></div></div>
-                <div class="bg-brand-card rounded-xl p-4 mb-5 border border-slate-700 shadow-lg"><div class="text-xs text-slate-400 mb-3 uppercase tracking-wider font-bold">Fattibilità Moduli</div><div id="formation-coverage" class="grid grid-cols-3 gap-2 text-center text-sm font-bold"></div></div>
+                <div class="flex justify-between items-end mb-4"><h2 class="font-display text-2xl text-brand-green flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> La Mia Rosa</h2><div class="text-right bg-slate-800 px-3 py-1 rounded border border-slate-700"><div class="text-[10px] text-slate-400 uppercase">Giocatori</div><div class="text-xl font-bold"><span id="team-count" class="text-white">0</span></div></div></div>
+                <div class="bg-brand-card rounded-xl p-4 mb-5 border border-slate-700 shadow-lg"><div class="text-xs text-slate-400 mb-3 uppercase tracking-wider font-bold">Copertura Moduli</div><div id="formation-coverage" class="grid grid-cols-3 gap-2 text-center text-sm font-bold"></div></div>
                 <div id="team-container" class="flex flex-col gap-3"></div>
             </div>
 
@@ -150,15 +145,12 @@
                         <i class="fa-solid fa-rotate-right"></i> Sincronizza
                     </button>
                 </div>
-                
                 <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center">
                     <p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni (Football-Data & API-Football) e scaricare le ultime news.</p>
                 </div>
-
                 <div id="api-results-container" class="flex flex-col gap-3 overflow-y-auto"></div>
             </div>
         </main>
-
         <!-- BOTTOM NAV -->
         <nav id="bottom-nav" class="bg-brand-dark/95 backdrop-blur-md border-t border-slate-800 justify-around p-2 pb-6 absolute bottom-0 w-full z-30 hidden">
             <button onclick="switchView('list')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 transition-colors" data-target="list"><i class="fa-solid fa-users text-xl"></i><span class="text-[10px] uppercase font-bold">Listone</span></button>
@@ -174,14 +166,14 @@
             <button onclick="closePlayerModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white z-50"><i class="fa-solid fa-chevron-down"></i></button>
             <div class="flex gap-4 items-center mb-4 mt-2">
                 <div class="w-20 h-20 bg-slate-800 rounded-2xl overflow-hidden border-2 border-slate-600 flex-shrink-0" id="modal-img-container"></div>
-                <div><h2 id="modal-name" class="font-display text-2xl font-bold text-white mb-1 flex items-center">Nome</h2><p id="modal-team" class="text-slate-400 font-bold uppercase mb-1">Sq</p><div id="modal-roles" class="flex gap-1 flex-wrap"></div></div>
+                <div><h2 id="modal-name" class="font-display text-2xl font-bold text-white mb-1 flex flex-col items-start gap-1">Nome</h2><p id="modal-team" class="text-slate-400 font-bold uppercase mb-1 mt-1">Sq</p><div id="modal-roles" class="flex gap-1 flex-wrap"></div></div>
             </div>
             
             <div id="modal-gk-crosses"></div>
 
             <div class="bg-slate-900 rounded-xl p-4 mb-4 border border-brand-accent/30 shadow-inner flex justify-between items-center">
-                <div><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Prezzo Max Consigliato (Dinamico)</div><div class="font-display text-3xl text-brand-green" id="modal-prezzo-consigliato">0</div></div>
-                <div class="text-right"><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Indice IA</div><div class="font-display text-3xl text-brand-accent" id="modal-ia">0</div></div>
+                <div><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Prezzo Max Consigliato (IA)</div><div class="font-display text-3xl text-brand-green" id="modal-prezzo-consigliato">0</div></div>
+                <div class="text-right"><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Indice FVM/IA</div><div class="font-display text-3xl text-brand-accent" id="modal-ia">0</div></div>
             </div>
             
             <div class="grid grid-cols-4 gap-2 mb-3 text-center border-b border-slate-700 pb-3">
@@ -205,7 +197,7 @@
 
             <div class="flex gap-3 mt-4 pb-4">
                 <button id="btn-fav" onclick="toggleFavFromModal()" class="w-16 py-3 rounded-xl font-bold border-2 border-yellow-500 text-yellow-500 flex justify-center items-center text-lg"><i class="fa-solid fa-star"></i></button>
-                <button id="btn-buy" onclick="openPurchaseModal('me')" class="flex-1 py-3 rounded-xl font-bold bg-brand-green text-white flex justify-center items-center gap-2 text-lg"><i class="fa-solid fa-gavel"></i> Prendi Tu</button>
+                <button id="btn-buy" onclick="openPurchaseModal('me')" class="flex-1 py-3 rounded-xl font-bold bg-brand-green text-white flex justify-center items-center gap-2 text-lg transition-colors"><i class="fa-solid fa-gavel"></i> Prendi Tu</button>
                 <button id="btn-assign-other" onclick="openPurchaseModal('other')" class="flex-1 py-3 rounded-xl font-bold bg-purple-600 text-white flex justify-center items-center gap-2"><i class="fa-solid fa-handshake"></i> Assegna</button>
                 <button id="btn-release" onclick="releasePlayer()" class="hidden flex-1 py-3 rounded-xl font-bold border-2 border-red-500 text-red-500 justify-center items-center gap-2"><i class="fa-solid fa-trash-can"></i> Svincola</button>
             </div>
@@ -226,32 +218,24 @@
     <!-- MODAL: SELEZIONA PER CAMPO (RIPRISTINATA) -->
     <div id="pitch-select-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-md hidden z-[60] flex flex-col p-4">
         <div class="flex justify-between items-center mb-2 mt-4 bg-slate-900 p-4 rounded-xl border border-slate-700">
-            <div>
-                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Ruolo Richiesto</div>
-                <h3 class="font-display text-2xl text-white" id="pitch-target-role"></h3>
-            </div>
+            <div><div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Ruolo Richiesto</div><h3 class="font-display text-2xl text-white" id="pitch-target-role"></h3></div>
             <button onclick="closePitchSelectModal()" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400"><i class="fa-solid fa-times"></i></button>
         </div>
         <div id="pitch-eligible-list" class="flex flex-col gap-3 overflow-y-auto flex-1 pb-10 px-1 mt-2"></div>
-        <div class="mt-4 pb-6">
-            <button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2"><i class="fa-solid fa-user-minus"></i> Rimuovi dal campo</button>
-        </div>
+        <div class="mt-4 pb-6"><button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2"><i class="fa-solid fa-user-minus"></i> Rimuovi dal campo</button></div>
     </div>
+
     <script>
         // --- 1. STATO E CONFIGURAZIONI ---
-        let defaultState = { 
-            mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, 
-            standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } 
-        };
+        let defaultState = { mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } };
         let appState = JSON.parse(localStorage.getItem('fantaProUniversal')) || defaultState;
         
-        // Retrocompatibilità
         if(!appState.mantra.squadre) appState.mantra.squadre = [];
         if(!appState.standard.squadre) appState.standard.squadre = [];
 
-        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0;
-        let assistantMode = false; let purchaseTarget = 'me';
-
+        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0; let assistantMode = false; let purchaseTarget = 'me';
+        
+        const standardLimits = { 'P': 4, 'D': 9, 'C': 9, 'A': 6 };
         const gkCrosses = { 'Inter': 'Milan', 'Milan': 'Inter', 'Juventus': 'Torino', 'Torino': 'Juventus', 'Roma': 'Lazio', 'Lazio': 'Roma', 'Empoli': 'Fiorentina', 'Fiorentina': 'Empoli', 'Genoa': 'Lecce', 'Lecce': 'Genoa', 'Parma': 'Bologna', 'Bologna': 'Parma', 'Napoli': 'Venezia', 'Venezia': 'Napoli', 'Verona': 'Udinese', 'Udinese': 'Verona', 'Atalanta': 'Como', 'Como': 'Atalanta', 'Monza': 'Cagliari', 'Cagliari': 'Monza' };
         
         const formationsMantra = { 
@@ -275,48 +259,35 @@
         const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
 
         // --- 2. UTILITY & AVATAR ---
-        function getAvatarUrl(nome) {
-            const encodedName = encodeURIComponent(nome.replace(/[^a-zA-Z ]/g, ""));
-            return `https://ui-avatars.com/api/?name=${encodedName}&background=0f172a&color=3b82f6&bold=true&rounded=true&size=128`;
-        }
+        function getAvatarUrl(nome) { const encodedName = encodeURIComponent(nome.replace(/[^a-zA-Z ]/g, "")); return `https://ui-avatars.com/api/?name=${encodedName}&background=0f172a&color=3b82f6&bold=true&rounded=true&size=128`; }
         function getRoleBadgesHTML(ruoliArray) { return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); }
+        function getTeamOwner(id) { if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'}; for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; } return null; }
 
-        function getTeamOwner(id) {
-            if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'};
-            for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; }
-            return null;
-        }
-
-        // --- 3. MOTORE ECONOMIA IA (CORRETTO - BASATO SUL BUDGET RESIDUO) ---
+        // --- 3. MOTORE ECONOMIA IA (CORRETTO FAIR VALUE RESIDUO) ---
         function calculateDynamicMaxBid(p, rosterSize, budgetResiduo) {
             const minRoster = currentMode === 'mantra' ? 25 : 28; 
             const slotsNeeded = Math.max(1, minRoster - rosterSize);
+            const creditiDiSicurezza = slotsNeeded - 1; // Devo tenere 1 cr per ogni giocatore mancante tranne 1
+            const budgetRealeSpendibile = budgetResiduo - creditiDiSicurezza; 
             
-            // Il massimo assoluto che PUOI spendere senza rimanere a 0 per gli slot vuoti
-            const maxBidAbs = budgetResiduo - (slotsNeeded - 1); 
-            if (maxBidAbs <= 1) return 1;
+            if (budgetRealeSpendibile <= 0) return 1;
 
             let maxFVM = Math.max(...state.db.map(g => g.fvm)); 
             if(maxFVM < 1) maxFVM = 100;
 
-            // Fanta-Economy: Percentuali calcolate in base allo stato della rosa
-            let topPlayerMaxPercent = 0.40; 
-            if (rosterSize >= 10) topPlayerMaxPercent = 0.25;
-            if (rosterSize >= 16) topPlayerMaxPercent = 0.10;
-            if (rosterSize >= 20) topPlayerMaxPercent = 0.05;
+            // L'IA applica la percentuale SUL BUDGET SPENDIBILE, non su quello di inizio anno.
+            let topPercent = 0.45; 
+            if (rosterSize >= 10) topPercent = 0.30;
+            if (rosterSize >= 18) topPercent = 0.15;
 
-            // IL SEGRETO È QUI: La percentuale si applica al BUDGET RESIDUO, non a quello iniziale!
-            let maxTopPrice = budgetResiduo * topPlayerMaxPercent;
-            let baseSuggest = Math.round((p.fvm / maxFVM) * maxTopPrice);
+            let valAssolutoMax = budgetRealeSpendibile * topPercent;
+            let finalPrice = Math.round((p.fvm / maxFVM) * valAssolutoMax);
 
-            return Math.min(Math.max(1, baseSuggest), maxBidAbs);
+            return Math.min(Math.max(1, finalPrice), budgetRealeSpendibile);
         }
 
-        // --- 4. INIZIALIZZAZIONE ---
-        async function initApp() { 
-            updateHomeBudgets(); 
-            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); 
-        }
+        // --- 4. INIZIALIZZAZIONE & DATI ---
+        async function initApp() { updateHomeBudgets(); setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); }
         function updateHomeBudgets() { document.getElementById('home-budget-mantra').innerText = appState.mantra.budgetIniziale - appState.mantra.creditiSpesi; document.getElementById('home-budget-standard').innerText = appState.standard.budgetIniziale - appState.standard.creditiSpesi; }
         
         function selezionaModalita(mode) {
@@ -333,13 +304,8 @@
         function updateBudgetUI() { document.getElementById('ui-budget').innerText = state.budgetIniziale - state.creditiSpesi; }
         function openBudgetModal() { const res = prompt(`Imposta Budget Iniziale:`, state.budgetIniziale); if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); switchView('list'); } }
 
-        function mapToStandardRole(ruoliArray) {
-            let res = new Set();
-            ruoliArray.forEach(r => { if(['Por','P'].includes(r)) res.add('P'); else if(['Dc','Dd','Ds','E','D'].includes(r)) res.add('D'); else if(['M','C','T'].includes(r)) res.add('C'); else if(['W','A','Pc'].includes(r)) res.add('A'); else res.add('C'); });
-            return Array.from(res);
-        }
+        function mapToStandardRole(ruoliArray) { let res = new Set(); ruoliArray.forEach(r => { if(['Por','P'].includes(r)) res.add('P'); else if(['Dc','Dd','Ds','E','D'].includes(r)) res.add('D'); else if(['M','C','T'].includes(r)) res.add('C'); else if(['W','A','Pc'].includes(r)) res.add('A'); else res.add('C'); }); return Array.from(res); }
 
-        // --- 5. GESTIONE FILE E DATI ---
         function importaJSON(event) {
             const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
             reader.onload = function(e) {
@@ -357,28 +323,11 @@
             }; reader.readAsText(file);
         }
 
-        function exportBackup() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState));
-            const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `fantapro_backup.json`); dlAnchorElem.click(); toggleSidebar();
-        }
+        function exportBackup() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `fantapro_backup.json`); dlAnchorElem.click(); toggleSidebar(); }
+        function importBackup(event) { const file = event.target.files[0]; if (!file) return; if(!confirm("Sovrascrivere TUTTI i dati attuali?")) return; const reader = new FileReader(); reader.onload = function(e) { try { const backupData = JSON.parse(e.target.result); if(backupData.mantra && backupData.standard) { appState = backupData; state = appState[currentMode]; salvaDati(); alert("Backup ripristinato!"); switchView('list'); toggleSidebar(); } else alert("File non valido."); } catch (err) { alert("Errore: " + err); } document.getElementById('backupInput').value = ''; }; reader.readAsText(file); }
+        function resetData() { if(confirm(`Vuoi azzerare la rosa in ${currentMode.toUpperCase()}?`)) { appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode])); appState[currentMode].db = state.db; state = appState[currentMode]; salvaDati(); switchView('list'); toggleSidebar(); } }
 
-        function importBackup(event) {
-            const file = event.target.files[0]; if (!file) return;
-            if(!confirm("Sovrascrivere TUTTI i dati attuali?")) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const backupData = JSON.parse(e.target.result);
-                    if(backupData.mantra && backupData.standard) { appState = backupData; state = appState[currentMode]; salvaDati(); alert("Backup ripristinato!"); switchView('list'); toggleSidebar(); } 
-                    else alert("File non valido.");
-                } catch (err) { alert("Errore: " + err); }
-                document.getElementById('backupInput').value = ''; 
-            }; reader.readAsText(file);
-        }
-
-        function resetData() { if(confirm(`Vuoi azzerare la rosa, gli avversari e i crediti in ${currentMode.toUpperCase()}?`)) { appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode])); appState[currentMode].db = state.db; state = appState[currentMode]; salvaDati(); switchView('list'); toggleSidebar(); } }
-
-        // --- 6. RENDER LISTE (LISTONE, PREFERITI, TEAM, AVVERSARI) ---
+        // --- 5. RENDER LISTE (TITOLARITÀ AGGIUNTA) ---
         function createPlayerCardHTML(p, actionType = 'list', malus = 0) {
             const owner = getTeamOwner(p.id); const isAcquistato = owner !== null; const opacity = (isAcquistato && actionType === 'list') ? 'opacity-40 grayscale' : '';
             let rightContent = '';
@@ -389,10 +338,12 @@
                 else if (assistantMode) rightContent = `<div class="text-lg font-bold text-brand-green"><i class="fa-solid fa-coins text-sm"></i> ${calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi)}</div>`;
                 else rightContent = `<div class="text-xl font-bold text-slate-300">${p.ia} <span class="text-[10px] block text-right">IA</span></div>`;
             }
-            let titBadge = p.tit === 100 ? '<div class="w-2 h-2 rounded-full bg-brand-green" title="Titolare"></div>' : p.tit === 50 ? '<div class="w-2 h-2 rounded-full bg-yellow-500" title="Ballottaggio"></div>' : p.tit === 10 ? '<div class="w-2 h-2 rounded-full bg-slate-500" title="Riserva"></div>' : '';
+            // Badge Titolarità Chiara
+            let titBadge = p.tit === 100 ? '<span class="bg-brand-green text-white text-[9px] px-1.5 py-0.5 rounded ml-2 shadow uppercase tracking-wide">Titolare</span>' : p.tit === 50 ? '<span class="bg-yellow-500 text-black text-[9px] px-1.5 py-0.5 rounded ml-2 shadow uppercase tracking-wide">Ballottaggio</span>' : '<span class="bg-slate-600 text-white text-[9px] px-1.5 py-0.5 rounded ml-2 shadow uppercase tracking-wide">Riserva</span>';
+            
             return `<div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" onclick="${actionType === 'pitch' ? `assignToPitch(${p.id}, ${malus})` : `openPlayerModal(${p.id})`}">
                     <div class="w-12 h-12 flex-shrink-0"><img src="${getAvatarUrl(p.nome)}" class="w-full h-full rounded-full border border-slate-600"></div>
-                    <div class="flex-1"><div class="font-bold text-lg flex items-center gap-2">${p.nome} ${titBadge} ${state.preferitiIds.includes(p.id) && actionType !== 'favs' && actionType !== 'pitch' ? '<i class="fa-solid fa-star text-yellow-500 text-xs"></i>' : ''}</div><div class="text-[11px] text-slate-400 mt-1">${p.sq} | ${getRoleBadgesHTML(p.ruoli)}</div></div><div>${rightContent}</div></div>`;
+                    <div class="flex-1"><div class="font-bold text-lg flex items-center flex-wrap gap-1 leading-tight">${p.nome} ${titBadge} ${state.preferitiIds.includes(p.id) && actionType !== 'favs' && actionType !== 'pitch' ? '<i class="fa-solid fa-star text-yellow-500 text-xs"></i>' : ''}</div><div class="text-[11px] text-slate-400 mt-1">${p.sq} | ${getRoleBadgesHTML(p.ruoli)}</div></div><div>${rightContent}</div></div>`;
         }
 
         function toggleAssistant() { assistantMode = !assistantMode; renderPlayerList(); const btn = document.getElementById('btn-assistant'); if(assistantMode){ btn.classList.replace('bg-slate-800','bg-brand-accent'); btn.classList.replace('text-slate-300','text-white'); document.getElementById('sort-label').innerHTML=`Assistente <b class="text-yellow-400">Attivo</b>`;}else{btn.classList.replace('bg-brand-accent','bg-slate-800'); btn.classList.replace('text-white','text-slate-300'); document.getElementById('sort-label').innerHTML=`Ordinamento per <b class="text-white">IA</b>`;} }
@@ -413,10 +364,26 @@
             order.forEach(role => { if(grouped[role]) { html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role}</div>`; html += grouped[role].map(p => createPlayerCardHTML(p, 'favs')).join(''); } }); document.getElementById('favs-container').innerHTML = html;
         }
 
+        // --- 6. LIMITI ROSA STANDARD & TEAM ---
         function renderTeam() {
-            document.getElementById('team-count').innerText = state.miaSquadra.length; let html = state.miaSquadra.length ? '' : '<div class="text-slate-500 text-center py-10">Rosa vuota.</div>';
-            if(state.miaSquadra.length) { let grouped = state.miaSquadra.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {}); const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
-                order.forEach(role => { if(grouped[role]) { html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role} (${grouped[role].length})</div>`; html += grouped[role].map(p => createPlayerCardHTML(p, 'team')).join(''); } }); } document.getElementById('team-container').innerHTML = html; calcFormationCoverage();
+            let limitText = currentMode === 'standard' ? '/28' : '/25+';
+            document.getElementById('team-count').innerHTML = `${state.miaSquadra.length}<span class="text-slate-500 text-sm">${limitText}</span>`; 
+            let html = state.miaSquadra.length ? '' : '<div class="text-slate-500 text-center py-10">Rosa vuota.</div>';
+            
+            if(state.miaSquadra.length) { 
+                let grouped = state.miaSquadra.reduce((acc, p) => { let r = p.ruoli[0]; if(!acc[r]) acc[r] = []; acc[r].push(p); return acc; }, {}); 
+                const order = currentMode === 'mantra' ? ['Por','Dc','Dd','Ds','E','M','C','T','W','A','Pc'] : ['P','D','C','A'];
+                
+                order.forEach(role => { 
+                    if(grouped[role] || (currentMode === 'standard' && standardLimits[role])) { 
+                        let count = grouped[role] ? grouped[role].length : 0;
+                        let maxText = currentMode === 'standard' ? `/${standardLimits[role]}` : '';
+                        html += `<div class="text-xs font-bold text-slate-400 mt-3 mb-2 px-2">${role} (${count}${maxText})</div>`; 
+                        if(grouped[role]) html += grouped[role].map(p => createPlayerCardHTML(p, 'team')).join(''); 
+                    } 
+                }); 
+            } 
+            document.getElementById('team-container').innerHTML = html; calcFormationCoverage();
         }
 
         function calcFormationCoverage() {
@@ -427,13 +394,10 @@
             document.getElementById('formation-coverage').innerHTML = html;
         }
 
-        function addOpponent() {
-            const name = prompt("Inserisci nome squadra avversaria:");
-            if(name) { state.squadre.push({ id: Date.now(), nome: name, roster: [] }); salvaDati(); renderOpponents(); }
-        }
+        // --- AVVERSARI ---
+        function addOpponent() { const name = prompt("Inserisci nome squadra avversaria:"); if(name) { state.squadre.push({ id: Date.now(), nome: name, roster: [] }); salvaDati(); renderOpponents(); } }
         function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
         function removeOpponent(id) { if(confirm("Eliminare la squadra?")) { state.squadre = state.squadre.filter(s => s.id !== id); salvaDati(); renderOpponents(); } }
-
         function evaluateTeam(roster) {
             if(roster.length === 0) return { evalText: 'In Attesa', colorClass: 'text-slate-400', icon: 'fa-clock' };
             let avgIA = roster.reduce((sum, p) => sum + p.ia, 0) / roster.length;
@@ -445,7 +409,6 @@
             if(score >= 2) return { evalText: 'Sufficiente', colorClass: 'text-yellow-400', icon: 'fa-minus' };
             return { evalText: 'Scarso', colorClass: 'text-red-500', icon: 'fa-thumbs-down' };
         }
-
         function renderOpponents() {
             let html = ''; let missingSomething = false; let insights = "";
             state.squadre.forEach(s => {
@@ -515,10 +478,12 @@
             }); state.pitchPlayers[state.pitchLayout] = newPitchState; salvaDati(); renderPitch();
         }
 
-        // --- 8. MODALS (ACQUISTO E DETTAGLIO) ---
+        // --- 8. MODALS (ACQUISTO, LIMITI STANDARD) ---
         function openPlayerModal(id) {
             currentPlayerId = id; const p = state.db.find(x => x.id == id); if(!p) return;
-            let titB = p.tit === 100 ? `<span class="bg-brand-green text-white text-[10px] px-2 py-0.5 rounded ml-2">Titolare</span>` : p.tit === 50 ? `<span class="bg-yellow-500 text-black text-[10px] px-2 py-0.5 rounded ml-2">Ballottaggio</span>` : '';
+            
+            // Badge Titolarità Chiara
+            let titB = p.tit === 100 ? `<span class="bg-brand-green text-white text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Titolare</span>` : p.tit === 50 ? `<span class="bg-yellow-500 text-black text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Ballottaggio</span>` : `<span class="bg-slate-600 text-white text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Riserva</span>`;
             document.getElementById('modal-name').innerHTML = `${p.nome} ${titB}`; 
             document.getElementById('modal-team').innerText = p.sq;
             document.getElementById('modal-roles').innerHTML = getRoleBadgesHTML(p.ruoli);
@@ -530,6 +495,7 @@
             document.getElementById('modal-qti').innerText = p.qti;
             document.getElementById('modal-fvm').innerText = p.fvm;
             document.getElementById('modal-prob').innerText = p.prob > 0 ? p.prob + '%' : 'N/D';
+            
             document.getElementById('modal-pv').innerText = p.pv || 0;
             document.getElementById('modal-mv').innerText = p.mv || 0;
             document.getElementById('modal-fm').innerText = p.fm || 0;
@@ -548,9 +514,33 @@
                 }
             } document.getElementById('modal-gk-crosses').innerHTML = gkHtml;
 
-            const owner = getTeamOwner(p.id); const btnBuy = document.getElementById('btn-buy'); const btnAssign = document.getElementById('btn-assign-other'); const btnRelease = document.getElementById('btn-release');
-            if(owner) { btnBuy.classList.add('hidden'); btnAssign.classList.add('hidden'); btnRelease.classList.remove('hidden'); btnRelease.innerHTML = `<i class="fa-solid fa-trash-can"></i> Svincola da ${owner.name}`; } 
-            else { btnBuy.classList.remove('hidden'); btnAssign.classList.remove('hidden'); btnRelease.classList.add('hidden'); }
+            const owner = getTeamOwner(p.id); 
+            const btnBuy = document.getElementById('btn-buy'); 
+            const btnAssign = document.getElementById('btn-assign-other'); 
+            const btnRelease = document.getElementById('btn-release');
+            
+            // LOGICA LIMITI ROSA STANDARD
+            let isRoleFull = false;
+            if(currentMode === 'standard') {
+                const playerRole = p.ruoli[0]; // P, D, C, A
+                const currentCountInRole = state.miaSquadra.filter(x => x.ruoli.includes(playerRole)).length;
+                if(currentCountInRole >= standardLimits[playerRole]) isRoleFull = true;
+            }
+
+            if(owner) { 
+                btnBuy.classList.add('hidden'); btnAssign.classList.add('hidden'); btnRelease.classList.remove('hidden'); 
+                btnRelease.innerHTML = `<i class="fa-solid fa-trash-can"></i> Svincola da ${owner.name}`; 
+            } else if (isRoleFull) {
+                btnBuy.classList.remove('hidden'); btnAssign.classList.remove('hidden'); btnRelease.classList.add('hidden');
+                btnBuy.disabled = true;
+                btnBuy.innerHTML = `<i class="fa-solid fa-ban"></i> Limite ${p.ruoli[0]} Raggiunto`;
+                btnBuy.className = "flex-1 py-3 rounded-xl font-bold bg-red-600 text-white flex justify-center items-center gap-2 text-lg opacity-50 cursor-not-allowed";
+            } else { 
+                btnBuy.classList.remove('hidden'); btnAssign.classList.remove('hidden'); btnRelease.classList.add('hidden'); 
+                btnBuy.disabled = false;
+                btnBuy.innerHTML = `<i class="fa-solid fa-gavel"></i> Prendi Tu`;
+                btnBuy.className = "flex-1 py-3 rounded-xl font-bold bg-brand-green text-white flex justify-center items-center gap-2 text-lg hover:bg-emerald-500 transition-colors";
+            }
             
             const btnFav = document.getElementById('btn-fav'); if(state.preferitiIds.includes(p.id)) { btnFav.classList.replace('text-yellow-500', 'text-brand-dark'); btnFav.classList.add('bg-yellow-500'); } else { btnFav.classList.replace('text-brand-dark', 'text-yellow-500'); btnFav.classList.remove('bg-yellow-500'); }
             document.getElementById('player-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('player-modal-content').classList.remove('translate-y-full'); }, 10);
@@ -625,7 +615,7 @@
                     
                     if(data1.errors && Object.keys(data1.errors).length > 0) {
                         console.log("Errore API 1:", data1.errors);
-                        localStorage.removeItem('footballApiKey'); // Reset chiave errata
+                        localStorage.removeItem('footballApiKey'); 
                     } else {
                         const infortuni = data1.response ? data1.response.slice(0, 10) : []; 
                         infortuni.forEach((item) => {
@@ -645,7 +635,7 @@
                 finalHtml += `<div class="p-3 mb-2 bg-red-900/30 text-red-400 text-xs border border-red-800 rounded-xl">Infortuni (API 1): Dati non disponibili o chiave errata.</div>`;
             }
 
-            // --- API 2: FOOTBALL-DATA.ORG (CON CORS PROXY DI SICUREZZA) ---
+            // --- API 2: FOOTBALL-DATA.ORG ---
             try {
                 let apiKey2 = localStorage.getItem('footballDataKey');
                 if (!apiKey2) {
