@@ -47,8 +47,10 @@
             <i class="fa-solid fa-circle-notch fa-spin text-brand-accent text-3xl"></i>
         </div>
     </div>
+
     <!-- MAIN APP CONTAINER -->
     <div id="app" class="hidden flex-col h-full w-full relative">
+        <!-- HEADER -->
         <header id="main-header" class="bg-brand-card shadow-md p-4 justify-between items-center z-20 hidden">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="text-2xl text-slate-300 hover:text-white"><i class="fa-solid fa-bars"></i></button>
@@ -139,22 +141,23 @@
                 <div class="flex justify-between bg-brand-card p-3 rounded-lg border border-slate-700 mb-4 text-center shadow-lg"><div class="flex-1 border-r border-slate-700"><div class="text-[10px] text-slate-400 uppercase tracking-wide">Forza (IA)</div><div id="pitch-ia-total" class="font-display text-xl text-white">0</div></div><div class="flex-1"><div class="text-[10px] text-slate-400 uppercase tracking-wide">Probabilità</div><div id="pitch-prob-avg" class="font-display text-xl text-yellow-400">0%</div></div></div>
                 <div class="pitch-bg pitch-lines flex-1 w-full mx-auto relative rounded-xl shadow-2xl mb-4"><div class="penalty-area-top"></div><div class="penalty-area-bottom"></div><div id="pitch-slots-container"></div></div>
             </div>
+
             <!-- VIEW: SCOUT SERIE A (API Esterne) -->
             <div id="view-scout" class="view-section hidden p-4 h-full flex flex-col">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="font-display text-2xl text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Scout Live</h2>
-        <button onclick="fetchExternalData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2">
-            <i class="fa-solid fa-rotate-right"></i> Sincronizza
-        </button>
-    </div>
-    
-    <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center">
-        <p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni e scaricare le ultime news.</p>
-    </div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-display text-2xl text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Scout Live</h2>
+                    <button onclick="fetchExternalData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Sincronizza
+                    </button>
+                </div>
+                
+                <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center">
+                    <p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni (API-Football) e scaricare le ultime news.</p>
+                </div>
 
-    <div id="api-results-container" class="flex flex-col gap-3 overflow-y-auto"></div>
-   </div>
-</main>
+                <div id="api-results-container" class="flex flex-col gap-3 overflow-y-auto"></div>
+            </div>
+        </main>
 
         <!-- BOTTOM NAV -->
         <nav id="bottom-nav" class="bg-brand-dark/95 backdrop-blur-md border-t border-slate-800 justify-around p-2 pb-6 absolute bottom-0 w-full z-30 hidden">
@@ -180,12 +183,27 @@
                 <div><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Prezzo Max Consigliato (Dinamico)</div><div class="font-display text-3xl text-brand-green" id="modal-prezzo-consigliato">0</div></div>
                 <div class="text-right"><div class="text-[10px] text-slate-400 uppercase font-bold mb-1">Indice IA</div><div class="font-display text-3xl text-brand-accent" id="modal-ia">0</div></div>
             </div>
+            
+            <!-- STATISTICHE RESTAURATE -->
             <div class="grid grid-cols-4 gap-2 mb-3 text-center border-b border-slate-700 pb-3">
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtA</div><div class="font-bold text-white text-lg" id="modal-qta">-</div></div>
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold">QtI</div><div class="font-bold text-slate-300 text-lg" id="modal-qti">-</div></div>
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold text-brand-accent">FVM</div><div class="font-bold text-white text-lg" id="modal-fvm">-</div></div>
                 <div class="bg-slate-800 rounded p-2"><div class="text-[9px] text-slate-400 uppercase font-bold text-yellow-400">Prob</div><div class="font-bold text-white text-lg" id="modal-prob">80%</div></div>
             </div>
+            <div class="grid grid-cols-3 gap-2 mb-3 text-center border-b border-slate-700 pb-3">
+                <div><div class="text-[10px] text-slate-400 font-bold uppercase">PV (Pres)</div><div class="font-bold text-white text-xl" id="modal-pv">-</div></div>
+                <div><div class="text-[10px] text-slate-400 font-bold uppercase">Media Voto</div><div class="font-bold text-white text-xl" id="modal-mv">-</div></div>
+                <div><div class="text-[10px] text-slate-400 font-bold uppercase text-brand-accent">FantaMedia</div><div class="font-bold text-white text-xl" id="modal-fm">-</div></div>
+            </div>
+            <div class="grid grid-cols-5 gap-1 mb-auto text-center">
+                <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-brand-green font-bold mb-1">GF</div><div class="font-bold text-white" id="modal-gf">0</div></div>
+                <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-red-400 font-bold mb-1">GS</div><div class="font-bold text-white" id="modal-gs">0</div></div>
+                <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-brand-accent font-bold mb-1">ASS</div><div class="font-bold text-white" id="modal-ass">0</div></div>
+                <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-yellow-500 font-bold mb-1">AMM</div><div class="font-bold text-white" id="modal-amm">0</div></div>
+                <div class="bg-slate-800/50 rounded py-2"><div class="text-[10px] text-red-600 font-bold mb-1">ESP/AU</div><div class="font-bold text-white" id="modal-esp-au">0</div></div>
+            </div>
+
             <div class="flex gap-3 mt-4 pb-4">
                 <button id="btn-fav" onclick="toggleFavFromModal()" class="w-16 py-3 rounded-xl font-bold border-2 border-yellow-500 text-yellow-500 flex justify-center items-center text-lg"><i class="fa-solid fa-star"></i></button>
                 <button id="btn-buy" onclick="openPurchaseModal('me')" class="flex-1 py-3 rounded-xl font-bold bg-brand-green text-white flex justify-center items-center gap-2 text-lg"><i class="fa-solid fa-gavel"></i> Prendi Tu</button>
@@ -216,6 +234,15 @@
         const formationsStandard = { '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ], '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ] };
         const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
         
+        // FUNZIONE GENERAZIONE AVATAR RESTAURATA
+        function getAvatarUrl(nome) {
+            const encodedName = encodeURIComponent(nome.replace(/[^a-zA-Z ]/g, ""));
+            return `https://ui-avatars.com/api/?name=${encodedName}&background=0f172a&color=3b82f6&bold=true&rounded=true&size=128`;
+        }
+        function getRoleBadgesHTML(ruoliArray) { 
+            return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); 
+        }
+
         async function initApp() { updateHomeBudgets(); setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; document.getElementById('app').classList.remove('hidden'); document.getElementById('app').classList.add('flex'); }, 500); }, 500); }
         function updateHomeBudgets() { document.getElementById('home-budget-mantra').innerText = appState.mantra.budgetIniziale - appState.mantra.creditiSpesi; document.getElementById('home-budget-standard').innerText = appState.standard.budgetIniziale - appState.standard.creditiSpesi; }
         
@@ -249,7 +276,7 @@
                         let qta = parseInt(g.QtA || 1); let fvm = parseInt(g.FVM || qta || 1); let ia = Math.round((fvm / maxFVM) * 90) + 9; if(ia > 99) ia = 99;
                         let ruoliArray = ["C"]; if (g.R) ruoliArray = g.R.split(';'); else if (g.Ruolo) ruoliArray = [g.Ruolo]; 
                         if(currentMode === 'standard') ruoliArray = mapToStandardRole(ruoliArray);
-                        return { id: g.Id ? parseInt(g.Id) : (index + 1), nome: g.Nome || g.nome || "Sconosciuto", sq: g.Squadra || g.sq || "SVN", ruoli: ruoliArray, ia: ia, tit: parseInt(g.TIT || 0), prob: parseInt(g.PV || 80), qta: qta, qti: parseInt(g.QtI || qta), fvm: fvm, pv: parseInt(g.PV || 0), mv: parseFloat(g.MV || 0).toFixed(2), fm: parseFloat(g.FM || 0).toFixed(2) };
+                        return { id: g.Id ? parseInt(g.Id) : (index + 1), nome: g.Nome || g.nome || "Sconosciuto", sq: g.Squadra || g.sq || "SVN", ruoli: ruoliArray, ia: ia, tit: parseInt(g.TIT || 0), prob: parseInt(g.PV || 80), qta: qta, qti: parseInt(g.QtI || qta), fvm: fvm, pv: parseInt(g.PV || 0), mv: parseFloat(g.MV || 0).toFixed(2), fm: parseFloat(g.FM || 0).toFixed(2), gf: parseInt(g.GF || 0), gs: parseInt(g.GS || 0), ass: parseInt(g.ASS || 0), amm: parseInt(g.AMM || 0), esp: parseInt(g.ESP || 0), au: parseInt(g.AU || 0) };
                     });
                     salvaDati(); alert("Database aggiornato!"); renderPlayerList(); toggleSidebar();
                 } catch (err) { alert("Errore: " + err); }
@@ -257,15 +284,32 @@
         }
         function getTeamOwner(id) { if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'}; for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; } return null; }
         
+        // NUOVA LOGICA IA: ECONOMIA REALISTICA
         function calculateDynamicMaxBid(p, rosterSize, budgetResiduo) {
-            const minRoster = currentMode === 'mantra' ? 25 : 28; const slotsNeeded = Math.max(1, minRoster - rosterSize);
-            const maxBidAbs = budgetResiduo - (slotsNeeded - 1); if (maxBidAbs < 1) return 1;
-            let maxFVM = Math.max(...state.db.map(g => g.fvm)); if(maxFVM < 1) maxFVM = 100;
-            let allocationMultiplier = rosterSize < 16 ? 0.85 : 0.20; // Drastic drop after 16 players
-            let baseSuggest = Math.round((p.fvm / maxFVM) * (state.budgetIniziale * allocationMultiplier));
+            const minRoster = currentMode === 'mantra' ? 25 : 28; 
+            const slotsNeeded = Math.max(1, minRoster - rosterSize);
+            const maxBidAbs = budgetResiduo - (slotsNeeded - 1); // Crediti max garantendo 1cr per le riserve
+            if (maxBidAbs <= 1) return 1;
+
+            let maxFVM = Math.max(...state.db.map(g => g.fvm)); 
+            if(maxFVM < 1) maxFVM = 100;
+
+            // Fanta-Economy: Un top assoluto costa al massimo il 40% del budget iniziale (es. 240 su 600)
+            let topPlayerMaxPercent = 0.40; 
+            
+            // L'IA abbassa il tetto di spesa man mano che la rosa si riempie
+            if (rosterSize >= 10) topPlayerMaxPercent = 0.25;
+            if (rosterSize >= 16) topPlayerMaxPercent = 0.10;
+            if (rosterSize >= 20) topPlayerMaxPercent = 0.05;
+            if (rosterSize >= 24) topPlayerMaxPercent = 0.02;
+
+            let maxTopPrice = state.budgetIniziale * topPlayerMaxPercent;
+            let baseSuggest = Math.round((p.fvm / maxFVM) * maxTopPrice);
+
             return Math.min(Math.max(1, baseSuggest), maxBidAbs);
         }
 
+        // CARDS CON AVATAR RESTAURATO
         function createPlayerCardHTML(p, actionType = 'list') {
             const owner = getTeamOwner(p.id); const isAcquistato = owner !== null; const opacity = (isAcquistato && actionType === 'list') ? 'opacity-40 grayscale' : '';
             let rightContent = '';
@@ -275,9 +319,10 @@
                 else if (assistantMode) rightContent = `<div class="text-lg font-bold text-brand-green"><i class="fa-solid fa-coins text-sm"></i> ${calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi)}</div>`;
                 else rightContent = `<div class="text-xl font-bold text-slate-300">${p.ia} <span class="text-[10px] block">IA</span></div>`;
             }
-            let titBadge = p.tit === 100 ? '<div class="w-2 h-2 rounded-full bg-brand-green"></div>' : p.tit === 50 ? '<div class="w-2 h-2 rounded-full bg-yellow-500"></div>' : p.tit === 10 ? '<div class="w-2 h-2 rounded-full bg-slate-500"></div>' : '';
+            let titBadge = p.tit === 100 ? '<div class="w-2 h-2 rounded-full bg-brand-green" title="Titolare"></div>' : p.tit === 50 ? '<div class="w-2 h-2 rounded-full bg-yellow-500" title="Ballottaggio"></div>' : p.tit === 10 ? '<div class="w-2 h-2 rounded-full bg-slate-500" title="Riserva"></div>' : '';
             return `<div class="bg-brand-card rounded-xl p-3 flex items-center gap-4 shadow border border-slate-700/50 hover:bg-slate-800 cursor-pointer ${opacity}" onclick="openPlayerModal(${p.id})">
-                    <div class="flex-1"><div class="font-bold text-lg flex items-center gap-2">${p.nome} ${titBadge}</div><div class="text-[11px] text-slate-400 mt-1">${p.sq} | ${p.ruoli.join(', ')}</div></div><div>${rightContent}</div></div>`;
+                    <div class="w-12 h-12 flex-shrink-0"><img src="${getAvatarUrl(p.nome)}" class="w-full h-full rounded-full border border-slate-600"></div>
+                    <div class="flex-1"><div class="font-bold text-lg flex items-center gap-2">${p.nome} ${titBadge}</div><div class="text-[11px] text-slate-400 mt-1">${p.sq} | ${getRoleBadgesHTML(p.ruoli)}</div></div><div>${rightContent}</div></div>`;
         }
 
         function toggleAssistant() { assistantMode = !assistantMode; renderPlayerList(); }
@@ -293,15 +338,36 @@
         function openPlayerModal(id) {
             currentPlayerId = id; const p = state.db.find(x => x.id == id); if(!p) return;
             let titB = p.tit === 100 ? `<span class="bg-brand-green text-white text-[10px] px-2 py-0.5 rounded ml-2">Titolare</span>` : p.tit === 50 ? `<span class="bg-yellow-500 text-black text-[10px] px-2 py-0.5 rounded ml-2">Ballottaggio</span>` : '';
-            document.getElementById('modal-name').innerHTML = `${p.nome} ${titB}`; document.getElementById('modal-team').innerText = p.sq;
-            currentSuggestedPrice = calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi);
-            document.getElementById('modal-prezzo-consigliato').innerText = currentSuggestedPrice; document.getElementById('modal-ia').innerText = p.ia; document.getElementById('modal-qta').innerText = p.qta;
+            document.getElementById('modal-name').innerHTML = `${p.nome} ${titB}`; 
+            document.getElementById('modal-team').innerText = p.sq;
+            document.getElementById('modal-roles').innerHTML = getRoleBadgesHTML(p.ruoli);
             
+            // Popolamento Statistiche Restaurato
+            currentSuggestedPrice = calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi);
+            document.getElementById('modal-prezzo-consigliato').innerText = currentSuggestedPrice; 
+            document.getElementById('modal-ia').innerText = p.ia; 
+            document.getElementById('modal-qta').innerText = p.qta;
+            document.getElementById('modal-qti').innerText = p.qti;
+            document.getElementById('modal-fvm').innerText = p.fvm;
+            document.getElementById('modal-prob').innerText = p.prob > 0 ? p.prob + '%' : 'N/D';
+            
+            document.getElementById('modal-pv').innerText = p.pv || 0;
+            document.getElementById('modal-mv').innerText = p.mv || 0;
+            document.getElementById('modal-fm').innerText = p.fm || 0;
+            document.getElementById('modal-gf').innerText = p.gf || 0;
+            document.getElementById('modal-gs').innerText = p.gs || 0;
+            document.getElementById('modal-ass').innerText = p.ass || 0;
+            document.getElementById('modal-amm').innerText = p.amm || 0;
+            document.getElementById('modal-esp-au').innerText = (parseInt(p.esp) || 0) + (parseInt(p.au) || 0);
+
+            // Popolamento Immagine
+            document.getElementById('modal-img-container').innerHTML = `<img src="${getAvatarUrl(p.nome)}" class="w-full h-full object-cover">`;
+
             let gkHtml = '';
             if (p.ruoli.includes('Por') || p.ruoli.includes('P')) {
                 let pTeam = gkCrosses[p.sq]; if (pTeam) {
                     let pGKs = state.db.filter(g => g.sq === pTeam && (g.ruoli.includes('Por') || g.ruoli.includes('P'))).sort((a,b) => b.fvm - a.fvm).slice(0, 2);
-                    if(pGKs.length > 0) gkHtml = `<div class="bg-slate-800 rounded-lg p-2 mb-3 border border-emerald-500/30"><div class="text-[9px] text-emerald-400 uppercase font-bold mb-1"><i class="fa-solid fa-link"></i> Incroci Perfetti 100%</div>${pGKs.map(g => `<div class="text-xs text-white">${g.nome} (${g.sq}) - Costo IA: ${g.qta}</div>`).join('')}</div>`;
+                    if(pGKs.length > 0) gkHtml = `<div class="bg-slate-800 rounded-lg p-2 mb-3 border border-emerald-500/30"><div class="text-[9px] text-emerald-400 uppercase font-bold mb-1"><i class="fa-solid fa-link"></i> Incroci Perfetti 100%</div>${pGKs.map(g => `<div class="text-xs text-white">${g.nome} (${g.sq}) - IA: ${g.ia}</div>`).join('')}</div>`;
                 }
             } document.getElementById('modal-gk-crosses').innerHTML = gkHtml;
 
@@ -328,49 +394,61 @@
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); }
         function switchView(v) { document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden')); document.getElementById(`view-${v}`).classList.remove('hidden'); if(v==='list') renderPlayerList(); }
-        // --- MODULO SANDBOX API ESTERNE ---
-async function fetchExternalData() {
-    const banner = document.getElementById('api-status-banner');
-    const container = document.getElementById('api-results-container');
-    
-    banner.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-400 text-2xl mb-2"></i><p class="text-sm text-cyan-200">Connessione ai server esterni in corso...</p>`;
-    container.innerHTML = '';
 
-    try {
-        // Esempio: Chiamata a un'ipotetica API pubblica per le news infortuni/squalifiche
-        // Usiamo un costrutto try/catch "robusto". Se fallisce qui, esce subito senza toccare il resto.
-        
-        // Simulazione di una chiamata API (sostituirai questo URL con quello dell'API free che sceglierai)
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=3'); 
-        
-        if (!response.ok) throw new Error(`Errore Server: ${response.status}`);
-        
-        const data = await response.json();
-        
-        banner.innerHTML = `<div class="text-brand-green font-bold"><i class="fa-solid fa-check-circle"></i> Sincronizzazione Completata</div>`;
-        
-        // Incrocio Dati: cerchiamo di abbinare i risultati dell'API con i giocatori del nostro JSON
-        let html = '';
-        data.forEach((item, index) => {
-            // Qui ci sarà la logica di abbinamento (es: if(state.db.find(p => p.nome.includes(item.player_name))))
-            html += `
-            <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-cyan-500">
-                <div class="text-xs text-cyan-400 font-bold uppercase mb-1">News dal Campo</div>
-                <div class="text-sm text-white font-bold">Aggiornamento Statistico ${index + 1}</div>
-                <div class="text-xs text-slate-400 mt-1">Dato importato dall'API esterna. Nessun crash rilevato.</div>
-            </div>`;
-        });
-        container.innerHTML = html;
+        // --- MODULO SANDBOX API ESTERNE (REALE) ---
+        async function fetchExternalData() {
+            const banner = document.getElementById('api-status-banner');
+            const container = document.getElementById('api-results-container');
+            
+            banner.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-400 text-2xl mb-2"></i><p class="text-sm text-cyan-200">Connessione ad API-Football in corso...</p>`;
+            container.innerHTML = '';
 
-    } catch (error) {
-        // SANDBOXING IN AZIONE: Se l'API muore, l'errore viene intrappolato qui.
-        console.error("Scout API Error:", error);
-        banner.innerHTML = `
-            <div class="text-red-400 font-bold mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Connessione Fallita</div>
-            <p class="text-xs text-slate-500">I server esterni sono offline o irraggiungibili (Errore 404/CORS).<br>L'app principale e l'Asta continuano a funzionare normalmente con i dati locali.</p>
-        `;
-    }
-}
+            try {
+                // CHIAMATA REALE - Sostituisci la Key con la tua
+                const response = await fetch("https://v3.football.api-sports.io/injuries?league=135&season=2024", {
+                    "method": "GET",
+                    "headers": {
+                        "x-rapidapi-host": "v3.football.api-sports.io",
+                        "x-rapidapi-key": "INCOLLA_QUI_LA_TUA_API_KEY_GRATUITA" // <--- Inserisci qui la tua chiave gratuita
+                    }
+                });
+                
+                if (!response.ok) throw new Error(`Errore Server: ${response.status}`);
+                const data = await response.json();
+                if(data.errors && Object.keys(data.errors).length > 0) throw new Error(data.errors.requests || "Limite API raggiunto o Key non valida");
+
+                banner.innerHTML = `<div class="text-brand-green font-bold"><i class="fa-solid fa-check-circle"></i> Radar Scout Aggiornato</div>`;
+                
+                let html = '';
+                const infortuni = data.response ? data.response.slice(0, 10) : []; 
+                
+                infortuni.forEach((item) => {
+                    const matchLocale = state.db.find(p => p.nome.toLowerCase().includes(item.player.name.toLowerCase()));
+                    const tagMatch = matchLocale ? `<span class="bg-brand-green text-white text-[9px] px-1 rounded ml-2">Nel Listone</span>` : '';
+
+                    html += `
+                    <div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-red-500 mb-2">
+                        <div class="text-xs text-red-400 font-bold uppercase mb-1"><i class="fa-solid fa-truck-medical"></i> Allarme Scout</div>
+                        <div class="text-sm text-white font-bold flex items-center">${item.player.name} ${tagMatch}</div>
+                        <div class="text-xs text-slate-300 mt-1">
+                            <b>Squadra:</b> ${item.team.name}<br>
+                            <b>Motivo:</b> ${item.fixture.reason || "Assente"}
+                        </div>
+                    </div>`;
+                });
+                
+                if(infortuni.length === 0) html = '<div class="text-slate-500 text-center py-4">Nessun problema rilevato o API vuota.</div>';
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error("Scout API Error:", error);
+                banner.innerHTML = `
+                    <div class="text-red-400 font-bold mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Connessione Fallita</div>
+                    <p class="text-xs text-slate-500">I server esterni sono irraggiungibili o la API Key non è valida.<br>L'app principale e l'Asta continuano a funzionare normalmente.</p>
+                `;
+            }
+        }
+        
         window.onload = initApp;
     </script>
 </body>
