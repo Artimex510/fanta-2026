@@ -44,7 +44,6 @@
     </style>
 </head>
 <body class="bg-brand-dark text-slate-100 h-screen w-screen overflow-hidden flex flex-col">
-    <!-- SPLASH SCREEN -->
     <div id="splash" class="fixed inset-0 z-[100] bg-brand-dark flex flex-col items-center justify-center">
         <div class="absolute bottom-20 text-center w-full">
             <h1 class="text-4xl font-display text-white mb-2 tracking-wider">FANTA PRO</h1>
@@ -53,7 +52,6 @@
         </div>
     </div>
     <div id="app" class="hidden flex-col h-full w-full relative">
-        <!-- HEADER -->
         <header id="main-header" class="bg-brand-card shadow-md p-4 justify-between items-center z-20 hidden">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="text-2xl text-slate-300 hover:text-white"><i class="fa-solid fa-bars"></i></button>
@@ -65,7 +63,6 @@
             </div>
         </header>
 
-        <!-- SIDEBAR -->
         <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-brand-card shadow-2xl transform -translate-x-full transition-transform duration-300 z-50 flex flex-col">
             <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900">
                 <h2 class="font-display text-xl text-white">Menu</h2>
@@ -91,7 +88,6 @@
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-40 backdrop-blur-sm"></div>
 
         <main class="flex-1 overflow-y-auto pb-24 relative" id="main-content">
-            <!-- HOME -->
             <div id="view-home" class="view-section flex flex-col items-center justify-center h-full p-6 bg-brand-dark relative">
                 <div class="text-center mb-10"><h1 class="font-display text-5xl text-white tracking-widest mb-2 shadow-black drop-shadow-lg">FANTA PRO</h1><p class="text-slate-400">Scegli l'asta a cui vuoi partecipare</p></div>
                 <div class="w-full max-w-sm flex flex-col gap-6">
@@ -106,7 +102,6 @@
                 </div>
             </div>
 
-            <!-- LISTONE -->
             <div id="view-list" class="view-section hidden p-4">
                 <div class="sticky top-0 bg-brand-dark/95 backdrop-blur z-10 pb-4 pt-2">
                     <div class="flex gap-2 mb-2">
@@ -119,17 +114,14 @@
                 <div id="player-list-container" class="flex flex-col gap-3"></div>
             </div>
 
-            <!-- PREFERITI -->
             <div id="view-favs" class="view-section hidden p-4"><h2 class="font-display text-2xl mb-4 text-yellow-400 flex items-center gap-2"><i class="fa-solid fa-star"></i> Preferiti</h2><div id="favs-container" class="flex flex-col gap-4"></div></div>
 
-            <!-- SQUADRA -->
             <div id="view-team" class="view-section hidden p-4">
                 <div class="flex justify-between items-end mb-4"><h2 class="font-display text-2xl text-brand-green flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> La Mia Rosa</h2><div class="text-right bg-slate-800 px-3 py-1 rounded border border-slate-700"><div class="text-[10px] text-slate-400 uppercase">Giocatori</div><div class="text-xl font-bold"><span id="team-count" class="text-white">0</span></div></div></div>
                 <div class="bg-brand-card rounded-xl p-4 mb-5 border border-slate-700 shadow-lg"><div class="text-xs text-slate-400 mb-3 uppercase tracking-wider font-bold">Copertura Moduli</div><div id="formation-coverage" class="grid grid-cols-3 gap-2 text-center text-sm font-bold"></div></div>
                 <div id="team-container" class="flex flex-col gap-3"></div>
             </div>
 
-            <!-- AVVERSARI -->
             <div id="view-opponents" class="view-section hidden p-4">
                 <div class="flex justify-between items-center mb-4"><h2 class="font-display text-2xl text-purple-400 flex items-center gap-2"><i class="fa-solid fa-users-rays"></i> Analisi IA & Rose</h2><button onclick="addOpponent()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-plus"></i> Avversario</button></div>
                 <div class="bg-slate-900 border border-brand-accent/50 rounded-xl p-4 mb-4 shadow-lg shadow-brand-accent/10" id="global-ai-insights">
@@ -139,7 +131,11 @@
                 <div id="opponents-container" class="flex flex-col gap-4"></div>
             </div>
 
-            <!-- CAMPO VERDE -->
+            <div id="view-ranking" class="view-section hidden p-4 pb-20">
+                <div class="flex justify-between items-center mb-4"><h2 class="font-display text-2xl text-yellow-500 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> Power Ranking</h2></div>
+                <div id="ranking-container" class="flex flex-col gap-4 pb-10"></div>
+            </div>
+
             <div id="view-pitch" class="view-section hidden p-4 h-full flex flex-col max-w-lg mx-auto">
                 <div class="flex justify-between items-center mb-3">
                     <select id="formation-select" onchange="renderPitch()" class="bg-brand-card text-white border rounded p-2 outline-none font-bold shadow-lg"></select>
@@ -149,24 +145,13 @@
                 <div class="pitch-bg pitch-lines flex-1 w-full mx-auto relative rounded-xl shadow-2xl mb-4"><div class="penalty-area-top"></div><div class="penalty-area-bottom"></div><div id="pitch-slots-container"></div></div>
             </div>
 
-            <!-- SCOUT -->
             <div id="view-scout" class="view-section hidden p-4 h-full flex flex-col">
                 <div class="flex justify-between items-center mb-4"><h2 class="font-display text-2xl text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Scout Live</h2><button onclick="fetchExternalData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Sync</button></div>
                 <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center"><p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni.</p></div>
                 <div id="api-results-container" class="flex flex-col gap-3 overflow-y-auto"></div>
             </div>
-            <!-- POWER RANKING FINALE -->
-            <div id="view-ranking" class="view-section hidden p-4 pb-20">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-display text-2xl text-yellow-500 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> Power Ranking</h2>
-                </div>
-                <div id="ranking-container" class="flex flex-col gap-4 pb-10">
-                    <!-- Il contenuto verrà generato dall'IA -->
-                </div>
-            </div>
         </main>
 
-        <!-- BOTTOM NAV -->
         <nav id="bottom-nav" class="bg-brand-dark/95 backdrop-blur-md border-t border-slate-800 justify-around p-2 pb-6 absolute bottom-0 w-full z-30 hidden">
             <button onclick="switchView('list')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 transition-colors" data-target="list"><i class="fa-solid fa-users text-xl"></i><span class="text-[10px] uppercase font-bold">Listone</span></button>
             <button onclick="switchView('favs')" class="nav-btn flex-1 text-slate-400 flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-slate-800 hover:text-yellow-400 transition-colors" data-target="favs"><i class="fa-solid fa-star text-xl"></i><span class="text-[10px] uppercase font-bold">Preferiti</span></button>
@@ -175,7 +160,6 @@
         </nav>
     </div>
 
-    <!-- MODAL: DETTAGLIO GIOCATORE -->
     <div id="player-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-sm hidden z-[60] flex flex-col justify-end">
         <div class="bg-brand-card rounded-t-3xl p-6 h-[90vh] flex flex-col relative transform transition-transform translate-y-full border-t border-slate-700 shadow-2xl" id="player-modal-content">
             <button onclick="closePlayerModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white z-50"><i class="fa-solid fa-chevron-down"></i></button>
@@ -215,11 +199,9 @@
         </div>
     </div>
 
-    <!-- MODAL: ACQUISTO -->
     <div id="purchase-modal" class="fixed inset-0 bg-brand-dark/90 backdrop-blur-md hidden z-[70] flex items-center justify-center p-4">
         <div class="bg-brand-card rounded-2xl p-6 w-full max-w-sm border border-slate-700 shadow-2xl text-center">
             <h3 class="font-display text-2xl mb-1 text-white"><span id="purchase-action-title">Acquisto</span> <span id="purchase-name" class="text-brand-green"></span></h3>
-            
             <div id="purchase-team-select-container" class="hidden text-left mt-4 mb-2"><label class="text-xs text-slate-400 uppercase font-bold">Seleziona Avversario</label><select id="purchase-team-select" class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-lg outline-none mt-1"></select></div>
             <div class="bg-slate-800 rounded p-2 mt-4 mb-4 border border-slate-700"><div class="text-xs text-slate-400 uppercase tracking-widest">Prezzo Max Consigliato</div><div class="text-2xl font-bold text-brand-accent" id="purchase-suggested">0</div></div>
             <input type="number" id="purchase-price" placeholder="Crediti pagati..." class="w-full bg-slate-900 text-white text-3xl font-display text-center rounded-xl p-4 border-2 border-slate-600 focus:border-brand-green focus:outline-none mb-6">
@@ -227,7 +209,6 @@
         </div>
     </div>
 
-    <!-- MODAL: SELEZIONA PER CAMPO -->
     <div id="pitch-select-modal" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-md hidden z-[60] flex flex-col p-4">
         <div class="flex justify-between items-center mb-2 mt-4 bg-slate-900 p-4 rounded-xl border border-slate-700">
             <div><div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Ruolo Richiesto</div><h3 class="font-display text-2xl text-white" id="pitch-target-role"></h3></div>
@@ -237,83 +218,67 @@
         <div class="mt-4 pb-6"><button onclick="removePlayerFromPitch()" class="p-4 bg-slate-800 text-red-400 border border-slate-700 rounded-xl font-bold w-full flex justify-center gap-2"><i class="fa-solid fa-user-minus"></i> Rimuovi dal campo</button></div>
     </div>
     <script>
-        // --- 1. STATO, CONFIGURAZIONI E LIMITI ---
         let defaultState = { mantra: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '433', pitchPlayers: {}, db: [] }, standard: { budgetIniziale: 500, creditiSpesi: 0, miaSquadra: [], squadre: [], preferitiIds: [], pitchLayout: '343', pitchPlayers: {}, db: [] } };
         let appState = JSON.parse(localStorage.getItem('fantaProUniversal')) || defaultState;
-        
-        if(!appState.mantra.squadre) appState.mantra.squadre = [];
-        if(!appState.standard.squadre) appState.standard.squadre = [];
-
-        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0;
-        let assistantMode = false; let purchaseTarget = 'me'; let currentFilterRole = 'TUTTI';
+        if(!appState.mantra.squadre) appState.mantra.squadre = []; if(!appState.standard.squadre) appState.standard.squadre = [];
+        let currentMode = null; let state = null; let currentPlayerId = null; let currentPitchSlot = null; let currentSuggestedPrice = 0; let assistantMode = false; let purchaseTarget = 'me'; let currentFilterRole = 'TUTTI';
         
         const standardLimits = { 'P': 4, 'D': 9, 'C': 9, 'A': 6 };
         const gkCrosses = { 'Inter': 'Milan', 'Milan': 'Inter', 'Juventus': 'Torino', 'Torino': 'Juventus', 'Roma': 'Lazio', 'Lazio': 'Roma', 'Empoli': 'Fiorentina', 'Fiorentina': 'Empoli', 'Genoa': 'Lecce', 'Lecce': 'Genoa', 'Parma': 'Bologna', 'Bologna': 'Parma', 'Napoli': 'Venezia', 'Venezia': 'Napoli', 'Verona': 'Udinese', 'Udinese': 'Verona', 'Atalanta': 'Como', 'Como': 'Atalanta', 'Monza': 'Cagliari', 'Cagliari': 'Monza' };
-        
-        const formationsMantra = { 
-            '3421': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ],
-            '3412': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T',x:50,y:35}, {role:'Pc|A',x:65,y:15}, {role:'Pc',x:35,y:15} ],
-            '352':  [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:78}, {role:'Dc',x:50,y:82}, {role:'Dc',x:25,y:78}, {role:'E',x:85,y:45}, {role:'M|C',x:65,y:55}, {role:'C|T',x:50,y:45}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:45}, {role:'Pc|A',x:65,y:18}, {role:'Pc|A',x:35,y:18} ],
-            '3511': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:50}, {role:'M|C',x:65,y:55}, {role:'C',x:50,y:60}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:50}, {role:'T',x:50,y:30}, {role:'Pc',x:50,y:10} ],
-            '433':  [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:50}, {role:'M|C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'W|A',x:80,y:25}, {role:'Pc',x:50,y:15}, {role:'W|A',x:20,y:25} ], 
-            '4312': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:78}, {role:'Dc',x:65,y:82}, {role:'Dc',x:35,y:82}, {role:'Ds',x:15,y:78}, {role:'C',x:75,y:55}, {role:'M|C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'T',x:50,y:35}, {role:'Pc|A',x:65,y:15}, {role:'Pc',x:35,y:15} ],
-            '442':  [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'W|E',x:85,y:50}, {role:'M|C',x:60,y:55}, {role:'M|C',x:40,y:55}, {role:'W|E',x:15,y:50}, {role:'Pc|A',x:65,y:18}, {role:'Pc',x:35,y:18} ],
-            '4141': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'M',x:50,y:65}, {role:'W|E',x:85,y:40}, {role:'C|T',x:65,y:45}, {role:'C|T',x:35,y:45}, {role:'W|E',x:15,y:40}, {role:'Pc',x:50,y:15} ],
-            '4411': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'W|E',x:85,y:50}, {role:'M|C',x:60,y:55}, {role:'M|C',x:40,y:55}, {role:'W|E',x:15,y:50}, {role:'T',x:50,y:30}, {role:'Pc',x:50,y:10} ],
-            '4231': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:80}, {role:'Dc',x:65,y:85}, {role:'Dc',x:35,y:85}, {role:'Ds',x:15,y:80}, {role:'M|C',x:65,y:58}, {role:'M|C',x:35,y:58}, {role:'W|T|A',x:80,y:35}, {role:'T',x:50,y:35}, {role:'W|T|A',x:20,y:35}, {role:'Pc',x:50,y:12} ],
-            '4321': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:55}, {role:'M|C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ]
-        };
-        const formationsStandard = { 
-            '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ], 
-            '352': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
-            '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ],
-            '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
-            '451': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:50,y:15} ],
-            '532': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ],
-            '541': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:50,y:15} ]
-        };
+        const formationsMantra = { '3421': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ], '3412': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:55}, {role:'M|C',x:60,y:60}, {role:'M|C',x:40,y:60}, {role:'E',x:15,y:55}, {role:'T',x:50,y:35}, {role:'Pc|A',x:65,y:15}, {role:'Pc',x:35,y:15} ], '352': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:78}, {role:'Dc',x:50,y:82}, {role:'Dc',x:25,y:78}, {role:'E',x:85,y:45}, {role:'M|C',x:65,y:55}, {role:'C|T',x:50,y:45}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:45}, {role:'Pc|A',x:65,y:18}, {role:'Pc|A',x:35,y:18} ], '3511': [ {role:'Por',x:50,y:90}, {role:'Dc',x:75,y:80}, {role:'Dc',x:50,y:85}, {role:'Dc',x:25,y:80}, {role:'E',x:85,y:50}, {role:'M|C',x:65,y:55}, {role:'C',x:50,y:60}, {role:'M|C',x:35,y:55}, {role:'E',x:15,y:50}, {role:'T',x:50,y:30}, {role:'Pc',x:50,y:10} ], '433': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:50}, {role:'M|C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'W|A',x:80,y:25}, {role:'Pc',x:50,y:15}, {role:'W|A',x:20,y:25} ], '4312': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:78}, {role:'Dc',x:65,y:82}, {role:'Dc',x:35,y:82}, {role:'Ds',x:15,y:78}, {role:'C',x:75,y:55}, {role:'M|C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'T',x:50,y:35}, {role:'Pc|A',x:65,y:15}, {role:'Pc',x:35,y:15} ], '442': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'W|E',x:85,y:50}, {role:'M|C',x:60,y:55}, {role:'M|C',x:40,y:55}, {role:'W|E',x:15,y:50}, {role:'Pc|A',x:65,y:18}, {role:'Pc',x:35,y:18} ], '4141': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'M',x:50,y:65}, {role:'W|E',x:85,y:40}, {role:'C|T',x:65,y:45}, {role:'C|T',x:35,y:45}, {role:'W|E',x:15,y:40}, {role:'Pc',x:50,y:15} ], '4411': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'W|E',x:85,y:50}, {role:'M|C',x:60,y:55}, {role:'M|C',x:40,y:55}, {role:'W|E',x:15,y:50}, {role:'T',x:50,y:30}, {role:'Pc',x:50,y:10} ], '4231': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:80}, {role:'Dc',x:65,y:85}, {role:'Dc',x:35,y:85}, {role:'Ds',x:15,y:80}, {role:'M|C',x:65,y:58}, {role:'M|C',x:35,y:58}, {role:'W|T|A',x:80,y:35}, {role:'T',x:50,y:35}, {role:'W|T|A',x:20,y:35}, {role:'Pc',x:50,y:12} ], '4321': [ {role:'Por',x:50,y:90}, {role:'Dd',x:85,y:75}, {role:'Dc',x:65,y:80}, {role:'Dc',x:35,y:80}, {role:'Ds',x:15,y:75}, {role:'C',x:75,y:55}, {role:'M|C',x:50,y:60}, {role:'C',x:25,y:55}, {role:'T|A',x:65,y:30}, {role:'T|A',x:35,y:30}, {role:'Pc',x:50,y:10} ] };
+        const formationsStandard = { '343': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:50}, {role:'C',x:65,y:55}, {role:'C',x:35,y:55}, {role:'C',x:15,y:50}, {role:'A',x:80,y:20}, {role:'A',x:50,y:15}, {role:'A',x:20,y:20} ], '352': [ {role:'P',x:50,y:90}, {role:'D',x:75,y:78}, {role:'D',x:50,y:82}, {role:'D',x:25,y:78}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ], '433': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:80,y:25}, {role:'A',x:50,y:15}, {role:'A',x:20,y:25} ], '442': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ], '451': [ {role:'P',x:50,y:90}, {role:'D',x:85,y:75}, {role:'D',x:65,y:80}, {role:'D',x:35,y:80}, {role:'D',x:15,y:75}, {role:'C',x:85,y:45}, {role:'C',x:65,y:55}, {role:'C',x:50,y:45}, {role:'C',x:35,y:55}, {role:'C',x:15,y:45}, {role:'A',x:50,y:15} ], '532': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:75,y:50}, {role:'C',x:50,y:55}, {role:'C',x:25,y:50}, {role:'A',x:65,y:18}, {role:'A',x:35,y:18} ], '541': [ {role:'P',x:50,y:90}, {role:'D',x:90,y:70}, {role:'D',x:70,y:78}, {role:'D',x:50,y:82}, {role:'D',x:30,y:78}, {role:'D',x:10,y:70}, {role:'C',x:85,y:50}, {role:'C',x:60,y:55}, {role:'C',x:40,y:55}, {role:'C',x:15,y:50}, {role:'A',x:50,y:15} ] };
         const roleColors = { 'Por':'role-por', 'P':'role-por', 'Dc':'role-def', 'Dd':'role-def', 'Ds':'role-def', 'E':'role-def', 'D':'role-def', 'M':'role-mid', 'C':'role-mid', 'T':'role-mid', 'W':'role-att', 'A':'role-att', 'Pc':'role-att' };
-        const adaptRulesMantra = { 'Dd':['Ds','E'], 'Ds':['Dd','E'], 'E':['W'], 'M':['C'], 'C':['M','T'], 'T':['C','W','A'], 'W':['E','T','A'], 'A':['W','Pc','T'], 'Pc':['A'] };
+        const adaptRulesMantra = { 'Dd': ['Ds', 'E'], 'Ds': ['Dd', 'E'], 'Dc': [], 'E': ['Dd', 'Ds', 'W'], 'M': ['C'], 'C': ['M', 'T'], 'W': ['E', 'T', 'A'], 'T': ['W', 'A'], 'A': ['W', 'T', 'Pc'], 'Pc': ['A'] };
 
-        // --- 2. UTILITY & MOTORE F.P.F E PROBABILITA' ---
+        function getMacroRole(r) { if(r.includes('P') || r.includes('Por')) return 'P'; if(['Dc','Dd','Ds','E','D'].some(x => r.includes(x))) return 'D'; if(['M','C','T','W'].some(x => r.includes(x))) return 'C'; if(['A','Pc'].some(x => r.includes(x))) return 'A'; return 'C'; }
+        
+        function checkPlayerFit(p, reqRolesStr) {
+            const reqRoles = reqRolesStr.split('|');
+            if (p.ruoli.some(r => reqRoles.includes(r))) return { fit: true, malus: 0 };
+            if (currentMode === 'standard') return { fit: false };
+
+            let isAffine = false; p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAffine = true; });
+            if (isAffine) return { fit: true, malus: -1 };
+
+            let pm = p.ruoli.map(r => getMacroRole(r)); let tm = reqRoles.map(r => getMacroRole(r));
+            if (pm.includes('P') || tm.includes('P')) return { fit: false };
+
+            let best = -99;
+            for(let p1 of pm) {
+                for(let t1 of tm) {
+                    if(p1==='D' && t1==='C') best = Math.max(best, -1);
+                    if(p1==='D' && t1==='A') best = Math.max(best, -2);
+                    if(p1==='C' && t1==='D') best = Math.max(best, -2);
+                    if(p1==='C' && t1==='A') best = Math.max(best, -1);
+                    if(p1==='A' && t1==='C') best = Math.max(best, -3);
+                    if(p1==='A' && t1==='D') {
+                        if(p.ruoli.includes('Pc') && reqRoles.includes('Dc')) continue;
+                        best = Math.max(best, -4);
+                    }
+                }
+            }
+            if(best > -99) return { fit: true, malus: best };
+            return { fit: false };
+        }
+
         function getAvatarUrl(nome) { const encodedName = encodeURIComponent(nome.replace(/[^a-zA-Z ]/g, "")); return `https://ui-avatars.com/api/?name=${encodedName}&background=0f172a&color=3b82f6&bold=true&rounded=true&size=128`; }
         function getRoleBadgesHTML(ruoliArray) { return ruoliArray.map(r => `<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${roleColors[r] || 'bg-slate-600'}">${r}</span>`).join(''); }
         function getTeamOwner(id) { if(state.miaSquadra.find(x => x.id == id)) return {type: 'me', name: 'Mia Squadra'}; for(let s of state.squadre) { let p = s.roster.find(x => x.id == id); if(p) return {type: 'opponent', name: s.nome, cost: p.costoAcquisto}; } return null; }
-
-        function getMaxAbsoluteBid(rosterSize, budgetResiduo) {
-            const minRoster = currentMode === 'mantra' ? 25 : 28; 
-            const slotsNeeded = Math.max(1, minRoster - rosterSize);
-            const creditiDiSicurezza = Math.max(0, slotsNeeded - 1); 
-            return budgetResiduo - creditiDiSicurezza; 
-        }
-
+        function getMaxAbsoluteBid(rosterSize, budgetResiduo) { const minRoster = currentMode === 'mantra' ? 25 : 28; const slotsNeeded = Math.max(1, minRoster - rosterSize); const creditiDiSicurezza = Math.max(0, slotsNeeded - 1); return budgetResiduo - creditiDiSicurezza; }
         function calculateDynamicMaxBid(p, rosterSize, budgetResiduo) {
-            const maxBidAbs = getMaxAbsoluteBid(rosterSize, budgetResiduo);
-            if (maxBidAbs <= 0) return 0; if (maxBidAbs === 1) return 1;
-
+            const maxBidAbs = getMaxAbsoluteBid(rosterSize, budgetResiduo); if (maxBidAbs <= 0) return 0; if (maxBidAbs === 1) return 1;
             let maxFVM = Math.max(...state.db.map(g => g.fvm)); if(maxFVM < 1) maxFVM = 100;
-            let topPercent = 0.45; 
-            if (rosterSize >= 10) topPercent = 0.30;
-            if (rosterSize >= 18) topPercent = 0.15;
-
-            let valAssolutoMax = maxBidAbs * topPercent;
-            let finalPrice = Math.round((p.fvm / maxFVM) * valAssolutoMax);
+            let topPercent = 0.45; if (rosterSize >= 10) topPercent = 0.30; if (rosterSize >= 18) topPercent = 0.15;
+            let valAssolutoMax = maxBidAbs * topPercent; let finalPrice = Math.round((p.fvm / maxFVM) * valAssolutoMax);
             return Math.min(Math.max(1, finalPrice), maxBidAbs);
         }
 
-        // --- 3. INIZIALIZZAZIONE & AUTO-CARICAMENTO ---
         async function autoLoadDatabases() {
             try {
                 const v = new Date().getTime(); 
-                if (appState.mantra.db.length === 0) {
-                    const resM = await fetch('./mantra.json?v=' + v);
-                    if (resM.ok) { const rawM = await resM.json(); processAutoLoadData(rawM, 'mantra'); }
-                }
-                if (appState.standard.db.length === 0) {
-                    const resS = await fetch('./standard.json?v=' + v);
-                    if (resS.ok) { const rawS = await resS.json(); processAutoLoadData(rawS, 'standard'); }
-                }
-            } catch (e) { console.log("JSON offline. Procedere manualmente."); }
+                if (appState.mantra.db.length === 0) { const resM = await fetch('./mantra.json?v=' + v); if (resM.ok) { const rawM = await resM.json(); processAutoLoadData(rawM, 'mantra'); } }
+                if (appState.standard.db.length === 0) { const resS = await fetch('./standard.json?v=' + v); if (resS.ok) { const rawS = await resS.json(); processAutoLoadData(rawS, 'standard'); } }
+            } catch (e) {}
         }
 
         function mapToStandardRole(ruoliArray) { let res = new Set(); ruoliArray.forEach(r => { if(['Por','P'].includes(r)) res.add('P'); else if(['Dc','Dd','Ds','E','D'].includes(r)) res.add('D'); else if(['M','C','T'].includes(r)) res.add('C'); else if(['W','A','Pc'].includes(r)) res.add('A'); else res.add('C'); }); return Array.from(res); }
@@ -324,8 +289,7 @@
                 let qta = parseInt(g.QtA || 1); let fvm = parseInt(g.FVM || qta || 1); let ia = Math.round((fvm / maxFVM) * 90) + 9; if(ia > 99) ia = 99;
                 let ruoliArray = ["C"]; if (g.R) ruoliArray = g.R.split(';'); else if (g.Ruolo) ruoliArray = [g.Ruolo]; 
                 if(mode === 'standard') ruoliArray = mapToStandardRole(ruoliArray);
-                let titProb = parseInt(g.TIT || 0); let probEffettiva = 15;
-                if(titProb === 100) probEffettiva = 95; else if(titProb === 50) probEffettiva = 55;
+                let titProb = parseInt(g.TIT || 0); let probEffettiva = 15; if(titProb === 100) probEffettiva = 95; else if(titProb === 50) probEffettiva = 55;
                 return { id: g.Id ? parseInt(g.Id) : (index + 1), nome: g.Nome || g.nome || "Sconosciuto", sq: g.Squadra || g.sq || "SVN", ruoli: ruoliArray, ia: ia, tit: titProb, prob: probEffettiva, qta: qta, qti: parseInt(g.QtI || qta), fvm: fvm, pv: parseInt(g.PV || 0), mv: parseFloat(g.MV || 0).toFixed(2), fm: parseFloat(g.FM || 0).toFixed(2), gf: parseInt(g.GF || 0), gs: parseInt(g.GS || 0), ass: parseInt(g.ASS || 0), amm: parseInt(g.AMM || 0), esp: parseInt(g.ESP || 0), au: parseInt(g.AU || 0) };
             });
             localStorage.setItem('fantaProUniversal', JSON.stringify(appState));
@@ -347,19 +311,16 @@
         function salvaDati() { localStorage.setItem('fantaProUniversal', JSON.stringify(appState)); if(currentMode) updateBudgetUI(); else updateHomeBudgets(); }
         function updateBudgetUI() { document.getElementById('ui-budget').innerText = state.budgetIniziale - state.creditiSpesi; }
         function openBudgetModal() { const res = prompt(`Imposta Budget Iniziale:`, state.budgetIniziale); if(res && !isNaN(res)) { state.budgetIniziale = parseInt(res); salvaDati(); switchView('list'); } }
-
         function importaJSON(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const rawData = JSON.parse(e.target.result); processAutoLoadData(rawData, currentMode); alert("Database manuale aggiornato!"); renderPlayerList(); toggleSidebar(); } catch (err) { alert("Errore lettura: " + err); } }; reader.readAsText(file); }
         function exportBackup() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", `fantapro_backup.json`); dlAnchorElem.click(); toggleSidebar(); }
         function importBackup(event) { const file = event.target.files[0]; if (!file) return; if(!confirm("Sovrascrivere TUTTI i dati attuali?")) return; const reader = new FileReader(); reader.onload = function(e) { try { const backupData = JSON.parse(e.target.result); if(backupData.mantra && backupData.standard) { appState = backupData; state = appState[currentMode]; salvaDati(); alert("Backup ripristinato!"); switchView('list'); toggleSidebar(); } else alert("File non valido."); } catch (err) { alert("Errore: " + err); } document.getElementById('backupInput').value = ''; }; reader.readAsText(file); }
         function resetData() { if(confirm(`Vuoi azzerare la rosa in ${currentMode.toUpperCase()}?`)) { appState[currentMode] = JSON.parse(JSON.stringify(defaultState[currentMode])); appState[currentMode].db = state.db; state = appState[currentMode]; salvaDati(); switchView('list'); toggleSidebar(); } }
 
-        // --- 4. GESTIONE LISTONE E FILTRI RUOLO ---
         function generateFilterBar() {
             const container = document.getElementById('role-filters');
             let roles = currentMode === 'standard' ? ['TUTTI', 'P', 'D', 'C', 'A'] : ['TUTTI', 'Por', 'Dc', 'Dd', 'Ds', 'E', 'M', 'C', 'T', 'W', 'A', 'Pc'];
             container.innerHTML = roles.map(r => `<button onclick="setFilterRole('${r}')" class="filter-btn ${currentFilterRole === r ? 'active shadow-lg shadow-brand-accent/50' : 'hover:border-slate-500'}">${r}</button>`).join('');
         }
-
         function setFilterRole(role) { currentFilterRole = role; generateFilterBar(); renderPlayerList(); }
         function toggleAssistant() { assistantMode = !assistantMode; renderPlayerList(); const btn = document.getElementById('btn-assistant'); if(assistantMode){ btn.classList.replace('bg-slate-800','bg-brand-accent'); btn.classList.replace('text-slate-300','text-white'); document.getElementById('sort-label').innerHTML=`Assistente <b class="text-yellow-400">Attivo</b>`;}else{btn.classList.replace('bg-brand-accent','bg-slate-800'); btn.classList.replace('text-white','text-slate-300'); document.getElementById('sort-label').innerHTML=`Ordinamento per <b class="text-white">IA</b>`;} }
         
@@ -367,7 +328,7 @@
             const owner = getTeamOwner(p.id); const isAcquistato = owner !== null; const opacity = (isAcquistato && actionType === 'list') ? 'opacity-40 grayscale' : '';
             let rightContent = '';
             if(actionType === 'team' || actionType === 'opponent') rightContent = `<div class="text-xl font-bold text-brand-green">${p.costoAcquisto}<br><span class="text-[10px] text-slate-400">CREDITI</span></div>`;
-            else if (actionType === 'pitch') rightContent = malus < 0 ? `<div class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Adattato -1</div>` : `<div class="bg-brand-green text-white px-2 py-1 rounded text-xs font-bold shadow">Perfetto</div>`;
+            else if (actionType === 'pitch') rightContent = malus < 0 ? `<div class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Malus ${malus}</div>` : `<div class="bg-brand-green text-white px-2 py-1 rounded text-xs font-bold shadow">Perfetto</div>`;
             else {
                 if (isAcquistato) rightContent = `<div class="text-[9px] text-slate-400 uppercase text-right leading-tight">Preso da<br><b class="text-white">${owner.name}</b></div>`;
                 else if (assistantMode) rightContent = `<div class="text-lg font-bold text-brand-green"><i class="fa-solid fa-coins text-sm"></i> ${calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi)}</div>`;
@@ -382,7 +343,6 @@
         function renderPlayerList() {
             let filtered = state.db.filter(p => p.nome.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase()));
             if(currentFilterRole !== 'TUTTI') filtered = filtered.filter(p => p.ruoli.includes(currentFilterRole));
-
             if (assistantMode) {
                 let budgetRimanente = state.budgetIniziale - state.creditiSpesi;
                 filtered = filtered.filter(p => getTeamOwner(p.id) === null && calculateDynamicMaxBid(p, state.miaSquadra.length, budgetRimanente) <= budgetRimanente).sort((a, b) => b.ia - a.ia);
@@ -414,25 +374,10 @@
             } document.getElementById('team-container').innerHTML = html; calcFormationCoverage();
         }
 
-        // --- 5. GESTIONE AVVERSARI E INTELLIGENZA ARTIFICIALE AVANZATA ---
-        function addOpponent() { const name = prompt("Inserisci nome squadra avversaria:"); if(name) { state.squadre.push({ id: Date.now(), nome: name, roster: [] }); salvaDati(); renderOpponents(); } }
-        function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
-        function removeOpponent(id) { if(confirm("Eliminare la squadra?")) { state.squadre = state.squadre.filter(s => s.id !== id); salvaDati(); renderOpponents(); } }
-        
-        function getMacroRole(r) {
-            if(r.includes('P') || r.includes('Por')) return 'P';
-            if(['Dc','Dd','Ds','E','D'].some(x => r.includes(x))) return 'D';
-            if(['M','C','T','W'].some(x => r.includes(x))) return 'C';
-            if(['A','Pc'].some(x => r.includes(x))) return 'A';
-            return 'C';
-        }
-
-        // Calcola Medie, Soglie Top Player e Frasi Avanzate
         function analyzeMarketAndRosters() {
             let thresholds = { P: 0, D: 0, C: 0, A: 0 }; let counts = { P: 0, D: 0, C: 0, A: 0 };
-            state.db.forEach(p => { if(p.qta > 1) { let mr = getMacroRole(p.ruoli[0]); thresholds[mr] += p.qta; counts[mr]++; } });
-            for(let k in thresholds) thresholds[k] = counts[k] > 0 ? (thresholds[k]/counts[k]) : 10;
-
+            state.db.forEach(p => { if(p.qta >= 5) { let mr = getMacroRole(p.ruoli[0]); thresholds[mr] += p.qta; counts[mr]++; } });
+            for(let k in thresholds) thresholds[k] = counts[k] > 0 ? (thresholds[k]/counts[k]) : 12;
             let freeTop = { P: 0, D: 0, C: 0, A: 0 };
             state.db.forEach(p => { if(!getTeamOwner(p.id)) { let mr = getMacroRole(p.ruoli[0]); if(p.qta >= thresholds[mr]) freeTop[mr]++; } });
             return { thresholds, freeTop };
@@ -440,15 +385,12 @@
 
         function getRoleRating(roster, macroRole, threshold) {
             let players = roster.filter(p => getMacroRole(p.ruoli[0]) === macroRole);
-            let topCount = players.filter(p => p.qta >= threshold).length;
-            let score = 0; // 0=Scarso, 1=Suff, 2=Buono, 3=Ottimo
-
+            let topCount = players.filter(p => p.qta >= threshold).length; let score = 0; 
             if(macroRole === 'P') score = topCount >= 1 ? 2 : (players.length > 0 ? 1 : 0);
             if(macroRole === 'D') score = topCount >= 2 ? 3 : (topCount === 1 ? 2 : (players.length >= 3 ? 1 : 0));
             if(macroRole === 'C') score = topCount >= 3 ? 3 : (topCount === 2 ? 2 : (topCount === 1 || players.length >= 3 ? 1 : 0));
             if(macroRole === 'A') score = topCount >= 2 ? 3 : (topCount === 1 ? 2 : (players.length >= 2 ? 1 : 0));
             if(players.length === 0) score = 0;
-
             let texts = ['Scarso', 'Suff.', 'Buono', 'Ottimo']; let colors = ['text-red-500', 'text-yellow-400', 'text-brand-green', 'text-blue-400']; let bgs = ['bg-red-500/20 border-red-500', 'bg-yellow-400/20 border-yellow-400', 'bg-brand-green/20 border-brand-green', 'bg-blue-400/20 border-blue-400'];
             return { score, text: texts[score], color: colors[score], bg: bgs[score], topCount, totalCount: players.length };
         }
@@ -463,14 +405,14 @@
             return insights.join(" ");
         }
 
+        function addOpponent() { const name = prompt("Inserisci nome squadra avversaria:"); if(name) { state.squadre.push({ id: Date.now(), nome: name, roster: [] }); salvaDati(); renderOpponents(); } }
+        function toggleAccordion(id) { document.getElementById(id).classList.toggle('open'); }
+        function removeOpponent(id) { if(confirm("Eliminare la squadra?")) { state.squadre = state.squadre.filter(s => s.id !== id); salvaDati(); renderOpponents(); } }
+
         function renderOpponents() {
-            let html = '';
-            let market = analyzeMarketAndRosters();
-            let allTeams = [ { id: 'me', nome: '⭐ LA MIA SQUADRA', roster: state.miaSquadra, isMe: true }, ...state.squadre ];
-            
+            let html = ''; let market = analyzeMarketAndRosters(); let allTeams = [ { id: 'me', nome: '⭐ LA MIA SQUADRA', roster: state.miaSquadra, isMe: true }, ...state.squadre ];
             allTeams.forEach(s => {
                 let spesa = s.roster.reduce((sum, p) => sum + p.costoAcquisto, 0); let budgetResiduo = state.budgetIniziale - spesa; 
-                
                 let ratings = { 'P': getRoleRating(s.roster, 'P', market.thresholds['P']), 'D': getRoleRating(s.roster, 'D', market.thresholds['D']), 'C': getRoleRating(s.roster, 'C', market.thresholds['C']), 'A': getRoleRating(s.roster, 'A', market.thresholds['A']) };
                 let avgScore = (ratings['P'].score + ratings['D'].score + ratings['C'].score + ratings['A'].score) / 4;
                 let globalEval = avgScore >= 2.5 ? {t:'OTTIMA', c:'text-blue-400'} : avgScore >= 1.75 ? {t:'BUONA', c:'text-brand-green'} : avgScore >= 1 ? {t:'SUFFICIENTE', c:'text-yellow-400'} : {t:'SCARSA', c:'text-red-500'};
@@ -482,13 +424,11 @@
                 if(s.roster.length === 0) rosterHtml = '<div class="text-sm text-slate-500 py-2">Rosa vuota</div>';
 
                 const borderClass = s.isMe ? 'border-brand-accent shadow-brand-accent/20' : 'border-slate-700 shadow-lg';
-
                 html += `
                     <div class="bg-brand-card border ${borderClass} rounded-xl overflow-hidden mb-4">
                         <div class="p-4 cursor-pointer hover:bg-slate-800 transition-colors" onclick="toggleAccordion('acc-${s.id}')">
                             <div class="flex justify-between items-center mb-2"><h3 class="font-display text-xl ${s.isMe ? 'text-brand-accent' : 'text-white'}">${s.nome}</h3><div class="font-bold flex items-center gap-1 text-sm"><i class="fa-solid fa-users text-slate-400"></i> ${s.roster.length}</div></div>
                             <div class="flex gap-4 text-sm mt-3"><div><div class="text-[10px] uppercase text-slate-400">Budget</div><div class="font-bold text-brand-green">${budgetResiduo}</div></div><div class="flex-1"><div class="text-[10px] uppercase text-slate-400">Voto Globale IA</div><div class="font-bold text-lg leading-none ${globalEval.c}">${globalEval.t}</div></div></div>
-                            
                             <div class="grid grid-cols-4 gap-1 text-center mt-3 border-t border-slate-700/50 pt-3">
                                 <div class="border rounded-lg p-1 ${ratings['P'].bg}"><div class="text-[9px] font-bold">POR</div><div class="text-[10px] ${ratings['P'].color}">${ratings['P'].text}</div></div>
                                 <div class="border rounded-lg p-1 ${ratings['D'].bg}"><div class="text-[9px] font-bold">DIF</div><div class="text-[10px] ${ratings['D'].color}">${ratings['D'].text}</div></div>
@@ -504,125 +444,12 @@
             document.getElementById('opponents-container').innerHTML = html;
         }
 
-        // --- 11. MOTORE POWER RANKING (1-100) ---
-        function calculateTeamScore(roster) {
-            let score = 0;
-            // Modificatore Difficoltà: Più squadre ci sono, più è dura avere una bella rosa.
-            let totalTeams = state.squadre.length + 1;
-            let diffMultiplier = totalTeams >= 10 ? 1.15 : (totalTeams >= 8 ? 1.08 : 1.0);
-
-            if(roster.length === 0) return 0;
-
-            // 1. Qualità Media Base (Max 40 pt)
-            let avgIA = roster.reduce((sum, p) => sum + p.ia, 0) / roster.length;
-            let iaScore = Math.max(0, (avgIA - 50) * 1.5); // Scala premiante
-            score += Math.min(40, iaScore * diffMultiplier);
-
-            // 2. Forza per Reparti e Top Player (Max 35 pt)
-            let market = analyzeMarketAndRosters();
-            let ratings = { 'P': getRoleRating(roster, 'P', market.thresholds['P']), 'D': getRoleRating(roster, 'D', market.thresholds['D']), 'C': getRoleRating(roster, 'C', market.thresholds['C']), 'A': getRoleRating(roster, 'A', market.thresholds['A']) };
-            
-            let repScore = 0;
-            repScore += (ratings['P'].score * 2);   // Max 6
-            repScore += (ratings['D'].score * 3);   // Max 9
-            repScore += (ratings['C'].score * 3);   // Max 9
-            repScore += (ratings['A'].score * 3.7); // Max ~11 (L'attacco pesa di più)
-            score += Math.min(35, repScore * diffMultiplier);
-
-            // 3. Profondità e Moduli (Max 25 pt)
-            let depthScore = 0;
-            let roleCount = {}; roster.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
-            
-            if(currentMode === 'standard') {
-                if(roleCount['P'] >= 3) depthScore += 5;
-                if(roleCount['D'] >= 8) depthScore += 6;
-                if(roleCount['C'] >= 8) depthScore += 6;
-                if(roleCount['A'] >= 6) depthScore += 8;
-            } else {
-                // Nel Mantra l'IA verifica quante formazioni base si possono schierare
-                let formCount = 0;
-                const check = (reqs) => { let passed = true; Object.keys(reqs).forEach(r => { let found = 0; if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0)); else found = roleCount[r] || 0; if(found < reqs[r]) passed = false; }); return passed; };
-                const keyForms = [
-                    {'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, // 433
-                    {'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2}, // 352
-                    {'Por':1,'Dd':1,'Dc':2,'Ds':1,'M|C':2,'W|T|A':3,'Pc':1}  // 4231 similare
-                ];
-                keyForms.forEach(f => { if(check(f)) formCount++; });
-                
-                depthScore += (formCount * 7); // Max 21
-                if(roleCount['M'] >= 2) depthScore += 2; // Bonus Mediani
-                if(roleCount['Pc'] >= 3) depthScore += 2; // Bonus Punte
-            }
-            score += Math.min(25, depthScore);
-
-            return Math.min(100, Math.round(score));
-        }
-
-        function renderRanking() {
-            const minPlayers = currentMode === 'mantra' ? 25 : 28;
-            let allTeams = [ { id: 'me', nome: '⭐ LA MIA SQUADRA', roster: state.miaSquadra, isMe: true }, ...state.squadre ];
-            
-            let allCompleted = true;
-            let teamsStatusHtml = '';
-            
-            allTeams.forEach(t => {
-                if(t.roster.length < minPlayers) {
-                    allCompleted = false;
-                    teamsStatusHtml += `<div class="flex justify-between items-center text-sm border-b border-slate-700/50 py-2"><span class="${t.isMe ? 'text-brand-accent font-bold' : 'text-slate-300'}">${t.nome}</span> <span class="text-red-400 font-bold">${t.roster.length}/${minPlayers}</span></div>`;
-                } else {
-                    teamsStatusHtml += `<div class="flex justify-between items-center text-sm border-b border-slate-700/50 py-2"><span class="${t.isMe ? 'text-brand-accent font-bold' : 'text-slate-300'}">${t.nome}</span> <span class="text-brand-green font-bold"><i class="fa-solid fa-check"></i> Completa</span></div>`;
-                }
-            });
-
-            // Se anche solo una squadra non è completa, mostra il Lucchetto
-            if(!allCompleted || allTeams.length < 2) {
-                document.getElementById('ranking-container').innerHTML = `
-                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 text-center shadow-lg mt-10">
-                        <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-slate-700"><i class="fa-solid fa-lock text-3xl text-slate-500"></i></div>
-                        <h3 class="font-display text-2xl text-white mb-2 tracking-wide">CALCOLO BLOCCATO</h3>
-                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">L'Intelligenza Artificiale elaborerà il Power Ranking ufficioso solo quando <b>TUTTE</b> le squadre avranno completato la rosa con il numero minimo di giocatori.</p>
-                        <div class="bg-brand-card p-4 rounded-xl border border-slate-700 text-left">
-                            <div class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Stato Completamento Rose</div>
-                            ${teamsStatusHtml}
-                        </div>
-                    </div>`;
-                return;
-            }
-
-            // Se tutti sono completi, calcola i voti e genera la Classifica
-            let rankedTeams = allTeams.map(t => { return { ...t, score: calculateTeamScore(t.roster) }; }).sort((a, b) => b.score - a.score);
-            
-            let html = `<div class="bg-brand-green/20 border border-brand-green rounded-xl p-4 mb-4 text-center shadow-[0_0_15px_rgba(16,185,129,0.2)]"><div class="text-brand-green font-bold uppercase tracking-widest text-xs mb-1"><i class="fa-solid fa-unlock"></i> Ranking Sbloccato</div><p class="text-sm text-white font-bold">L'IA ha emesso il suo verdetto pre-campionato basato su Algoritmi di Equilibrio e Valore IA.</p></div>`;
-            
-            rankedTeams.forEach((t, index) => {
-                let positionColors = index === 0 ? 'bg-yellow-500 text-black border-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.3)]' : index === 1 ? 'bg-slate-300 text-black border-slate-200' : index === 2 ? 'bg-amber-700 text-white border-amber-600' : 'bg-slate-800 text-slate-400 border-slate-700';
-                let scoreColor = t.score >= 90 ? 'text-blue-400' : t.score >= 80 ? 'text-brand-green' : t.score >= 70 ? 'text-yellow-400' : 'text-orange-400';
-                
-                html += `
-                <div class="bg-brand-card border ${t.isMe ? 'border-brand-accent shadow-lg shadow-brand-accent/20' : 'border-slate-700'} rounded-xl p-4 flex items-center gap-4 relative overflow-hidden">
-                    ${t.isMe ? '<div class="absolute top-0 right-0 w-16 h-16 bg-brand-accent opacity-10 rounded-bl-[100px]"></div>' : ''}
-                    <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-display text-xl font-bold border-2 ${positionColors}">${index + 1}</div>
-                    <div class="flex-1">
-                        <div class="font-display text-xl ${t.isMe ? 'text-brand-accent' : 'text-white'}">${t.nome}</div>
-                        <div class="text-xs text-slate-400 mt-1">Valutazione basata su ${t.roster.length} giocatori</div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Rating</div>
-                        <div class="font-display text-4xl ${scoreColor}">${t.score}</div>
-                    </div>
-                </div>`;
-            });
-
-            document.getElementById('ranking-container').innerHTML = html;
-        }
-        
-        // --- 6. CAMPO VERDE E FORMAZIONI ---
         function calcFormationCoverage() {
             let roleCount = {}; state.miaSquadra.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
             const check = (reqs) => { let passed = true; Object.keys(reqs).forEach(r => { let found = 0; if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0)); else found = roleCount[r] || 0; if(found < reqs[r]) passed = false; }); return passed; };
             const fRules = currentMode === 'mantra' 
-    ? { '4-3-3':{'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, '3-5-2':{'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2}, '4-2-3-1':{'Por':1,'Dd|E':1,'Ds|E':1,'Dc':2,'M|C':2,'W|T|A':2,'T':1,'Pc':1} } 
-    : { '3-4-3':{'P':1,'D':3,'C':4,'A':3}, '4-3-3':{'P':1,'D':4,'C':3,'A':3}, '3-5-2':{'P':1,'D':3,'C':5,'A':2} };
+                ? { '4-3-3':{'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, '3-5-2':{'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2}, '4-2-3-1':{'Por':1,'Dd|E':1,'Ds|E':1,'Dc':2,'M|C':2,'W|T|A':2,'T':1,'Pc':1} } 
+                : { '3-4-3':{'P':1,'D':3,'C':4,'A':3}, '4-3-3':{'P':1,'D':4,'C':3,'A':3}, '3-5-2':{'P':1,'D':3,'C':5,'A':2} };
             let html = ''; for (const [name, rules] of Object.entries(fRules)) { let ok = check(rules); html += `<div class="py-2 rounded-lg border ${ok ? 'bg-brand-green/20 border-brand-green text-brand-green' : 'bg-slate-800 border-slate-700 text-slate-500'}">${name}<br>${ok ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark opacity-50"></i>'}</div>`; } 
             document.getElementById('formation-coverage').innerHTML = html;
         }
@@ -633,7 +460,7 @@
             let totIA = 0, totProb = 0, countFilled = 0; const accentText = currentMode === 'mantra' ? 'text-blue-400' : 'text-orange-400';
             layout.forEach((pos, index) => {
                 const pitchData = state.pitchPlayers[selForm][index]; const p = pitchData ? state.miaSquadra.find(x => x.id == pitchData.id) : null; const roleClass = roleColors[pos.role.split('|')[0]];
-                if(p) { const malusBadge = pitchData.malus < 0 ? `<div class="malus-badge">${pitchData.malus}</div>` : ''; container.innerHTML += `<div class="player-slot filled ${roleClass}" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')">${malusBadge}<div class="slot-name">${p.nome}</div></div>`; totIA += (p.ia + (pitchData.malus * 10)); totProb += p.prob; countFilled++; }
+                if(p) { const malusBadge = pitchData.malus < 0 ? `<div class="malus-badge">${pitchData.malus}</div>` : ''; container.innerHTML += `<div class="player-slot filled ${roleClass}" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')">${malusBadge}<div class="slot-name">${p.nome}</div></div>`; totIA += (p.ia + (pitchData.malus * 20)); totProb += p.prob; countFilled++; }
                 else container.innerHTML += `<div class="player-slot" style="left:${pos.x}%; top:${pos.y}%;" onclick="openPitchSelector(${index}, '${pos.role}')"><div class="text-[9px] text-slate-500 mb-0.5">${pos.label || pos.role}</div><i class="fa-solid fa-plus ${accentText}"></i></div>`;
             });
             document.getElementById('pitch-ia-total').innerText = totIA; document.getElementById('pitch-prob-avg').innerText = countFilled > 0 ? Math.round(totProb/countFilled) + '%' : '0%';
@@ -641,12 +468,11 @@
 
         function openPitchSelector(slotIndex, reqRolesStr) {
             currentPitchSlot = slotIndex; document.getElementById('pitch-target-role').innerText = reqRolesStr.replace(/\|/g, ' o ');
-            const reqRoles = reqRolesStr.split('|'); let schieratiIds = Object.values(state.pitchPlayers[state.pitchLayout] || {}).map(x => x.id); let eligible = [];
+            let schieratiIds = Object.values(state.pitchPlayers[state.pitchLayout] || {}).map(x => x.id); let eligible = [];
             state.miaSquadra.forEach(p => {
                 if(schieratiIds.includes(p.id) && state.pitchPlayers[state.pitchLayout][currentPitchSlot]?.id != p.id) return;
-                let isPerfect = p.ruoli.some(r => reqRoles.includes(r)); let isAdapted = false;
-                if(!isPerfect && currentMode === 'mantra') p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true; });
-                if(isPerfect) eligible.push({p: p, malus: 0}); else if(isAdapted) eligible.push({p: p, malus: -1});
+                let fitData = checkPlayerFit(p, reqRolesStr);
+                if(fitData.fit) eligible.push({p: p, malus: fitData.malus});
             });
             eligible.sort((a, b) => (b.p.ia + (b.malus*20)) - (a.p.ia + (a.malus*20))); 
             let html = eligible.length ? '' : '<div class="text-slate-500 text-center py-10 bg-slate-800 rounded-xl">Nessun giocatore compatibile.</div>'; eligible.forEach(item => html += createPlayerCardHTML(item.p, 'pitch', item.malus));
@@ -659,62 +485,44 @@
         
         function autoSuggestFormation() {
             const layout = currentMode === 'mantra' ? formationsMantra[state.pitchLayout] : formationsStandard[state.pitchLayout]; let newPitchState = {}; let availablePlayers = [...state.miaSquadra];
-            layout.forEach((pos, index) => {
-                const reqRoles = pos.role.split('|'); let bestMatch = null, bestScore = -999, bestIndex = -1;
+            
+            let slotOptions = layout.map((pos, index) => { let options = availablePlayers.filter(p => checkPlayerFit(p, pos.role).fit); return { index, pos, optionsCount: options.length }; });
+            slotOptions.sort((a, b) => a.optionsCount - b.optionsCount);
+
+            slotOptions.forEach(slotInfo => {
+                const reqRolesStr = slotInfo.pos.role; let bestMatch = null; let bestScore = -999; let bestIndex = -1;
                 availablePlayers.forEach((p, i) => {
-                    let isPerfect = p.ruoli.some(r => reqRoles.includes(r)); let isAdapted = false;
-                    if(!isPerfect && currentMode === 'mantra') p.ruoli.forEach(pr => { if(adaptRulesMantra[pr] && adaptRulesMantra[pr].some(t => reqRoles.includes(t))) isAdapted = true; });
-                    if(isPerfect || isAdapted) { let malus = isPerfect ? 0 : -1; let score = (p.ia * (p.prob/100)) + (malus * 20); if(score > bestScore) { bestScore = score; bestMatch = {id: p.id, malus}; bestIndex = i; } }
+                    let fitData = checkPlayerFit(p, reqRolesStr);
+                    if (fitData.fit) {
+                        let score = (p.ia * (p.prob / 100)) + (fitData.malus * 25);
+                        score -= (p.ruoli.length * 2); 
+                        if (score > bestScore) { bestScore = score; bestMatch = { id: p.id, malus: fitData.malus }; bestIndex = i; }
+                    }
                 });
-                if(bestMatch) { newPitchState[index] = bestMatch; availablePlayers.splice(bestIndex, 1); }
+                if (bestMatch) { newPitchState[slotInfo.index] = bestMatch; availablePlayers.splice(bestIndex, 1); }
             }); state.pitchPlayers[state.pitchLayout] = newPitchState; salvaDati(); renderPitch();
         }
 
-        // --- 7. MODALS ACQUISTO (CON REGOLE FPF RIGIDE) ---
         function openPlayerModal(id) {
             currentPlayerId = id; const p = state.db.find(x => x.id == id); if(!p) return;
-            
             let titB = p.tit === 100 ? `<span class="bg-brand-green text-white text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Titolare</span>` : p.tit === 50 ? `<span class="bg-yellow-500 text-black text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Ballottaggio</span>` : `<span class="bg-slate-600 text-white text-[10px] px-2 py-0.5 rounded ml-2 uppercase tracking-wide">Riserva</span>`;
-            document.getElementById('modal-name').innerHTML = `${p.nome} ${titB}`; 
-            document.getElementById('modal-team').innerText = p.sq;
-            document.getElementById('modal-roles').innerHTML = getRoleBadgesHTML(p.ruoli);
-            
+            document.getElementById('modal-name').innerHTML = `${p.nome} ${titB}`; document.getElementById('modal-team').innerText = p.sq; document.getElementById('modal-roles').innerHTML = getRoleBadgesHTML(p.ruoli);
             currentSuggestedPrice = calculateDynamicMaxBid(p, state.miaSquadra.length, state.budgetIniziale - state.creditiSpesi);
-            document.getElementById('modal-prezzo-consigliato').innerText = currentSuggestedPrice; 
-            document.getElementById('modal-ia').innerText = p.ia; 
-            document.getElementById('modal-qta').innerText = p.qta;
-            document.getElementById('modal-qti').innerText = p.qti;
-            document.getElementById('modal-fvm').innerText = p.fvm;
-            document.getElementById('modal-prob').innerText = p.prob > 0 ? p.prob + '%' : 'N/D';
-            
-            document.getElementById('modal-pv').innerText = p.pv || 0; document.getElementById('modal-mv').innerText = p.mv || 0; document.getElementById('modal-fm').innerText = p.fm || 0;
-            document.getElementById('modal-gf').innerText = p.gf || 0; document.getElementById('modal-gs').innerText = p.gs || 0; document.getElementById('modal-ass').innerText = p.ass || 0;
-            document.getElementById('modal-amm').innerText = p.amm || 0; document.getElementById('modal-esp-au').innerText = (parseInt(p.esp) || 0) + (parseInt(p.au) || 0);
+            document.getElementById('modal-prezzo-consigliato').innerText = currentSuggestedPrice; document.getElementById('modal-ia').innerText = p.ia; document.getElementById('modal-qta').innerText = p.qta; document.getElementById('modal-qti').innerText = p.qti; document.getElementById('modal-fvm').innerText = p.fvm; document.getElementById('modal-prob').innerText = p.prob > 0 ? p.prob + '%' : 'N/D';
+            document.getElementById('modal-pv').innerText = p.pv || 0; document.getElementById('modal-mv').innerText = p.mv || 0; document.getElementById('modal-fm').innerText = p.fm || 0; document.getElementById('modal-gf').innerText = p.gf || 0; document.getElementById('modal-gs').innerText = p.gs || 0; document.getElementById('modal-ass').innerText = p.ass || 0; document.getElementById('modal-amm').innerText = p.amm || 0; document.getElementById('modal-esp-au').innerText = (parseInt(p.esp) || 0) + (parseInt(p.au) || 0);
             document.getElementById('modal-img-container').innerHTML = `<img src="${getAvatarUrl(p.nome)}" class="w-full h-full object-cover">`;
 
-            const owner = getTeamOwner(p.id); const btnBuy = document.getElementById('btn-buy'); const btnAssign = document.getElementById('btn-assign-other'); const btnRelease = document.getElementById('btn-release');
-            
-            // Check Limite Ruoli Solo per ME per il bottone rapido
             let isRoleFullForMe = false;
-            if(currentMode === 'standard') {
-                const playerRole = p.ruoli[0];
-                const countMe = state.miaSquadra.filter(x => x.ruoli.includes(playerRole)).length;
-                if(countMe >= standardLimits[playerRole]) isRoleFullForMe = true;
-            }
+            if(currentMode === 'standard') { const playerRole = p.ruoli[0]; const countMe = state.miaSquadra.filter(x => x.ruoli.includes(playerRole)).length; if(countMe >= standardLimits[playerRole]) isRoleFullForMe = true; }
+            const owner = getTeamOwner(p.id); const btnBuy = document.getElementById('btn-buy'); const btnAssign = document.getElementById('btn-assign-other'); const btnRelease = document.getElementById('btn-release');
 
             if(owner) { 
                 btnBuy.classList.add('hidden'); btnAssign.classList.add('hidden'); btnRelease.classList.remove('hidden'); btnRelease.innerHTML = `<i class="fa-solid fa-trash-can"></i> Svincola da ${owner.name}`; 
             } else {
                 btnBuy.classList.remove('hidden'); btnAssign.classList.remove('hidden'); btnRelease.classList.add('hidden'); 
-                if(isRoleFullForMe) {
-                    btnBuy.disabled = true; btnBuy.innerHTML = `<i class="fa-solid fa-ban"></i> Limite ${p.ruoli[0]} Pieno`;
-                    btnBuy.className = "flex-1 py-3 rounded-xl font-bold bg-red-600 text-white flex justify-center items-center gap-2 text-lg opacity-50 cursor-not-allowed";
-                } else {
-                    btnBuy.disabled = false; btnBuy.innerHTML = `<i class="fa-solid fa-gavel"></i> Tuo`;
-                    btnBuy.className = "flex-1 py-3 rounded-xl font-bold bg-brand-green text-white flex justify-center items-center gap-2 text-lg hover:bg-emerald-500 transition-colors";
-                }
+                if(isRoleFullForMe) { btnBuy.disabled = true; btnBuy.innerHTML = `<i class="fa-solid fa-ban"></i> Limite ${p.ruoli[0]} Pieno`; btnBuy.className = "flex-1 py-3 rounded-xl font-bold bg-red-600 text-white flex justify-center items-center gap-2 text-lg opacity-50 cursor-not-allowed"; } 
+                else { btnBuy.disabled = false; btnBuy.innerHTML = `<i class="fa-solid fa-gavel"></i> Tuo`; btnBuy.className = "flex-1 py-3 rounded-xl font-bold bg-brand-green text-white flex justify-center items-center gap-2 text-lg hover:bg-emerald-500 transition-colors"; }
             }
-            
             const btnFav = document.getElementById('btn-fav'); if(state.preferitiIds.includes(p.id)) { btnFav.classList.replace('text-yellow-500', 'text-brand-dark'); btnFav.classList.add('bg-yellow-500'); } else { btnFav.classList.replace('text-brand-dark', 'text-yellow-500'); btnFav.classList.remove('bg-yellow-500'); }
             document.getElementById('player-modal').classList.remove('hidden'); setTimeout(() => { document.getElementById('player-modal-content').classList.remove('translate-y-full'); }, 10);
         }
@@ -727,38 +535,80 @@
         function confirmPurchase() {
             const price = parseInt(document.getElementById('purchase-price').value); const p = state.db.find(x => x.id == currentPlayerId);
             if(isNaN(price) || price < 1) return alert("Prezzo non valido!");
-            
             const teamId = purchaseTarget === 'me' ? 'me' : document.getElementById('purchase-team-select').value;
             if(!teamId) return alert("Seleziona una squadra avversaria!");
-            
             let roster = teamId === 'me' ? state.miaSquadra : state.squadre.find(s => s.id == teamId).roster;
             let spesaPre = teamId === 'me' ? state.creditiSpesi : roster.reduce((a,b)=>a+b.costoAcquisto, 0);
             let budgetResiduo = state.budgetIniziale - spesaPre;
-            
-            // CONTROLLO BLOCCO FPF: Limite Assoluto di Spesa
             let maxBid = getMaxAbsoluteBid(roster.length, budgetResiduo);
             if(price > maxBid) return alert(`BLOCCO FPF!\nLa squadra ha solo ${budgetResiduo} crediti e deve ancora comprare i giocatori mancanti.\nOfferta massima consentita: ${maxBid} crediti.`);
             
-            // CONTROLLO BLOCCO FPF: Limite Ruoli Standard
-            if(currentMode === 'standard') {
-                let roleCount = roster.filter(x => x.ruoli.includes(p.ruoli[0])).length;
-                if(roleCount >= standardLimits[p.ruoli[0]]) return alert(`BLOCCO FPF!\nLimite massimo di giocatori raggiunto in questo ruolo (${standardLimits[p.ruoli[0]]}).`);
-            }
-
-            if(teamId === 'me') { state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price; } 
-            else { state.squadre.find(s => s.id == teamId).roster.push({...p, costoAcquisto: price}); }
-            
+            if(currentMode === 'standard') { let roleCount = roster.filter(x => x.ruoli.includes(p.ruoli[0])).length; if(roleCount >= standardLimits[p.ruoli[0]]) return alert(`BLOCCO FPF!\nLimite massimo di giocatori raggiunto in questo ruolo (${standardLimits[p.ruoli[0]]}).`); }
+            if(teamId === 'me') { state.miaSquadra.push({...p, costoAcquisto: price}); state.creditiSpesi += price; } else { state.squadre.find(s => s.id == teamId).roster.push({...p, costoAcquisto: price}); }
             salvaDati(); closePurchaseModal(); closePlayerModal(); updateBudgetUI(); renderActiveView();
         }
         
         function releasePlayer() {
             const myIdx = state.miaSquadra.findIndex(x => x.id == currentPlayerId);
-            if(myIdx > -1) { state.creditiSpesi -= state.miaSquadra[myIdx].costoAcquisto; state.miaSquadra.splice(myIdx, 1); } 
-            else { state.squadre.forEach(s => { const oIdx = s.roster.findIndex(x => x.id == currentPlayerId); if(oIdx > -1) s.roster.splice(oIdx, 1); }); }
+            if(myIdx > -1) { state.creditiSpesi -= state.miaSquadra[myIdx].costoAcquisto; state.miaSquadra.splice(myIdx, 1); } else { state.squadre.forEach(s => { const oIdx = s.roster.findIndex(x => x.id == currentPlayerId); if(oIdx > -1) s.roster.splice(oIdx, 1); }); }
             salvaDati(); closePlayerModal(); updateBudgetUI(); renderActiveView();
         }
 
-        // --- 8. NAVIGAZIONE ---
+        function calculateTeamScore(roster) {
+            let score = 0; let totalTeams = state.squadre.length + 1; let diffMultiplier = totalTeams >= 10 ? 1.15 : (totalTeams >= 8 ? 1.08 : 1.0);
+            if(roster.length === 0) return 0;
+            let avgIA = roster.reduce((sum, p) => sum + p.ia, 0) / roster.length; let iaScore = Math.max(0, (avgIA - 50) * 1.5); score += Math.min(40, iaScore * diffMultiplier);
+            let market = analyzeMarketAndRosters();
+            let ratings = { 'P': getRoleRating(roster, 'P', market.thresholds['P']), 'D': getRoleRating(roster, 'D', market.thresholds['D']), 'C': getRoleRating(roster, 'C', market.thresholds['C']), 'A': getRoleRating(roster, 'A', market.thresholds['A']) };
+            let repScore = (ratings['P'].score * 2) + (ratings['D'].score * 3) + (ratings['C'].score * 3) + (ratings['A'].score * 3.7); score += Math.min(35, repScore * diffMultiplier);
+
+            let depthScore = 0; let roleCount = {}; roster.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
+            if(currentMode === 'standard') {
+                if(roleCount['P'] >= 3) depthScore += 5; if(roleCount['D'] >= 8) depthScore += 6; if(roleCount['C'] >= 8) depthScore += 6; if(roleCount['A'] >= 6) depthScore += 8;
+            } else {
+                let formCount = 0; const check = (reqs) => { let passed = true; Object.keys(reqs).forEach(r => { let found = 0; if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0)); else found = roleCount[r] || 0; if(found < reqs[r]) passed = false; }); return passed; };
+                const keyForms = [ {'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, {'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2}, {'Por':1,'Dd':1,'Dc':2,'Ds':1,'M|C':2,'W|T|A':3,'Pc':1} ];
+                keyForms.forEach(f => { if(check(f)) formCount++; });
+                depthScore += (formCount * 7); if(roleCount['M'] >= 2) depthScore += 2; if(roleCount['Pc'] >= 3) depthScore += 2;
+            }
+            score += Math.min(25, depthScore); return Math.min(100, Math.round(score));
+        }
+
+        function renderRanking() {
+            const minPlayers = currentMode === 'mantra' ? 25 : 28;
+            let allTeams = [ { id: 'me', nome: '⭐ LA MIA SQUADRA', roster: state.miaSquadra, isMe: true }, ...state.squadre ];
+            let allCompleted = true; let teamsStatusHtml = '';
+            
+            allTeams.forEach(t => {
+                if(t.roster.length < minPlayers) { allCompleted = false; teamsStatusHtml += `<div class="flex justify-between items-center text-sm border-b border-slate-700/50 py-2"><span class="${t.isMe ? 'text-brand-accent font-bold' : 'text-slate-300'}">${t.nome}</span> <span class="text-red-400 font-bold">${t.roster.length}/${minPlayers}</span></div>`; } 
+                else { teamsStatusHtml += `<div class="flex justify-between items-center text-sm border-b border-slate-700/50 py-2"><span class="${t.isMe ? 'text-brand-accent font-bold' : 'text-slate-300'}">${t.nome}</span> <span class="text-brand-green font-bold"><i class="fa-solid fa-check"></i> Completa</span></div>`; }
+            });
+
+            if(!allCompleted || allTeams.length < 2) {
+                document.getElementById('ranking-container').innerHTML = `
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 text-center shadow-lg mt-10"><div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-slate-700"><i class="fa-solid fa-lock text-3xl text-slate-500"></i></div>
+                        <h3 class="font-display text-2xl text-white mb-2 tracking-wide">CALCOLO BLOCCATO</h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">L'IA sbloccherà il Ranking quando <b>TUTTE</b> le squadre avranno completato la rosa minima.</p>
+                        <div class="bg-brand-card p-4 rounded-xl border border-slate-700 text-left"><div class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Stato Completamento</div>${teamsStatusHtml}</div>
+                    </div>`; return;
+            }
+
+            let rankedTeams = allTeams.map(t => { return { ...t, score: calculateTeamScore(t.roster) }; }).sort((a, b) => b.score - a.score);
+            let html = `<div class="bg-brand-green/20 border border-brand-green rounded-xl p-4 mb-4 text-center shadow-[0_0_15px_rgba(16,185,129,0.2)]"><div class="text-brand-green font-bold uppercase tracking-widest text-xs mb-1"><i class="fa-solid fa-unlock"></i> Ranking Sbloccato</div><p class="text-sm text-white font-bold">L'IA ha emesso il suo verdetto basato su Algoritmi di Equilibrio e Valore IA.</p></div>`;
+            rankedTeams.forEach((t, index) => {
+                let positionColors = index === 0 ? 'bg-yellow-500 text-black border-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.3)]' : index === 1 ? 'bg-slate-300 text-black border-slate-200' : index === 2 ? 'bg-amber-700 text-white border-amber-600' : 'bg-slate-800 text-slate-400 border-slate-700';
+                let scoreColor = t.score >= 90 ? 'text-blue-400' : t.score >= 80 ? 'text-brand-green' : t.score >= 70 ? 'text-yellow-400' : 'text-orange-400';
+                html += `
+                <div class="bg-brand-card border ${t.isMe ? 'border-brand-accent shadow-lg shadow-brand-accent/20' : 'border-slate-700'} rounded-xl p-4 flex items-center gap-4 relative overflow-hidden">
+                    ${t.isMe ? '<div class="absolute top-0 right-0 w-16 h-16 bg-brand-accent opacity-10 rounded-bl-[100px]"></div>' : ''}
+                    <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-display text-xl font-bold border-2 ${positionColors}">${index + 1}</div>
+                    <div class="flex-1"><div class="font-display text-xl ${t.isMe ? 'text-brand-accent' : 'text-white'}">${t.nome}</div><div class="text-xs text-slate-400 mt-1">Valutazione basata su ${t.roster.length} giocatori</div></div>
+                    <div class="text-right"><div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Rating</div><div class="font-display text-4xl ${scoreColor}">${t.score}</div></div>
+                </div>`;
+            });
+            document.getElementById('ranking-container').innerHTML = html;
+        }
+
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); }
         function switchView(v) { 
             document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden')); document.getElementById(`view-${v}`).classList.remove('hidden'); 
@@ -768,26 +618,15 @@
             renderActiveView(v);
         }
         function renderActiveView(v = null) {
-    const active = v || document.querySelector('.view-section:not(.hidden)').id.replace('view-', '');
-    if(active==='list') renderPlayerList(); 
-    if(active==='favs') renderFavs(); 
-    if(active==='team') renderTeam(); 
-    if(active==='opponents') renderOpponents(); 
-    if(active==='pitch') renderPitch();
-    if(active==='ranking') renderRanking();
-}
+            const active = v || document.querySelector('.view-section:not(.hidden)').id.replace('view-', '');
+            if(active==='list') renderPlayerList(); if(active==='favs') renderFavs(); if(active==='team') renderTeam(); if(active==='opponents') renderOpponents(); if(active==='pitch') renderPitch(); if(active==='ranking') renderRanking();
+        }
 
-        // --- 9. API SCOUT ---
         async function fetchExternalData() {
-            const banner = document.getElementById('api-status-banner');
-            const container = document.getElementById('api-results-container');
-            banner.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-400 text-2xl mb-2"></i><p class="text-sm text-cyan-200">Sincronizzazione API in corso...</p>`;
-            container.innerHTML = '';
-            let finalHtml = '';
-
+            const banner = document.getElementById('api-status-banner'); const container = document.getElementById('api-results-container');
+            banner.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-400 text-2xl mb-2"></i><p class="text-sm text-cyan-200">Sincronizzazione in corso...</p>`; container.innerHTML = ''; let finalHtml = '';
             try {
-                let apiKey1 = localStorage.getItem('footballApiKey');
-                if (!apiKey1) { apiKey1 = prompt("API-Football\nInserisci API Key:"); if (apiKey1) localStorage.setItem('footballApiKey', apiKey1); }
+                let apiKey1 = localStorage.getItem('footballApiKey'); if (!apiKey1) { apiKey1 = prompt("API-Football\nInserisci API Key:"); if (apiKey1) localStorage.setItem('footballApiKey', apiKey1); }
                 if(apiKey1) {
                     const response1 = await fetch("https://v3.football.api-sports.io/injuries?league=135&season=2024", { "method": "GET", "headers": { "x-rapidapi-host": "v3.football.api-sports.io", "x-rapidapi-key": apiKey1 } });
                     if (!response1.ok) throw new Error(`API 1 Error`); const data1 = await response1.json();
@@ -795,8 +634,7 @@
                     else {
                         const infortuni = data1.response ? data1.response.slice(0, 10) : []; 
                         infortuni.forEach((item) => {
-                            const matchLocale = state.db.find(p => p.nome.toLowerCase().includes(item.player.name.toLowerCase()));
-                            const tagMatch = matchLocale ? `<span class="bg-brand-green text-white text-[9px] px-1 rounded ml-2">Nel Listone</span>` : '';
+                            const matchLocale = state.db.find(p => p.nome.toLowerCase().includes(item.player.name.toLowerCase())); const tagMatch = matchLocale ? `<span class="bg-brand-green text-white text-[9px] px-1 rounded ml-2">Nel Listone</span>` : '';
                             finalHtml += `<div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-red-500 mb-2"><div class="text-xs text-red-400 font-bold uppercase mb-1"><i class="fa-solid fa-truck-medical"></i> Infortunio/Squalifica (API 1)</div><div class="text-sm text-white font-bold">${item.player.name} ${tagMatch}</div><div class="text-xs text-slate-300 mt-1"><b>${item.team.name}</b> | ${item.fixture.reason || "Assente"}</div></div>`;
                         });
                     }
@@ -804,8 +642,7 @@
             } catch (e) {}
 
             try {
-                let apiKey2 = localStorage.getItem('footballDataKey');
-                if (!apiKey2) { apiKey2 = prompt("Football-Data.org\nInserisci X-Auth-Token:"); if (apiKey2) localStorage.setItem('footballDataKey', apiKey2); }
+                let apiKey2 = localStorage.getItem('footballDataKey'); if (!apiKey2) { apiKey2 = prompt("Football-Data.org\nInserisci X-Auth-Token:"); if (apiKey2) localStorage.setItem('footballDataKey', apiKey2); }
                 if(apiKey2) {
                     const targetUrl = encodeURIComponent("https://api.football-data.org/v4/competitions/SA/standings");
                     const response2 = await fetch("https://api.allorigins.win/raw?url=" + targetUrl, { "method": "GET", "headers": { "X-Auth-Token": apiKey2 } });
@@ -814,11 +651,11 @@
                     classifica.forEach((team) => { finalHtml += `<div class="bg-brand-card border border-slate-700 rounded-xl p-3 shadow-lg border-l-4 border-l-blue-500 mb-2"><div class="text-xs text-blue-400 font-bold uppercase mb-1"><i class="fa-solid fa-chart-line"></i> Top 5 Serie A (API 2)</div><div class="text-sm text-white font-bold">${team.position}. ${team.team.shortName}</div><div class="text-xs text-slate-300 mt-1"><b>Punti:</b> ${team.points} | <b>Forma:</b> ${team.form || "N/D"}</div></div>`; });
                 }
             } catch (e) {}
-
             if(finalHtml === '') finalHtml = '<div class="text-slate-500 text-center py-4">Nessun dato recuperato.</div>';
             container.innerHTML = finalHtml; banner.innerHTML = `<div class="text-brand-green font-bold"><i class="fa-solid fa-check-circle"></i> Radar Scout Aggiornato</div>`;
         }
         
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW fallito:', err)); }); }
         window.onload = initApp;
     </script>
 </body>
