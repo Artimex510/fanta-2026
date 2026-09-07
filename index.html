@@ -77,6 +77,7 @@
                 <a href="#" onclick="switchView('favs'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-yellow-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-star"></i></div> Preferiti</a>
                 <a href="#" onclick="switchView('team'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-brand-green transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-shield-halved"></i></div> Mia Squadra</a>
                 <a href="#" onclick="switchView('opponents'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-purple-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-users-rays"></i></div> Recap Rose & IA</a>
+                <a href="#" onclick="switchView('ranking'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-yellow-500 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-trophy text-yellow-500"></i></div> Ranking Finale (1-100)</a>
                 <a href="#" onclick="switchView('pitch'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-emerald-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-futbol"></i></div> Campo Verde</a>
                 <a href="#" onclick="switchView('scout'); toggleSidebar();" class="flex items-center gap-3 text-lg hover:text-cyan-400 transition-colors"><div class="w-8 text-center"><i class="fa-solid fa-satellite-dish"></i></div> Scout Serie A</a>
                 <div class="my-2 border-t border-slate-700"></div>
@@ -153,6 +154,15 @@
                 <div class="flex justify-between items-center mb-4"><h2 class="font-display text-2xl text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Scout Live</h2><button onclick="fetchExternalData()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Sync</button></div>
                 <div id="api-status-banner" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-center"><p class="text-sm text-slate-400">Premi Sincronizza per collegarti ai server esterni.</p></div>
                 <div id="api-results-container" class="flex flex-col gap-3 overflow-y-auto"></div>
+            </div>
+            <!-- POWER RANKING FINALE -->
+            <div id="view-ranking" class="view-section hidden p-4 h-full flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-display text-2xl text-yellow-500 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> Power Ranking</h2>
+                </div>
+                <div id="ranking-container" class="flex flex-col gap-4 pb-10">
+                    <!-- Il contenuto verrà generato dall'IA -->
+                </div>
             </div>
         </main>
 
@@ -494,6 +504,118 @@
             document.getElementById('opponents-container').innerHTML = html;
         }
 
+        // --- 11. MOTORE POWER RANKING (1-100) ---
+        function calculateTeamScore(roster) {
+            let score = 0;
+            // Modificatore Difficoltà: Più squadre ci sono, più è dura avere una bella rosa.
+            let totalTeams = state.squadre.length + 1;
+            let diffMultiplier = totalTeams >= 10 ? 1.15 : (totalTeams >= 8 ? 1.08 : 1.0);
+
+            if(roster.length === 0) return 0;
+
+            // 1. Qualità Media Base (Max 40 pt)
+            let avgIA = roster.reduce((sum, p) => sum + p.ia, 0) / roster.length;
+            let iaScore = Math.max(0, (avgIA - 50) * 1.5); // Scala premiante
+            score += Math.min(40, iaScore * diffMultiplier);
+
+            // 2. Forza per Reparti e Top Player (Max 35 pt)
+            let market = analyzeMarketAndRosters();
+            let ratings = { 'P': getRoleRating(roster, 'P', market.thresholds['P']), 'D': getRoleRating(roster, 'D', market.thresholds['D']), 'C': getRoleRating(roster, 'C', market.thresholds['C']), 'A': getRoleRating(roster, 'A', market.thresholds['A']) };
+            
+            let repScore = 0;
+            repScore += (ratings['P'].score * 2);   // Max 6
+            repScore += (ratings['D'].score * 3);   // Max 9
+            repScore += (ratings['C'].score * 3);   // Max 9
+            repScore += (ratings['A'].score * 3.7); // Max ~11 (L'attacco pesa di più)
+            score += Math.min(35, repScore * diffMultiplier);
+
+            // 3. Profondità e Moduli (Max 25 pt)
+            let depthScore = 0;
+            let roleCount = {}; roster.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
+            
+            if(currentMode === 'standard') {
+                if(roleCount['P'] >= 3) depthScore += 5;
+                if(roleCount['D'] >= 8) depthScore += 6;
+                if(roleCount['C'] >= 8) depthScore += 6;
+                if(roleCount['A'] >= 6) depthScore += 8;
+            } else {
+                // Nel Mantra l'IA verifica quante formazioni base si possono schierare
+                let formCount = 0;
+                const check = (reqs) => { let passed = true; Object.keys(reqs).forEach(r => { let found = 0; if(r.includes('|')) r.split('|').forEach(sub => found += (roleCount[sub] || 0)); else found = roleCount[r] || 0; if(found < reqs[r]) passed = false; }); return passed; };
+                const keyForms = [
+                    {'Por':1,'Dc':2,'Dd|E':1,'Ds|E':1,'M|C':3,'W|A':2,'Pc':1}, // 433
+                    {'Por':1,'Dc':3,'E':2,'M|C|T':3,'Pc|A':2}, // 352
+                    {'Por':1,'Dd':1,'Dc':2,'Ds':1,'M|C':2,'W|T|A':3,'Pc':1}  // 4231 similare
+                ];
+                keyForms.forEach(f => { if(check(f)) formCount++; });
+                
+                depthScore += (formCount * 7); // Max 21
+                if(roleCount['M'] >= 2) depthScore += 2; // Bonus Mediani
+                if(roleCount['Pc'] >= 3) depthScore += 2; // Bonus Punte
+            }
+            score += Math.min(25, depthScore);
+
+            return Math.min(100, Math.round(score));
+        }
+
+        function renderRanking() {
+            const minPlayers = currentMode === 'mantra' ? 25 : 28;
+            let allTeams = [ { id: 'me', nome: '⭐ LA MIA SQUADRA', roster: state.miaSquadra, isMe: true }, ...state.squadre ];
+            
+            let allCompleted = true;
+            let teamsStatusHtml = '';
+            
+            allTeams.forEach(t => {
+                if(t.roster.length < minPlayers) {
+                    allCompleted = false;
+                    teamsStatusHtml += `<div class="flex justify-between items-center text-sm border-b border-slate-700/50 py-2"><span class="${t.isMe ? 'text-brand-accent font-bold' : 'text-slate-300'}">${t.nome}</span> <span class="text-red-400 font-bold">${t.roster.length}/${minPlayers}</span></div>`;
+                } else {
+                    teamsStatusHtml += `<div class="flex justify-between items-center text-sm border-b border-slate-700/50 py-2"><span class="${t.isMe ? 'text-brand-accent font-bold' : 'text-slate-300'}">${t.nome}</span> <span class="text-brand-green font-bold"><i class="fa-solid fa-check"></i> Completa</span></div>`;
+                }
+            });
+
+            // Se anche solo una squadra non è completa, mostra il Lucchetto
+            if(!allCompleted || allTeams.length < 2) {
+                document.getElementById('ranking-container').innerHTML = `
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 text-center shadow-lg mt-10">
+                        <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-slate-700"><i class="fa-solid fa-lock text-3xl text-slate-500"></i></div>
+                        <h3 class="font-display text-2xl text-white mb-2 tracking-wide">CALCOLO BLOCCATO</h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">L'Intelligenza Artificiale elaborerà il Power Ranking ufficioso solo quando <b>TUTTE</b> le squadre avranno completato la rosa con il numero minimo di giocatori.</p>
+                        <div class="bg-brand-card p-4 rounded-xl border border-slate-700 text-left">
+                            <div class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Stato Completamento Rose</div>
+                            ${teamsStatusHtml}
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            // Se tutti sono completi, calcola i voti e genera la Classifica
+            let rankedTeams = allTeams.map(t => { return { ...t, score: calculateTeamScore(t.roster) }; }).sort((a, b) => b.score - a.score);
+            
+            let html = `<div class="bg-brand-green/20 border border-brand-green rounded-xl p-4 mb-4 text-center shadow-[0_0_15px_rgba(16,185,129,0.2)]"><div class="text-brand-green font-bold uppercase tracking-widest text-xs mb-1"><i class="fa-solid fa-unlock"></i> Ranking Sbloccato</div><p class="text-sm text-white font-bold">L'IA ha emesso il suo verdetto pre-campionato basato su Algoritmi di Equilibrio e Valore IA.</p></div>`;
+            
+            rankedTeams.forEach((t, index) => {
+                let positionColors = index === 0 ? 'bg-yellow-500 text-black border-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.3)]' : index === 1 ? 'bg-slate-300 text-black border-slate-200' : index === 2 ? 'bg-amber-700 text-white border-amber-600' : 'bg-slate-800 text-slate-400 border-slate-700';
+                let scoreColor = t.score >= 90 ? 'text-blue-400' : t.score >= 80 ? 'text-brand-green' : t.score >= 70 ? 'text-yellow-400' : 'text-orange-400';
+                
+                html += `
+                <div class="bg-brand-card border ${t.isMe ? 'border-brand-accent shadow-lg shadow-brand-accent/20' : 'border-slate-700'} rounded-xl p-4 flex items-center gap-4 relative overflow-hidden">
+                    ${t.isMe ? '<div class="absolute top-0 right-0 w-16 h-16 bg-brand-accent opacity-10 rounded-bl-[100px]"></div>' : ''}
+                    <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-display text-xl font-bold border-2 ${positionColors}">${index + 1}</div>
+                    <div class="flex-1">
+                        <div class="font-display text-xl ${t.isMe ? 'text-brand-accent' : 'text-white'}">${t.nome}</div>
+                        <div class="text-xs text-slate-400 mt-1">Valutazione basata su ${t.roster.length} giocatori</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-0.5">Rating</div>
+                        <div class="font-display text-4xl ${scoreColor}">${t.score}</div>
+                    </div>
+                </div>`;
+            });
+
+            document.getElementById('ranking-container').innerHTML = html;
+        }
+        
         // --- 6. CAMPO VERDE E FORMAZIONI ---
         function calcFormationCoverage() {
             let roleCount = {}; state.miaSquadra.forEach(p => p.ruoli.forEach(r => roleCount[r] = (roleCount[r] || 0) + 1));
@@ -646,9 +768,14 @@
             renderActiveView(v);
         }
         function renderActiveView(v = null) {
-            const active = v || document.querySelector('.view-section:not(.hidden)').id.replace('view-', '');
-            if(active==='list') renderPlayerList(); if(active==='favs') renderFavs(); if(active==='team') renderTeam(); if(active==='opponents') renderOpponents(); if(active==='pitch') renderPitch();
-        }
+    const active = v || document.querySelector('.view-section:not(.hidden)').id.replace('view-', '');
+    if(active==='list') renderPlayerList(); 
+    if(active==='favs') renderFavs(); 
+    if(active==='team') renderTeam(); 
+    if(active==='opponents') renderOpponents(); 
+    if(active==='pitch') renderPitch();
+    if(active==='ranking') renderRanking();
+}
 
         // --- 9. API SCOUT ---
         async function fetchExternalData() {
